@@ -55,3 +55,12 @@ Entry format:
 - Ran the red integration command separately because the planned Compose configuration is created in Step 3; started Compose after writing that configuration, preserving the failing-test-first requirement.
 - Added a configurable host port (default 5432); this machine's existing listener owns 5432, so its ignored .env uses localhost:15432 while the container stays on 5432. Existing processes and databases were not changed.
 - Selected Prisma/client 6.19.3 to retain the plan's db push --skip-generate and package.json prisma.seed interfaces; added db:generate, db:migrate and db:seed scripts, a generated initial migration and CI database initialization.
+
+## Task 3: Internationalisation (English / Hindi) (2026-10-02, branch phase-0-foundation, commit 4c8ea3d)
+- Tests: red `npm run test:unit` failed in 2 missing-module/message suites. Final unit run passed 3 files / 8 tests; integration passed 2 files / 4 tests; `npm run test:e2e -- i18n` passed 6 checks across mobile and desktop. Lint, typecheck and diff whitespace checks exited 0.
+- Behaviour: the validated public locale action stores NEXT_LOCALE for one year; invalid cookie values use English. The provider and html lang follow the cookie. Missing/blank Hindi DB text falls back to English; Settings.about now validates with l10nSchema, and fresh seeds include English and Hindi demo text.
+- Reviews: Ponytail review: Lean already. Ship. Impeccable shape used the settled task brief: a familiar language button for phone users, the existing tokens and Button, with pending/error feedback. Audit and hardening covered keyboard focus, targets at least 44 px, invalid locale, reduced motion, long Hindi at 360 px, network error announcement and retry; the detector found no issues. Desktop/mobile screenshots were inspected. The public menu and home design work, including DESIGN.md, remains in Phase 1.
+### Deviations
+- Pinned next-intl 4.4.0, which declares Next 16 support, after 4.14.8's plugin failed to load a native SWC module blocked by Windows Application Control; no system policy was changed.
+- Scoped the E2E error assertion to the locale alert's text because Next also renders a route-announcer alert; the role and exact error-content assertions remain.
+- Used the detailed task/spec as the Impeccable shape brief and continued under the user's continuous-mode/no-per-step-questions instruction instead of adding a confirmation pause.
