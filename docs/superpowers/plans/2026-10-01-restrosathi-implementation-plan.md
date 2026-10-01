@@ -210,7 +210,7 @@ Run: `npm run test:e2e`. Expected: PASS.
 
 **Files:**
 - Create: `docker-compose.yml`, `docker/postgres-init.sql`, `prisma/schema.prisma`, `prisma/seed.ts`, `src/lib/db.ts`, `src/lib/settings/schema.ts`, `src/lib/settings/index.ts`, `src/lib/settings/settings.int.test.ts`, `src/lib/audit/index.ts`, `src/lib/audit/audit.int.test.ts`, `tests/setup/db.ts`
-- Modify: `vitest.config.ts` (two projects), `.github/workflows/ci.yml` (Postgres 17 service + `test:int`), `.env.example` (`DATABASE_URL`, `TEST_DATABASE_URL`)
+- Modify: `vitest.config.ts` (two projects), `.github/workflows/ci.yml` (Postgres 17 service + `test:int`), `.env.example` (`DATABASE_URL`, `TEST_DATABASE_URL`), `package.json` + `package-lock.json` (`npm i @prisma/client`, `npm i -D prisma`; `prisma.seed` and `db:*` scripts), `prisma/migrations/` (generated)
 
 **Interfaces:**
 - Consumes: `L10n` from Task 3 is **not** available yet, so define `Settings.about` as `Json` here and validate it with `l10nSchema` once Task 3 lands (Task 3 Step 6 edits this file).
@@ -259,7 +259,7 @@ it("writes an audit row", async () => {
 
 **Files:**
 - Create: `src/i18n/request.ts`, `messages/en.json`, `messages/hi.json`, `src/lib/i18n/l10n.ts`, `src/lib/i18n/l10n.test.ts`, `src/lib/i18n/messages.test.ts`, `src/components/LanguageToggle.tsx`, `src/app/actions/locale.ts`, `tests/e2e/i18n.spec.ts`
-- Modify: `next.config.ts` (next-intl plugin), `src/app/layout.tsx` (`<html lang={locale}>`, provider), `src/lib/settings/schema.ts` + `index.ts` (validate `about` with `l10nSchema`)
+- Modify: `package.json` + `package-lock.json` (`npm i next-intl`), `next.config.ts` (next-intl plugin), `src/app/layout.tsx` (`<html lang={locale}>`, provider), `src/lib/settings/schema.ts` + `index.ts` (validate `about` with `l10nSchema`)
 
 **Interfaces:**
 - Produces: `type Locale = "en" | "hi"`; `type L10n = { en: string; hi?: string }`; `l10nSchema` (Zod; `en` non-empty); `localize(value: L10n, locale: Locale): string`; server action `setLocale(locale: Locale): Promise<void>` (public; sets cookie `NEXT_LOCALE`, 1 year); `<LanguageToggle />`. `SettingsView.about` becomes `L10n`.
@@ -519,7 +519,7 @@ it("builds a wa.me link", () => expect(whatsappChatUrl("+919876543210", "Hi")).t
 
 **Files:**
 - Create: `src/lib/menu/images.ts`, `src/lib/menu/images.int.test.ts`, `src/lib/menu/mutations.ts`, `src/lib/menu/mutations.int.test.ts`, `src/app/admin/menu/page.tsx`, `src/app/admin/menu/[itemId]/page.tsx`, `src/app/admin/menu/actions.ts`, `src/app/uploads/[...path]/route.ts`, `tests/e2e/menu-admin.spec.ts`, `src/lib/menu/__fixtures__/` (tiny PNG, fake.jpg text file, 6 MB file generated in the test)
-- Modify: `.env.example` (`UPLOAD_DIR=./uploads`), `.gitignore` (`uploads/`)
+- Modify: `.env.example` (`UPLOAD_DIR=./uploads`), `.gitignore` (`uploads/`), `package.json` + `package-lock.json` (`npm i sharp`)
 
 **Interfaces:**
 - Consumes: `itemInputSchema` (Task 5); `requireUser` (Task 4); `audit` (Task 2).
