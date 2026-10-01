@@ -86,3 +86,11 @@ Entry format:
 - Ponytail full phase audit: Lean already. Ship. Required security, validation, business rules and tests were retained; no additional abstraction or dependency was introduced for the audit.
 - Notes: this machine uses Node 22 from the task runtime and the existing Docker Desktop installation, with host PostgreSQL port 15432 to avoid the unrelated existing 5432 listener. next-intl remains pinned to 4.4.0 because Windows blocks the newer plugin's native module. Existing npm install advisories were recorded in Task 2; no unsolicited security scan was run.
 - Next: the user's continuous Tasks 1-10 goal explicitly authorizes moving to phase-1-menu-site and Task 5. Phase 2 remains out of scope; main was not changed.
+
+## Task 5: Menu model and pricing rules (2026-10-02, branch phase-1-menu-site, commit 0ad4ff2)
+- Tests: red unit run failed in two missing pricing/schema suites; red integration run failed in the missing query suite. Final unit result: 6 files / 39 tests passed. Integration: 4 files / 19 tests passed. Lint, typecheck and diff whitespace checks exited 0.
+- Behaviour: Phase 1 menu models, validated localized inputs and reads, exclusive base-price/variant rules, integer prices, modifier bounds, server pricing and typed choice errors. Ordered public query includes sold-out items and omits empty categories. Seed adds 20 fictional dishes in six categories with the specified variants/options, no-Hindi fallback fixture and a long Hindi name.
+- Reviews: Ponytail full review: Lean already. Ship. No new dependency or UI surface; responsive/accessibility checks belong to Task 6. All Task 5 checkboxes complete.
+### Deviations
+- Added an additive generated menu migration and explicit sortOrder fields on modifier groups/options/pairings to persist the planned ordering. Deployed and seeded the development database without resetting it; seed upserts preserve later owner edits.
+- Added unknown-variant, duplicate-option, untrusted client-price, malformed-input, empty-category and invalid localized-read checks alongside the planned tests. Repeated option IDs are treated as one selection.
