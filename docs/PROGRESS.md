@@ -45,3 +45,13 @@ Entry format:
 - Additional evidence: ran `npm run test:int` separately under Node 22.23.3. Vitest reported `Test Files 2 failed (2)`: audit could not import `../db`, and settings could not import `./index`. These are the planned missing-module failures; no implementation was written.
 - State: Task 2 Step 1 tests and the integration test project configuration, together with its checkbox, were stashed as `Task 2 red tests: stopped on Compose step ordering`. No failing work was committed. Task 1 remains complete; Tasks 2-10 and both phase exit checks remain incomplete.
 - What I need from you: correct the Task 2 step order so the Compose configuration exists before its Step 2 command, or explicitly authorize running the red integration tests separately and starting Compose after Step 3. I have not changed the plan's text or weakened its checks.
+
+## Task 2: Database, Settings, audit log (2026-10-02, branch phase-0-foundation, commit 162ec24)
+- Tests: red integration run failed with two missing-module suites; final `npm run test:int` passed 2 files / 4 tests. `npm run lint` and `npm run typecheck` exited 0; `npm run test:unit` passed 1 file / 3 tests. `git diff --check` passed.
+- Runtime: Compose PostgreSQL 17.11 is healthy; the generated foundation migration applied to the development database and the seed created Settings row 1 for Saffron Tadka. Integration setup resets only the separate restrosathi_test database, verifies its name and separation before resetting, then seeds it; files run serially.
+- Reviews: Ponytail review: Lean already. Ship. No UI surface was added in this task.
+- Notes: Prisma's package.json seed deprecation notice is expected on 6.19.3. npm's install summary reported 3 high severity findings; no separate security scan or automatic breaking upgrade was run. The earlier scope and ordering stops are resolved by the updated AGENTS.md in 13ada84. All Task 2 checkboxes are complete.
+### Deviations
+- Ran the red integration command separately because the planned Compose configuration is created in Step 3; started Compose after writing that configuration, preserving the failing-test-first requirement.
+- Added a configurable host port (default 5432); this machine's existing listener owns 5432, so its ignored .env uses localhost:15432 while the container stays on 5432. Existing processes and databases were not changed.
+- Selected Prisma/client 6.19.3 to retain the plan's db push --skip-generate and package.json prisma.seed interfaces; added db:generate, db:migrate and db:seed scripts, a generated initial migration and CI database initialization.
