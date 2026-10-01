@@ -1,6 +1,6 @@
 # RestroSathi Prototype Implementation Plan
 
-> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
+> **For agentic workers (Codex or similar):** Follow `AGENTS.md`. Implement one task at a time, in order, and tick each step's checkbox (`- [ ]` → `- [x]`) as you finish it. That is the only edit allowed to this file. One commit per task, then stop and report.
 
 **Goal:** Build a single-restaurant website, QR ordering, kitchen board and billing system (plus bookings, WhatsApp and growth features) for the fictional demo restaurant "Saffron Tadka", delivered in 7 phases.
 
@@ -154,6 +154,8 @@ Test naming: `*.test.ts` = unit (no DB); `*.int.test.ts` = integration (test DB)
 
 **Interfaces:**
 - Produces: `formatINR(paise: number): string`; npm scripts `dev`, `build`, `start`, `lint`, `typecheck` (`tsc --noEmit`), `test:unit`, `test:int`, `test:e2e`; CSS variables `--color-surface`, `--color-surface-raised`, `--color-text`, `--color-text-muted`, `--color-primary`, `--color-primary-contrast`, `--color-accent`, `--color-veg`, `--color-nonveg`, `--color-danger`, `--color-focus`, `--radius-sm|md|lg`, `--duration-fast` (150ms), `--duration-base` (250ms), font families `--font-display`, `--font-body`.
+
+- [ ] **Step 0: Protect existing files.** Run `git status`; it must be clean (the repo already has `.gitattributes` with `* text=auto eol=lf` so Windows doesn't rewrite line endings). Then scaffold. After scaffolding, run `git status` again. If `AGENTS.md`, `PRODUCT.md` or any file under `docs/` was changed or overwritten, restore it with `git checkout -- <file>`.
 
 - [ ] **Step 1: Scaffold**
 
