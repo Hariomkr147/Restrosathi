@@ -469,7 +469,7 @@ Run: `npm run test:e2e -- menu`. Expected: PASS.
 - Consumes: `getSettings`, `Hours` (Task 2); `getPublicMenu` (Task 5); `localize` (Task 3).
 - Produces: `FEATURES = { bookings: false, events: false } as const`; `restaurantJsonLd(s: SettingsView, siteUrl: string): Record<string, unknown>`; `whatsappChatUrl(phoneE164: string, text?: string): string` (in `FloatingContact.tsx` or `src/lib/seo`; reused in Phase 5) returning `https://wa.me/<digits>?text=<encoded>`.
 
-- [ ] **Step 1: Failing unit tests**
+- [x] **Step 1: Failing unit tests**
 
 ```ts
 it("builds Restaurant JSON-LD", () => {
@@ -485,15 +485,15 @@ it("emits overnight hours as given", () => {
 it("builds a wa.me link", () => expect(whatsappChatUrl("+919876543210", "Hi")).toBe("https://wa.me/919876543210?text=Hi"));
 ```
 
-- [ ] **Step 2: Run** unit. Expected: FAIL.
+- [x] **Step 2: Run** unit. Expected: FAIL.
 
-- [ ] **Step 3: Implement** the interfaces; the home page: hero (full-bleed photo from `public/brand/hero.webp`; commit a placeholder food photo you own or that is free to use, ≤ 200 KB WebP; name, about text, CTA "View menu", plus "Book a table" / "Plan an event" only when the matching `FEATURES` flag is true), signature dishes (items tagged `CHEFS_SPECIAL`, max 6), hours + Google Maps iframe (only if `mapEmbedUrl`) + Google review link (only if `googleReviewUrl`), floating Call (`tel:`) and WhatsApp-chat buttons. Entrance motion via `motion` with token durations; none under reduced motion. JSON-LD in a `<script type="application/ld+json">`.
+- [x] **Step 3: Implement** the interfaces; the home page: hero (full-bleed photo from `public/brand/hero.webp`; commit a placeholder food photo you own or that is free to use, ≤ 200 KB WebP; name, about text, CTA "View menu", plus "Book a table" / "Plan an event" only when the matching `FEATURES` flag is true), signature dishes (items tagged `CHEFS_SPECIAL`, max 6), hours + Google Maps iframe (only if `mapEmbedUrl`) + Google review link (only if `googleReviewUrl`), floating Call (`tel:`) and WhatsApp-chat buttons. Entrance motion via `motion` with token durations; none under reduced motion. JSON-LD in a `<script type="application/ld+json">`.
 
-- [ ] **Step 4: Run** unit. Expected: PASS.
+- [x] **Step 4: Run** unit. Expected: PASS.
 
-- [ ] **Step 5: E2E** `tests/e2e/home.spec.ts`: home shows "Saffron Tadka"; "View menu" navigates to `/menu`; no link named "Book a table" exists; a JSON-LD script parses with `name === "Saffron Tadka"`; the WhatsApp button `href` starts with `https://wa.me/91`. Run: `npm run test:e2e -- home`. Expected: PASS.
+- [x] **Step 5: E2E** `tests/e2e/home.spec.ts`: home shows "Saffron Tadka"; "View menu" navigates to `/menu`; no link named "Book a table" exists; a JSON-LD script parses with `name === "Saffron Tadka"`; the WhatsApp button `href` starts with `https://wa.me/91`. Run: `npm run test:e2e -- home`. Expected: PASS.
 
-- [ ] **Step 6: Commit**: `git commit -m "feat: home page, Restaurant JSON-LD, feature flags"`
+- [x] **Step 6: Commit**: `git commit -m "feat: home page, Restaurant JSON-LD, feature flags"`
 
 ---
 

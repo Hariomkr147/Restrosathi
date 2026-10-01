@@ -3,6 +3,8 @@
     "home": "Home",
     "menu": "Menu",
     "main": "Main navigation",
+    "book": "Book a table",
+    "events": "Events",
     "skip": "Skip to content"
   },
   "home": {
@@ -12,7 +14,13 @@
     "hours": "Opening hours",
     "findUs": "Find us",
     "googleReviews": "Google reviews",
-    "demo": "Fictional demo restaurant"
+    "demo": "Fictional demo restaurant",
+    "heroAlt": "Illustrative Indian meal with dal, naan and paneer tikka",
+    "illustrativePhoto": "Illustrative photo",
+    "bookTable": "Book a table",
+    "planEvent": "Plan an event",
+    "visiting": "Visiting information",
+    "mapTitle": "Restaurant location map"
   },
   "menu": {
     "title": "Menu",
@@ -69,6 +77,8 @@
     "languageError": "Could not change language. Try again.",
     "call": "Call",
     "whatsapp": "Chat on WhatsApp",
+    "contact": "Contact the restaurant",
+    "days": { "mon": "Monday", "tue": "Tuesday", "wed": "Wednesday", "thu": "Thursday", "fri": "Friday", "sat": "Saturday", "sun": "Sunday" },
     "closed": "Closed",
     "save": "Save",
     "saving": "Saving…",
