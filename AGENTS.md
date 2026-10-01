@@ -74,9 +74,13 @@ Use the smallest set that covers the task. Skills are invoked with `$name`. If a
 - `PRODUCT.md`: product truth. `DESIGN.md`: visual rules. `src/brand/theme.css`: actual token values. `AGENTS.md`: your behaviour. Spec and plan: scope and acceptance criteria.
 - Task 1 runs `create-next-app` in this folder. Before it, make sure everything is committed. Afterwards run `git status`. If `AGENTS.md`, `PRODUCT.md` or anything under `docs/` was changed or overwritten, restore it with `git checkout -- <file>` and keep the generated project files.
 
-## Floci, S3, AWS
+## Floci (local AWS emulator): Phase 6 only
 
-Not needed for Phases 0–5. Uploads go to a local folder (`UPLOAD_DIR`) as the plan says; do not add a storage abstraction, Floci or AWS services unless I ask. If a later phase needs them, keep the emulator off the public network.
+- **Phases 0–5:** do not add Floci, AWS SDKs or a storage abstraction. Uploads go to a local folder (`UPLOAD_DIR`) as the plan says.
+- **Phase 6 (Task 44, off-site backups):** use Floci as the local S3 to test the backup upload and restore scripts. Image `floci/floci:latest`, endpoint `http://floci:4566` inside Compose, port bound to `127.0.0.1` only, dummy credentials. For tests, `@floci/testcontainers` may be used.
+- Do not mount the Docker socket into Floci unless a service truly needs it (S3 does not).
+- Floci is an emulator, not AWS. The real backup target (an S3-compatible bucket) must be tested once for real before go-live.
+- Add `src/lib/storage/` only if uploads themselves move to object storage, and only then.
 
 ## Security
 

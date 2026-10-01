@@ -103,8 +103,25 @@ Never run a design skill on billing logic, order states or auth. Check those you
 
 ## 6. Things you can skip
 
-- **Floci / S3 / `src/lib/storage/`:** nothing in Phases 0–5 needs them. Uploads go to a local folder. Add them only if a later phase needs object storage.
-- **Taste-Skill, Hallmark, Anti-Slop, Stop Slop:** these overlap with Impeccable. Don't install them.
+- **Taste-Skill, Hallmark, Stop Slop:** these overlap with Impeccable and No AI Slop. Don't install them.
+- **Anti-Slop:** there are two unrelated projects with this name.
+  - `miqdadbadjuber/anti-slop` is a rulebook for frontend, prose and code comments, with 38 rules and a PASS/FAIL report on every delivery. It overlaps with Impeccable and No AI Slop, and it adds work to every task. Optional: try it *instead of* No AI Slop when you write copy, not on top of Impeccable. Codex install per its README: `codex plugin marketplace add miqdadbadjuber/anti-slop` then `codex plugin add antislop@anti-slop`.
+  - `dmmulroy/anti-slop` is a set of TypeScript lint rules (Oxlint). Its `no-module-mocking` rule conflicts with the plan, which mocks cookies in tests and uses fakes for WhatsApp and AI. It would also be a second linter next to ESLint. Skip for now; revisit after Phase 1 as a trial on its own branch.
+
+## 6b. Floci (local AWS emulator): Phase 6
+
+Not used in Phases 0–5. In Phase 6 (Task 44, off-site backups) it acts as a local S3 for testing the backup upload and restore scripts:
+
+```yaml
+services:
+  floci:
+    image: floci/floci:latest
+    ports:
+      - "127.0.0.1:4566:4566"
+    # no Docker socket mount: S3 does not need it
+```
+
+The app or scripts then use `AWS_ENDPOINT_URL=http://floci:4566` with dummy credentials. Floci is an emulator, so the real backup bucket must also be tested once for real before go-live.
 
 ## 7. Security tools (Strix), when the time comes
 
