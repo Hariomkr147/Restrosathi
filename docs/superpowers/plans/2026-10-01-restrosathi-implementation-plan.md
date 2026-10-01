@@ -221,7 +221,7 @@ Run: `npm run test:e2e`. Expected: PASS.
   - `audit(entry: { actorId: string | null; action: string; entity: string; entityId: string; data?: unknown }): Promise<void>`
   - Prisma models `Settings` (id fixed `1`), `User`, `AuthSession`, `LoginAttempt`, `AuditLog` with fields from spec §11 (Phase 0 row)
 
-- [ ] **Step 1: Write failing integration tests**
+- [x] **Step 1: Write failing integration tests**
 
 ```ts
 // settings.int.test.ts
@@ -245,13 +245,13 @@ it("writes an audit row", async () => {
 });
 ```
 
-- [ ] **Step 2: Run**: `docker compose up -d && npm run test:int`. Expected: FAIL (modules missing).
+- [x] **Step 2: Run**: `docker compose up -d && npm run test:int`. Expected: FAIL (modules missing).
 
-- [ ] **Step 3: Implement** the Compose file (Postgres 17, port 5432, init script creating `restrosathi_test`), the Phase 0 Prisma models, `src/lib/db.ts` (global-cached client), `hoursSchema`, `getSettings()` (reads row `1`, parses `hours` with `hoursSchema`, throws if the row is missing), `audit()`, and `prisma/seed.ts` (upsert Settings row `1` for Saffron Tadka, hours 11:00–23:00 daily, placeholder address and phone). `tests/setup/db.ts` is the Vitest `globalSetup` for the integration project: run `prisma db push --force-reset --skip-generate` against `TEST_DATABASE_URL`, then the seed. Integration project runs with `fileParallelism: false`.
+- [x] **Step 3: Implement** the Compose file (Postgres 17, port 5432, init script creating `restrosathi_test`), the Phase 0 Prisma models, `src/lib/db.ts` (global-cached client), `hoursSchema`, `getSettings()` (reads row `1`, parses `hours` with `hoursSchema`, throws if the row is missing), `audit()`, and `prisma/seed.ts` (upsert Settings row `1` for Saffron Tadka, hours 11:00–23:00 daily, placeholder address and phone). `tests/setup/db.ts` is the Vitest `globalSetup` for the integration project: run `prisma db push --force-reset --skip-generate` against `TEST_DATABASE_URL`, then the seed. Integration project runs with `fileParallelism: false`.
 
-- [ ] **Step 4: Run**: `npm run test:int`. Expected: PASS.
+- [x] **Step 4: Run**: `npm run test:int`. Expected: PASS.
 
-- [ ] **Step 5: Commit**: `git commit -am "feat: postgres, prisma, settings, audit log"` (add new files first).
+- [x] **Step 5: Commit**: `git commit -am "feat: postgres, prisma, settings, audit log"` (add new files first).
 
 ---
 

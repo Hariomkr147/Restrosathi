@@ -1,0 +1,68 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Settings {
+  id              Int     @id @default(1)
+  name            String
+  about           Json
+  address         String
+  phone           String
+  whatsappPhone   String
+  mapEmbedUrl     String?
+  googleReviewUrl String?
+  hours           Json
+}
+
+enum Role {
+  OWNER
+  STAFF
+}
+
+model User {
+  id           String        @id @default(cuid())
+  name         String
+  phone        String?       @unique
+  passwordHash String?
+  pinHash      String?
+  role         Role
+  active       Boolean       @default(true)
+  sessions     AuthSession[]
+  auditLogs    AuditLog[]
+}
+
+model AuthSession {
+  tokenHash String   @id
+  userId    String
+  expiresAt DateTime @db.Timestamptz(3)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([expiresAt])
+}
+
+model LoginAttempt {
+  id  String   @id @default(cuid())
+  key String
+  at  DateTime @default(now()) @db.Timestamptz(3)
+
+  @@index([key, at])
+}
+
+model AuditLog {
+  id       String   @id @default(cuid())
+  actorId  String?
+  action   String
+  entity   String
+  entityId String
+  data     Json     @default("{}")
+  at       DateTime @default(now()) @db.Timestamptz(3)
+  actor    User?    @relation(fields: [actorId], references: [id], onDelete: SetNull)
+
+  @@index([at])
+}
