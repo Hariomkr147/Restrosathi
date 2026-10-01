@@ -25,7 +25,7 @@ export function LanguageToggle() {
         }}>
         {pending ? t("changingLanguage") : t(next === "hi" ? "hindi" : "english")}
       </Button>
-      {error && <p role="alert" className="text-sm text-danger">{t("languageError")}</p>}
+      {error && <p role="alert" className="text-sm text-destructive">{t("languageError")}</p>}
     </div>
   );
 }

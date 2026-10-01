@@ -17,8 +17,10 @@ jobs:
           --health-cmd "pg_isready -U restrosathi -d restrosathi"
           --health-interval 5s --health-timeout 5s --health-retries 10
     env:
-      DATABASE_URL: postgresql://restrosathi:restrosathi@localhost:5432/restrosathi?schema=public
-      TEST_DATABASE_URL: postgresql://restrosathi:restrosathi@localhost:5432/restrosathi_test?schema=public
+      DATABASE_URL: postgresql://restrosathi:restrosathi@127.0.0.1:5432/restrosathi?schema=public
+      TEST_DATABASE_URL: postgresql://restrosathi:restrosathi@127.0.0.1:5432/restrosathi_test?schema=public
+      SEED_OWNER_PASSWORD: DemoOwner!2026
+      SEED_STAFF_PIN: "123456"
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4

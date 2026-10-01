@@ -1,6 +1,10 @@
+import { existsSync } from "node:fs";
 import { defineConfig, devices } from "@playwright/test";
 
+if (existsSync(".env")) process.loadEnvFile(".env");
+
 export default defineConfig({
+  globalSetup: "./tests/setup/db.ts",
   testDir: "./tests/e2e",
   forbidOnly: !!process.env.CI,
   retries: 0,
@@ -20,5 +24,6 @@ export default defineConfig({
     command: "npm run build && npm run start",
     port: 3000,
     timeout: 120_000,
+    env: { DATABASE_URL: process.env.TEST_DATABASE_URL ?? "" },
   },
 });

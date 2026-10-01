@@ -28,6 +28,34 @@
     "CHEFS_SPECIAL": "Chef’s special",
     "NEW": "New"
   },
+  "login": {
+    "ownerTitle": "Owner login",
+    "staffTitle": "Staff PIN login",
+    "phone": "Phone number",
+    "phoneHint": "Include +91, followed by your 10-digit number.",
+    "password": "Password",
+    "staffName": "Staff member",
+    "pin": "4–6 digit PIN",
+    "keypad": "PIN keypad",
+    "backspace": "Delete digit",
+    "clear": "Clear PIN",
+    "signIn": "Log in",
+    "signingIn": "Logging in…",
+    "invalid": "Phone, password or PIN is incorrect.",
+    "locked": "Too many attempts. Try again in 15 minutes.",
+    "network": "Could not log in. Check your connection and try again.",
+    "noStaff": "No staff accounts are available. Ask the owner for help.",
+    "logout": "Log out",
+    "loggingOut": "Logging out…",
+    "logoutError": "Could not log out. Check your connection and try again."
+  },
+  "admin": {
+    "title": "Restaurant workspace",
+    "welcome": "Welcome, {name}.",
+    "role": "Role: {role}",
+    "OWNER": "Owner",
+    "STAFF": "Staff"
+  },
   "common": {
     "english": "English",
     "hindi": "हिन्दी",

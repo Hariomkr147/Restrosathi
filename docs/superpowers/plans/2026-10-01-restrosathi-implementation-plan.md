@@ -324,7 +324,7 @@ Run: `npm run test:e2e -- i18n`. Expected: PASS.
   - Server actions (public): `loginWithPassword(form: { phone: string; password: string })`, `loginWithPin(form: { userId: string; pin: string })`. Both return `{ error: "invalid" | "locked" } | void` and redirect to `/admin` on success. `logout()` requires a user.
   - Test helpers in `tests/helpers/auth.ts`: `mockCookies()` (installs the in-memory `next/headers` mock), `asOwner(): Promise<void>`, `asStaff(): Promise<void>`, `asAnonymous(): void`. These create a real `AuthSession` for the seeded user and put its token in the mock jar. Every later integration test uses them.
 
-- [ ] **Step 1: Failing tests**
+- [x] **Step 1: Failing tests**
 
 ```ts
 // password.test.ts
@@ -342,15 +342,15 @@ it("requireUser('OWNER') rejects staff", async () => { /* staff session → awai
 
 Cookie access in integration tests: mock `next/headers` `cookies()` with a small in-memory jar via `vi.mock`.
 
-- [ ] **Step 2: Run** unit + integration. Expected: FAIL.
+- [x] **Step 2: Run** unit + integration. Expected: FAIL.
 
-- [ ] **Step 3: Implement** the interfaces above. Pages: `/login` (phone + password), `/login/staff` (pick an active staff name, then a 4–6 digit PIN on a large keypad with ≥ 44 px keys). `/admin/layout.tsx` calls `requirePageUser()` and shows the user's name, role and a Logout button.
+- [x] **Step 3: Implement** the interfaces above. Pages: `/login` (phone + password), `/login/staff` (pick an active staff name, then a 4–6 digit PIN on a large keypad with ≥ 44 px keys). `/admin/layout.tsx` calls `requirePageUser()` and shows the user's name, role and a Logout button.
 
-- [ ] **Step 4: Run** unit + integration. Expected: PASS.
+- [x] **Step 4: Run** unit + integration. Expected: PASS.
 
-- [ ] **Step 5: E2E** `tests/e2e/auth.spec.ts`: anonymous `/admin` redirects to `/login`; the owner logs in and sees "Owner"; staff PIN login shows "Ravi"; a wrong PIN shows the `invalid` message; Logout returns to `/login`. Run: `npm run test:e2e -- auth`. Expected: PASS.
+- [x] **Step 5: E2E** `tests/e2e/auth.spec.ts`: anonymous `/admin` redirects to `/login`; the owner logs in and sees "Owner"; staff PIN login shows "Ravi"; a wrong PIN shows the `invalid` message; Logout returns to `/login`. Run: `npm run test:e2e -- auth`. Expected: PASS.
 
-- [ ] **Step 6: Commit**: `git commit -m "feat: owner password and staff PIN auth with DB sessions and lockout"`
+- [x] **Step 6: Commit**: `git commit -m "feat: owner password and staff PIN auth with DB sessions and lockout"`
 
 **Phase 0 exit check:** `npm run lint && npm run typecheck && npm run test:unit && npm run test:int && npm run test:e2e` all pass; CI green.
 
