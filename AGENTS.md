@@ -7,6 +7,7 @@ Codex does not open files that this file mentions, so open these yourself at the
 1. `docs/superpowers/specs/2026-09-29-restrosathi-prototype-design.md` (the spec, v2: what to build)
 2. `docs/superpowers/plans/2026-10-01-restrosathi-implementation-plan.md` (the plan: how, task by task)
 3. `PRODUCT.md` (product truth). `DESIGN.md` too, once it exists.
+4. `docs/PROGRESS.md` (what is done, and why any earlier run stopped). Newest entries last.
 
 The spec and plan are authoritative. Do not edit them, except to tick a finished step's checkbox in the plan. If something in them is wrong, unclear or contradicts the code, **stop and tell me**; do not work around it.
 
@@ -16,14 +17,49 @@ RestroSathi is a single-restaurant operating system for the fictional demo resta
 
 ## How to work
 
-- **One task at a time.** Do exactly the task I name (for example "Task 3"), following its steps in order, including the failing test first.
-- **Only Phases 0 and 1 have step-by-step tasks.** Phases 2–6 are a roadmap. Do not start a phase, or invent its tasks, until its detailed plan exists in `docs/superpowers/plans/`. Ask me instead.
+There are two modes. I choose the mode in my prompt.
+
+- **Single-task mode** ("Do Task N"): do only that task, commit, then stop and report.
+- **Continuous mode** ("Complete Phase N" or a `/goal`): work through every unticked task of the named phase, in plan order, without waiting for me between tasks. Never go past the end of that phase.
+
+Rules for both modes:
+
+- Do each task exactly as written, steps in order, failing test first.
+- **Only Phases 0 and 1 have step-by-step tasks.** Phases 2–6 are a roadmap. Do not start a phase, or invent its tasks, until its detailed plan exists in `docs/superpowers/plans/`.
 - Do not silently expand scope. Features from later phases stay hidden behind `FEATURES` in `src/lib/features.ts`.
 - Inspect the existing code and tests before changing anything.
-- Run the focused tests first. Before saying a task is done, run its verification commands and show me the real output.
-- **One commit per task**, after its acceptance criteria pass. One branch per phase (`phase-0-foundation`, `phase-1-menu-site`, …).
-- After the commit, **stop** and report: what changed, test output, anything unexpected.
-- Never weaken a test, gate or budget to make something pass. If a gate fails, fix the cause or tell me.
+- Run the focused tests first. Before calling a task done, run its verification commands and read the real output.
+- **One commit per task**, only after its acceptance criteria pass. One branch per phase (`phase-0-foundation`, `phase-1-menu-site`, …). Never commit a failing test, a skipped test or a weakened gate.
+- Never weaken a test, gate or budget to make something pass. Fix the cause, or stop and tell me.
+
+### Continuous mode: the loop
+
+Repeat until the phase is finished or a stop condition below is hit:
+
+1. Read `docs/PROGRESS.md` and `git log` to find the next unticked task. Make sure you are on the phase branch with a clean working tree.
+2. Do the task (skills as described below), tick its checkboxes in the plan, commit.
+3. Append one entry to `docs/PROGRESS.md` (task, commit hash, tests run and result, anything notable) and commit it with the task commit or as a follow-up `docs:` commit.
+4. Go straight to the next task. Do not ask "shall I continue?".
+
+When the last task of the phase is done: run the full lint, typecheck, unit, integration and e2e commands, check each exit criterion for that phase, write a **Phase summary** in `docs/PROGRESS.md`, then **stop**. Do not start the next phase and do not merge to `main`.
+
+### Stop conditions (continuous mode)
+
+Stop immediately, leave the repo clean (uncommitted half-done work goes on the branch as a `wip:` commit only if its tests pass; otherwise `git stash` it and say so), write a **STOPPED** entry in `docs/PROGRESS.md` and report, when:
+
+1. The same test or command still fails after **3** different fix attempts.
+2. The spec or plan is unclear, contradicts itself or the code, or would need to be changed.
+3. A gate or budget fails (accessibility, 150 KB JS, 360 px, Hindi) and the only way to pass is to weaken it.
+4. The task needs something not in the plan: a new dependency, a secret or API key, network access, Docker that is not running, a paid service.
+5. A security-relevant choice the plan does not decide (auth, sessions, money, billing rounding, data deletion).
+6. Unexpected git state: unrelated uncommitted changes, wrong branch, a failed merge.
+7. The phase is finished (see above), or the next task belongs to a phase with no detailed plan.
+
+Do not "route around" a stop condition by editing tests, the plan or the spec. A stop with a clear report is a good result.
+
+### What may be edited outside the task
+
+The plan: tick checkboxes only. The spec: never. `docs/PROGRESS.md`: append only. Nothing else outside the task's own file list.
 
 ## Architecture
 

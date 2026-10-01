@@ -1,6 +1,6 @@
 # RestroSathi Prototype Implementation Plan
 
-> **For agentic workers (Codex or similar):** Follow `AGENTS.md`. Implement one task at a time, in order, and tick each step's checkbox (`- [ ]` → `- [x]`) as you finish it. That is the only edit allowed to this file. One commit per task, then stop and report.
+> **For agentic workers (Codex or similar):** Follow `AGENTS.md`. Implement tasks in order, and tick each step's checkbox (`- [ ]` → `- [x]`) as you finish it. Ticking checkboxes is the only edit allowed to this file. One commit per task. In single-task mode, stop after the commit; in continuous mode, carry on to the next task and stop only at the end of the phase or at an `AGENTS.md` stop condition.
 
 **Goal:** Build a single-restaurant website, QR ordering, kitchen board and billing system (plus bookings, WhatsApp and growth features) for the fictional demo restaurant "Saffron Tadka", delivered in 7 phases.
 

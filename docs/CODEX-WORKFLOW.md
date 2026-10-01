@@ -32,23 +32,77 @@ codex plugin add ponytail@ponytail
 | `src/brand/theme.css` | The real colour/spacing/motion values (created in Task 1) |
 | `docs/superpowers/specs/…` | What to build (v2 spec) |
 | `docs/superpowers/plans/…` | How to build it, task by task, with tests |
+| `docs/PROGRESS.md` | Log Codex appends to: tasks done, and why it stopped |
+| `scripts/run-phase.sh` | Optional runner: one `codex exec` per task, with checks |
 | `docs/CODEX-WORKFLOW.md` | This file |
+
+## 2b. Continuous mode: make Codex work without you
+
+You want Codex to keep going task after task. There are two ways. Both rely on the stop conditions in `AGENTS.md`, so it halts and tells you instead of guessing.
+
+### Option A: `/goal` (simplest, one prompt per phase)
+
+Codex CLI 0.128.0 and later has a `/goal` command that keeps Codex working across many turns until a stop condition is met. Commands: `/goal <objective>`, `/goal` (status), `/goal pause`, `/goal resume`, `/goal clear`.
+
+1. Update Codex: `npm install -g @openai/codex@latest`.
+2. Turn it on: `codex features enable goals` (or put `[features]` / `goals = true` in `~/.codex/config.toml`), then restart Codex.
+3. Start a fresh session in the repo, on branch `phase-0-foundation`, and send:
+
+```text
+/goal Complete Phase 0 (Tasks 1-4) of the implementation plan in continuous mode, as defined in AGENTS.md.
+Read AGENTS.md, PRODUCT.md, the v2 spec, the plan and docs/PROGRESS.md first.
+Stopping condition: Tasks 1-4 are committed, the full lint, typecheck, unit and integration commands pass, the Phase 0 exit criteria are checked, and the Phase summary is written in docs/PROGRESS.md.
+Stop earlier on any AGENTS.md stop condition and write a STOPPED entry. Do not start Phase 1.
+```
+
+Check progress with `/goal`, or read `docs/PROGRESS.md` and `git log`. Pause with `/goal pause`.
+
+Caveats, from other people's tests and the docs: a long goal uses a lot of your plan's quota, it works best when "done" can be checked by commands (our tasks can), and it is not a safety feature: the sandbox and `AGENTS.md` are. One long session also piles up context, so for a whole phase Option B is more reliable.
+
+### Option B: runner script (fresh context per task, checks each task itself)
+
+`scripts/run-phase.sh` runs `codex exec` once per task. Each task starts with a clean context, and after each one the script checks that Codex made a commit, logged progress, left a clean tree and that lint, typecheck and tests really pass. It halts on the first problem.
+
+```bash
+# from the repo root, on branch phase-0-foundation
+scripts/run-phase.sh 1 4        # Phase 0
+scripts/run-phase.sh 5 10       # Phase 1, after Phase 0 is merged
+touch .stop                     # ask it to halt before the next task
+```
+
+Run it in WSL2 or a terminal where `codex`, `node`, `npm` and `docker` all work. Logs go to `.codex-logs/`.
+
+Two things the script cannot fix for you:
+
+- **Sandbox.** `codex exec` runs in the `workspace-write` sandbox by default, with network off. Task 1 (`npm install`) and the Postgres container from Task 2 need network and Docker. If they fail with permission or network errors, either allow network for the sandbox in `~/.codex/config.toml` (`[sandbox_workspace_write]` / `network_access = true`), or run with `SANDBOX=danger-full-access scripts/run-phase.sh 1 4`. The second removes the sandbox, so use it only inside WSL2 or a VM, on a branch, with nothing secret on that machine. I could not test this on your machine, so try Task 1 alone first.
+- **It only checks what the plan has.** Passing tests mean the task matches the plan, not that the screen looks good or that billing is right.
+
+### Which to use
+
+Use Option B for the long runs. Use Option A if you would rather watch one session. Either way, run one phase, then read `docs/PROGRESS.md` and look at the app before starting the next.
+
+### Where you should still look yourself
+
+- After Phase 1: open the site on a real phone.
+- Before sharing the Phase 2 demo URL and after Phase 3 (billing): the security reviews in section 7, plus your own check of invoice numbers, GST and round-off.
+- Any STOPPED entry: read it, fix the cause or change the plan on purpose, then rerun. Don't just rerun.
+- Cost: each run uses model quota. Check usage after the first task before leaving a phase running overnight.
 
 ## 3. What to type: copy-paste prompts
 
 **Start a session (any day):**
 ```text
 Read AGENTS.md, PRODUCT.md, the v2 spec and the implementation plan.
-Then tell me, in 5 lines or fewer, which phase and task we are on, based on the ticked checkboxes and git log.
+Then tell me, in 5 lines or fewer, which phase and task we are on, based on docs/PROGRESS.md, the ticked checkboxes and git log.
 Do not change any files yet.
 ```
 
-**Do one task:**
+**Do one task (single-task mode, when you want to watch each step):**
 ```text
 Execute Task N of the implementation plan, and only Task N.
 Follow its steps in order, starting with the failing test.
 Tick each step's checkbox in the plan as you finish it.
-Make the single commit the task asks for, then stop and show me the test output.
+Make the single commit the task asks for and log it in docs/PROGRESS.md, then stop and show me the test output.
 ```
 
 **Task fails or is unclear:**
@@ -133,5 +187,5 @@ The app or scripts then use `AWS_ENDPOINT_URL=http://floci:4566` with dummy cred
 
 - Task 1 runs `create-next-app` in this folder. It could overwrite `AGENTS.md` or files in `docs/`. Commit first, then check `git status` afterwards and restore anything it changed.
 - Codex doesn't read files that `AGENTS.md` mentions, which is why the prompts above ask it to open them.
-- If Codex starts doing several tasks at once, stop it and re-send the "Do one task" prompt.
+- In single-task mode, if Codex starts doing several tasks at once, stop it and re-send the "Do one task" prompt. In continuous mode that is expected, but it must still stop at the end of the phase.
 - If it asks to change the plan or a test, say no unless you've agreed the change.

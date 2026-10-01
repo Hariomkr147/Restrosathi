@@ -1,0 +1,7 @@
+# Local Codex skills and hooks
+/.agents/
+/.codex/
+
+# Runner logs and stop file
+/.codex-logs/
+/.stop
