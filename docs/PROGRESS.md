@@ -38,3 +38,10 @@ Entry format:
 - What blocked: Task 2 requires `prisma` and `@prisma/client`, both explicitly allowed by the plan, but neither is declared in package.json. Task 2's file list omits package.json and package-lock.json; AGENTS.md says "Nothing else outside the task's own file list." Installing the required dependencies changes those files.
 - What I tried: inspected the Task 2 contract, package.json, Vitest configuration and AGENTS.md; `npm ls prisma @prisma/client --depth=0` reports an empty dependency tree. No Task 2 code, tests or checkbox changes were made.
 - What I need from you: allow package.json and package-lock.json updates when needed for dependencies already explicitly allowed by the plan, or amend the task file lists yourself. The spec and plan were left unchanged.
+
+## STOPPED at Task 2: reason 2 from AGENTS.md (2026-10-02)
+- Resolved scope: commit fb4bf22 permits plan-approved package and lockfile changes and lists the Task 2 dependency installs.
+- What failed: Task 2 Step 2 runs `docker compose up -d && npm run test:int`, but Step 3 creates `docker-compose.yml`. The exact Step 2 command exited 1 with `no configuration file provided: not found`; its `&&` prevented the integration tests from running.
+- Additional evidence: ran `npm run test:int` separately under Node 22.23.3. Vitest reported `Test Files 2 failed (2)`: audit could not import `../db`, and settings could not import `./index`. These are the planned missing-module failures; no implementation was written.
+- State: Task 2 Step 1 tests and the integration test project configuration, together with its checkbox, were stashed as `Task 2 red tests: stopped on Compose step ordering`. No failing work was committed. Task 1 remains complete; Tasks 2-10 and both phase exit checks remain incomplete.
+- What I need from you: correct the Task 2 step order so the Compose configuration exists before its Step 2 command, or explicitly authorize running the red integration tests separately and starting Compose after Step 3. I have not changed the plan's text or weakened its checks.
