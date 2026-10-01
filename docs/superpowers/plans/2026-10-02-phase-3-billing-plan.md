@@ -2,7 +2,7 @@
 
 > **For Codex:** Follow `AGENTS.md` and `docs/superpowers/plans/2026-10-02-conventions.md`. Tick checkboxes as you go. One commit per task, then the `docs/PROGRESS.md` entry. Branch: `phase-3-billing`, created from the last commit of `phase-2-qr-ordering`.
 > **Spec:** sections 7 (staff-entered orders), 8 (billing), 11 (data model, Phase 3 row), 12, 13.
-> **Billing is money.** Do not use design skills on the billing math, invoice numbering or settlement code. Use exact integers; no floats anywhere. If a test in this plan disagrees with your reading of the spec, stop (stop condition 2).
+> **Billing is money.** Do not use design skills on the billing math, invoice numbering or settlement code. Use exact integers; no floats anywhere. If a test in this plan disagrees with your reading of the spec, do not stop: the verified vectors in this file and the spec win for behaviour; log the disagreement under "Decisions for Hariom" (No-stop protocol) and continue.
 
 **Goal:** Staff can enter orders for a table or a takeaway customer, generate a bill with the right tax and round-off, settle it with one or more payments under a sequential invoice number, print it on an 80 mm printer, cancel it (owner), and see a day-end report that matches the bills to the paisa.
 

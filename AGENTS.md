@@ -11,7 +11,7 @@ Codex does not open files that this file mentions, so open these yourself at the
 5. `docs/superpowers/plans/2026-10-02-conventions.md` and, for the current task, its phase plan file listed in `docs/QUEUE.md`. `docs/QUEUE.md` is the order of work.
 6. `docs/HUMAN-TODO.md` (append to it; see "Human steps" below).
 
-The spec and the plan files are authoritative. Do not edit them, except to tick a finished step's checkbox. If something in them is wrong, unclear or contradicts the code, **stop and tell me**; do not work around it.
+The spec and the plan files are authoritative. Do not edit them, except to tick a finished step's checkbox. If something in them is wrong, unclear or contradicts the code: in single-task mode stop and tell me; in continuous and queue mode follow the **No-stop protocol** below (decide, log, carry on).
 
 ## Product
 
@@ -23,7 +23,7 @@ There are three modes. I choose the mode in my prompt.
 
 - **Single-task mode** ("Do Task N"): do only that task, commit, then stop and report.
 - **Continuous mode** ("Complete Phase N" or a `/goal`): work through every unticked task of the named phase, in plan order, without waiting for me between tasks. Never go past the end of that phase.
-- **Queue mode** ("Run the queue"): work through `docs/QUEUE.md` from the first item not yet logged in `docs/PROGRESS.md`, task after task and phase after phase, without waiting for me, until the queue is finished or a stop condition is hit. At the end of a phase do its Gate row, create the next phase's branch from the current commit, and carry on. Do not stop at a phase boundary in this mode.
+- **Queue mode** ("Run the queue"): work through `docs/QUEUE.md` from the first item not yet logged in `docs/PROGRESS.md`, task after task and phase after phase, without waiting for me, until the queue is finished or your usage limit is close (see the No-stop protocol). At the end of a phase do its Gate row, create the next phase's branch from the current commit, and carry on. Do not stop at a phase boundary in this mode.
 
 Rules for both modes:
 
@@ -33,18 +33,18 @@ Rules for both modes:
 - Inspect the existing code and tests before changing anything.
 - Run the focused tests first. Before calling a task done, run its verification commands and read the real output.
 - **One commit per task**, only after its acceptance criteria pass. One branch per phase (`phase-0-foundation`, `phase-1-menu-site`, …). Never commit a failing test, a skipped test or a weakened gate.
-- Never weaken a test, gate or budget to make something pass. Fix the cause, or stop and tell me.
+- Never weaken a test, gate or budget to make something pass. Fix the cause (single-task mode: or stop and tell me; continuous and queue mode: or park the task, see the No-stop protocol).
 
 ### Continuous mode: the loop
 
-Repeat until the phase is finished or a stop condition below is hit:
+Repeat until the phase is finished or your usage limit is close (No-stop protocol):
 
 1. Read `docs/PROGRESS.md` and `git log` to find the next unticked task. Make sure you are on the phase branch with a clean working tree.
 2. Do the task (skills as described below), tick its checkboxes in the plan, commit.
 3. Append one entry to `docs/PROGRESS.md` (task, commit hash, tests run and result, anything notable) and commit it with the task commit or as a follow-up `docs:` commit.
 4. Go straight to the next task. Do not ask "shall I continue?".
 
-When the last task of a phase is done, do the phase's **Gate** (its gate section in the plan file): the full lint, typecheck, unit, integration and e2e commands, every exit criterion, and a summary headed exactly `## Phase N summary` in `docs/PROGRESS.md`. In continuous mode then **stop**. In queue mode commit, create the next phase branch from this commit, and carry on. In both modes: never merge to `main`, never delete branches, never force-push.
+When the last task of a phase is done, do the phase's **Gate** (its gate section in the plan file): the full lint, typecheck, unit, integration and e2e commands, every exit criterion, and a summary headed exactly `## Phase N summary` in `docs/PROGRESS.md`. In continuous mode then write the final request (see No-stop protocol) and **stop**. In queue mode commit, create the next phase branch from this commit, and carry on. In both modes: never merge to `main`, never delete branches, never force-push.
 
 Headings in `docs/PROGRESS.md` must be exactly `## Task N: <title>` and `## Phase N summary` so scripts can find them.
 
@@ -61,23 +61,41 @@ The plan was written by hand and will have small mistakes: steps in a slightly w
 - Keep the intent: the task's behaviour, tests, acceptance criteria, constraints and the spec stay as written.
 - Record every such fix as one line under a **Deviations** heading in that task's `docs/PROGRESS.md` entry, so I can review it later. No question, no pause.
 
-### Stop conditions (continuous mode)
+### No-stop protocol (continuous and queue mode)
 
-Stop only for a real blocker. Leave the repo clean (`git stash` unfinished work and say so), write a **STOPPED** entry in `docs/PROGRESS.md` and report, when:
+I start these modes and then leave, often overnight. **Nobody is there to answer.** So in continuous and queue mode:
 
-1. The same test or command still fails after **3** different fix attempts.
-2. Doing the task would change **what the product does** (behaviour, a price or tax rule, an auth rule, data shape) compared with the spec, not just how the steps are ordered.
-3. A gate or budget fails (accessibility, 150 KB JS, 360 px, Hindi) and the only way to pass is to weaken it.
-4. The **code** of the task cannot be written or tested without something only I can give (a new dependency outside the allowed list, installing software on my machine, a paid service with no fake or local stand-in). A missing real API key, SIM, server or bucket is **not** a stop: use the fake and log a human step.
-5. The next action is destructive or irreversible (deleting data or branches, force-push, dropping a database that is not the test database).
-6. The queue (queue mode) or the phase (continuous mode) is finished.
-7. You notice your usage or time limit is close: finish or stash the current task cleanly, write the progress entry, and stop.
+- **Never ask me a question and never wait for an answer.** Do not use any ask-the-user tool and do not end a turn with a question. Pick the most reasonable option, log it, and keep going. Everything I need to answer goes into the final request (below).
+- **Never mark the goal "blocked" or "complete" early.** The goal ends only when the queue (or the phase) is finished, or your usage or time limit is close.
+- **Never ask for permission or approval** for ordinary work: running tests, Docker Compose, migrations, npm installs of allowed packages, git commits on the phase branch, creating or editing files.
 
-Never route around a stop condition by weakening tests, the spec or a gate. For anything not on this list, decide, log it under Deviations and continue.
+What to do instead of stopping:
+
+1. **Plan is wrong, unclear, or contradicts the code or the spec.** Spec wins for behaviour (what the product does, prices, tax, auth, data shape). The plan wins for order, names and file lists. If the spec itself is ambiguous, take the simplest safe reading. Write one line under **Decisions for Hariom** in that task's PROGRESS entry and carry on.
+2. **A test or command keeps failing.** Make 3 different fix attempts. Still failing: step back, find the root cause (reproduce, read the real error, check the plan's assumption) and make 3 attempts with a different approach. Still failing: **park the task** (below).
+3. **A gate or budget fails** (accessibility, 150 KB JS, 360 px, Hindi). Fix the cause. Never weaken it. After the same 6 attempts, record `GATE FAILED: <which, why>` in the phase summary and carry on to the next phase.
+4. **A new dependency outside the allowed list.** Prefer a few lines of your own code or something already installed. If it is really needed, add one well-known, actively maintained package at an exact version, put a one-line reason in the commit message, and add a "review this dependency" item to `docs/HUMAN-TODO.md`. Do not install anything on my machine outside the repo.
+5. **A paid or real external service, key, SIM, server, bucket, domain.** Use the fake or local stand-in, and append what I must provide, with exact steps, to `docs/HUMAN-TODO.md` and the **Keys and access** list for the final request.
+6. **A destructive or irreversible action** (deleting data, branches or files that are not yours, force-push, resetting a database that is not the test database). Never do it. Pick a non-destructive route, or skip that step and log it. Only the test database may be reset.
+7. **Usage or time limit close.** Finish or save the current task cleanly (commit, or save as below), append the PROGRESS entry, and end. This is the only normal reason to stop before the queue is finished.
+
+**Parking a task.** A parked task must never block the rest of the queue:
+- Save the unfinished work: `git switch -c parked/task-N`, `git add -A`, commit `wip: parked Task N`, `git switch` back to the phase branch (clean tree).
+- Append `## Task N: <title> [PARKED]` to `docs/PROGRESS.md` with: what was tried, the exact failing output, your best guess at the cause, and what would unblock it. Add a line to `docs/HUMAN-TODO.md`. Commit.
+- Go on to the next task. If a later task truly depends on the parked one and cannot work without it, park that one too with the reason "depends on Task N". Do the parts that do not depend on it.
+- A Gate that fails only because of parked tasks is recorded as `GATE NOT PASSED: parked Tasks …` in the phase summary. Do not weaken the gate. Carry on to the next phase.
+
+**End of the queue: the final request.** When the last Gate is done (or your limit is close), write `docs/FINAL-REQUEST.md` and print it as your last message. This is the **only** place you ask me for anything:
+1. **Keys and secrets** I must provide: the exact variable name in `.env`, which service it comes from, what it unlocks, and what runs on a fake until then (for example `ANTHROPIC_API_KEY`, the WA-AKG base URL, session id and API key, the Razorpay-style keys if any, the backup bucket keys).
+2. **Access and permissions** I must grant: VPS and domain, WhatsApp number pairing, GitHub merge and branch protection, anything that needs my login.
+3. **Decisions for Hariom**: every "Decisions for Hariom" line, one per bullet, with your default and how to change it.
+4. **Parked tasks and failed gates**: each with the one thing that would unblock it.
+5. **First three things to do tomorrow**, in order.
+Keep it short and concrete. Never put a real secret in the repo.
 
 ### What may be edited outside the task
 
-The spec: never. The plan: tick checkboxes only. `docs/PROGRESS.md`: append only. Task file lists are a guide, not a fence: you may create or change other files when the task needs them (for example `package.json`, `package-lock.json`, config files, generated files such as `prisma/migrations/`). Do not add a dependency outside the plan's allowed list (stop condition 4).
+The spec: never. The plan: tick checkboxes only. `docs/PROGRESS.md`: append only. Task file lists are a guide, not a fence: you may create or change other files when the task needs them (for example `package.json`, `package-lock.json`, config files, generated files such as `prisma/migrations/`). Do not add a dependency outside the plan's allowed list except as rule 4 of the No-stop protocol says.
 
 ## Architecture
 

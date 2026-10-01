@@ -56,7 +56,7 @@ How to read it: a **Task** row is done when `docs/PROGRESS.md` has an entry head
 
 ## Gate procedure (the same for every Gate row)
 
-1. Do every checkbox in that phase's gate section, in order. A failed item is fixed with a test first, or it is a stop condition.
+1. Do every checkbox in that phase's gate section, in order. A failed item is fixed with a test first; if it still fails after the No-stop protocol's attempts, record `GATE NOT PASSED` in the summary and carry on. Never weaken a check.
 2. Write `## Phase N summary` in `docs/PROGRESS.md` (what exists, test counts, Deviations, human items).
 3. Make sure `docs/HUMAN-TODO.md` is up to date for the phase.
 4. Commit. The next phase's branch is created from this commit. **Do not merge to `main`, do not delete branches, do not force-push.**
@@ -64,3 +64,7 @@ How to read it: a **Task** row is done when `docs/PROGRESS.md` has an entry head
 ## Human steps never block the queue
 
 Anything a person must do (real server, real WhatsApp pairing, API keys, real bucket, real devices, Strix, the pilot) goes to `docs/HUMAN-TODO.md` and the queue continues with fakes and tests. Never stop the queue for a human step.
+
+## Nothing stops the queue
+
+Queue mode never asks a question and never marks itself blocked. A task it cannot finish is parked (see "No-stop protocol" in `AGENTS.md`) and the queue moves on. When the last Gate is done, or the usage limit is close, Codex writes `docs/FINAL-REQUEST.md` (keys, access, decisions, parked tasks) and prints it. That is the only time it asks for anything.

@@ -39,7 +39,7 @@ Read this before any task in Phases 2–6. It records how the Phase 0–1 code a
 
 The Playwright web server is a production build, so test fakes cannot depend on `NODE_ENV`. Instead `playwright.config.ts` (modified in Task 28) passes these env vars to the server: `WHATSAPP_PROVIDER=fake`, `ALLOW_FAKE_WA=1`, `FAKE_WA_OUTBOX=test-results/fake-wa-outbox.jsonl`, `FAKE_WA_CONTROL=test-results/fake-wa-control.txt`, `AI_PROVIDER=fake`, `CRON_SECRET`, `OTP_SECRET`, `COOKIE_SECRET`, `WA_WEBHOOK_SECRET` (fixed test values), and large rate limits (`RATE_LIMIT_IP_ORDERS_PER_HOUR=100000`). The fake WhatsApp provider **refuses to construct unless `ALLOW_FAKE_WA=1`**, and Task 47's preflight fails if `ALLOW_FAKE_WA` is set or the provider is `fake` in production. The control file holds one word read on every send/status call: `connected` (default when the file is missing), `disconnected`, or `fail` (sends throw). e2e tests write to it to simulate outages and clear the outbox file in `beforeEach`.
 
-## 4. Allowed dependencies by phase (anything else: stop condition 4)
+## 4. Allowed dependencies by phase (anything else: rule 4 of the No-stop protocol in `AGENTS.md`)
 
 | Phase | Runtime | Dev |
 |---|---|---|

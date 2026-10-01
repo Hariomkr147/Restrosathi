@@ -79,25 +79,30 @@ Two things the script cannot fix for you:
 
 ### Option C: run the whole queue overnight (queue mode)
 
-Every phase now has a detailed plan, and `docs/QUEUE.md` lists all 47 items in order (Phase 1's remaining tasks, then Phases 2–6, with a "Gate" row at the end of each phase). Queue mode does not stop at a phase boundary. It still stops at the real blockers in `AGENTS.md`, and it never stops for human-only steps (real server, API keys, WhatsApp pairing, bucket, devices): those go into `docs/HUMAN-TODO.md`.
+Every phase has a detailed plan, and `docs/QUEUE.md` lists all 47 items in order (Phase 1's remaining tasks, then Phases 2–6, with a "Gate" row at the end of each phase). Queue mode **never stops to ask you anything**. A problem it cannot solve is *parked* (work saved on a `parked/` branch, logged, and the queue moves on). Human-only things (API keys, server, WhatsApp pairing, bucket, devices) go to `docs/HUMAN-TODO.md`, and everything it needs from you is collected into one `docs/FINAL-REQUEST.md` at the very end. The rules are the "No-stop protocol" in `AGENTS.md`.
 
-**With `/goal` (what you use in the Codex app):** replace the current goal by sending this once. It also continues any half-finished task already in the working tree.
+**Before you leave (once):**
+1. In the Codex app set permissions to **Full access** (or approvals to *never*). Otherwise Codex pauses on every Docker, npm or git command and waits for a click, which is exactly the stop you do not want. Full access means Codex can run any command on your PC; `AGENTS.md` forbids destructive actions, but the setting is your call. If you prefer less trust, use `workspace-write`; Docker and installs may then fail and get parked.
+2. Plug in the laptop and turn off sleep (Settings, System, Power: Screen and sleep: Never while plugged in). A sleeping laptop is the most common reason an overnight run is "stuck".
+3. Commit or stash anything of your own. Codex needs a clean tree apart from its own work.
+
+**With `/goal` (the Codex app):** replace the current goal by sending this once. It also continues any half-finished task already in the working tree.
 
 ```text
 /goal Run the queue in docs/QUEUE.md (queue mode in AGENTS.md) from the first item not yet logged in docs/PROGRESS.md, all the way to Gate 6.
 Read AGENTS.md, PRODUCT.md, the v2 spec, docs/superpowers/plans/2026-10-02-conventions.md, docs/QUEUE.md, docs/PROGRESS.md and docs/HUMAN-TODO.md first. If the working tree holds uncommitted work for the current task, continue that task instead of restarting it.
 For each item follow its plan file: test first, tick checkboxes, one commit per task, then a PROGRESS entry. Do each Gate row at the end of its phase, then create the next phase's branch from that commit and carry on. Never merge to main.
-Fix small plan problems yourself and log them under Deviations. Human-only steps go to docs/HUMAN-TODO.md and never block you. Stop only for the stop conditions in AGENTS.md.
-Stopping condition: Gate 6 is done and the final report is written in docs/PROGRESS.md.
+Follow the No-stop protocol in AGENTS.md exactly: never ask me a question, never wait for approval, never mark this goal blocked. Fix small plan problems yourself. If a task cannot be finished after the attempts the protocol lists, park it and move to the next. Put everything you need from me (API keys, access, decisions) into docs/FINAL-REQUEST.md.
+Ending condition: Gate 6 is done (or your usage limit is close) and docs/FINAL-REQUEST.md is written and printed as your last message. That is the only time you ask me for anything.
 ```
 
 If the session keeps dropping ("Context compaction" failures), pause with `/goal pause`, start a **new** session and send the same goal again. Nothing is lost: progress lives in git and `docs/PROGRESS.md`, and Codex resumes at the first item not logged.
 
-**With the script (WSL or any bash with `codex` installed):** `scripts/run-queue.sh` does one `codex exec` per item with a fresh context and checks lint, typecheck, unit and integration tests after every item (and the e2e suite after every Gate). `scripts/run-queue.sh 6 15` runs only queue rows 6–15. `touch .stop` halts it before the next item.
+**With the script (WSL or any bash with `codex` installed), the most robust way to run it unattended:** `scripts/run-queue.sh` does one `codex exec` per item with a fresh context. It waits and retries when Codex reports a usage limit (every 30 minutes, up to 12 hours), retries other Codex errors, gives an unfinished item a second pass, then parks it, and runs lint, typecheck, unit and integration tests after every item (and e2e after every Gate) with one automatic repair pass. It never halts on a problem; it records it and moves on. `scripts/run-queue.sh 6 15` runs only rows 6–15. `touch .stop` halts it before the next item. Set `SANDBOX=danger-full-access` if Docker commands fail in the default sandbox.
 
-**What to expect:** 42 more items. Each takes 20–40 minutes at the pace of Phase 1, so a full run is **days of Codex time, not one night**; it will stop when your Codex usage limit is reached (that is normal; send the goal again later). Check `docs/PROGRESS.md` and `git log` in the morning.
+**What to expect:** 42 more items. Each takes 20–40 minutes at the pace of Phase 1, so a full run is **days of Codex time, not one night**. With the `/goal`, it ends when your Codex usage limit is reached (send the goal again later). With the script, it sleeps through the limit and continues by itself. In the morning read `docs/PROGRESS.md` (newest last) and `git log`; at the end read `docs/FINAL-REQUEST.md`.
 
-**What you still do yourself:** read `docs/HUMAN-TODO.md`; look at each phase's result on a phone before trusting it (especially the customer pages and the staff board); read `docs/PROGRESS.md` Deviations; merge phase branches to `main` only after you have looked. Anything involving money (Phase 3) deserves your own check of invoice numbers, GST and round-off.
+**What you still do yourself:** answer `docs/FINAL-REQUEST.md`; read `docs/HUMAN-TODO.md`; look at each phase's result on a phone before trusting it (especially the customer pages and the staff board); read `docs/PROGRESS.md` Deviations and Decisions for Hariom; merge phase branches to `main` only after you have looked. Anything involving money (Phase 3) deserves your own check of invoice numbers, GST and round-off.
 
 ### Which to use
 
@@ -107,7 +112,7 @@ Option C (the queue) is the one for leaving it running. Use Option B (`run-phase
 
 - After Phase 1: open the site on a real phone.
 - Before sharing the Phase 2 demo URL and after Phase 3 (billing): the security reviews in section 7, plus your own check of invoice numbers, GST and round-off.
-- Any STOPPED entry: read it, fix the cause or change the plan on purpose, then rerun. Don't just rerun.
+- Any `[PARKED]` entry or `GATE NOT PASSED` line in `docs/PROGRESS.md`: read it, fix the cause or change the plan on purpose, then re-run that item. Don't just rerun.
 - Cost: each run uses model quota. Check usage after the first task before leaving a phase running overnight.
 
 ## 3. What to type: copy-paste prompts
