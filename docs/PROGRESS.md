@@ -64,3 +64,15 @@ Entry format:
 - Pinned next-intl 4.4.0, which declares Next 16 support, after 4.14.8's plugin failed to load a native SWC module blocked by Windows Application Control; no system policy was changed.
 - Scoped the E2E error assertion to the locale alert's text because Next also renders a route-announcer alert; the role and exact error-content assertions remain.
 - Used the detailed task/spec as the Impeccable shape brief and continued under the user's continuous-mode/no-per-step-questions instruction instead of adding a confirmation pause.
+
+## Task 4: Owner password and staff PIN authentication (2026-10-02, branch phase-0-foundation, commit 1a13ec5)
+- Tests: red unit run failed on the missing password module; red integration run failed on the missing session module after correcting the cookie mock's hoisted export. Final focused checks passed 4 unit files / 12 tests and 3 integration files / 16 tests. Lint and typecheck exited 0; `npm run test:e2e -- auth` passed 8 checks on desktop/mobile against the production build.
+- Behaviour: salted scrypt secrets, hash-only DB session tokens with 12-hour secure production cookies, active-user/role guards, owner password and active-staff PIN login, logout, and per-user/IP lockout. The fifth failure within 15 minutes triggers a full 15-minute lockout; tests cover expiry and spread-out failures. Integration fixtures expose the planned owner/staff/anonymous cookie helpers.
+- UI checks: labelled forms, 44 px PIN keys, visible keyboard focus, English/Hindi login and admin roles, long Hindi without 360 px horizontal overflow, wrong-PIN feedback, and retained credentials plus retry after a network failure. Hindi desktop/mobile screenshots were inspected. Impeccable was not used on auth, as AGENTS.md requires.
+- Reviews: Ponytail review: Lean already. Ship. No new dependency. All Task 4 checkboxes are complete; the full Phase 0 exit check runs after this commit.
+### Deviations
+- Added the shared LoginForm and auth/login module so both real login paths share UI feedback and persistence stays in src/lib/auth; added login/admin message keys, CI seed env and Vitest alias inheritance needed by those paths.
+- E2E now resets and uses only TEST_DATABASE_URL via the existing guarded setup; repeated authentication tests do not alter development data or accumulate lockouts there.
+- Replaced localhost in DB URLs with the Compose binding's explicit IPv4 address. A mobile login trace showed a 5.6-second pending action; measured concurrent credential checks were 2.1–4.2 seconds with localhost and 139–203 ms with 127.0.0.1. The original tests and timeouts are unchanged; temporary timing logs were removed.
+- Set the spec's 100 KB server-action body limit and corrected the locale error's class to the existing mapped destructive token.
+- Seed credentials are clearly fictional, declared in .env.example and read from server env. Proxy IP keys use the validated last forwarded address, with an unknown fallback; account keys always apply independently.
