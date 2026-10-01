@@ -264,7 +264,7 @@ it("writes an audit row", async () => {
 **Interfaces:**
 - Produces: `type Locale = "en" | "hi"`; `type L10n = { en: string; hi?: string }`; `l10nSchema` (Zod; `en` non-empty); `localize(value: L10n, locale: Locale): string`; server action `setLocale(locale: Locale): Promise<void>` (public; sets cookie `NEXT_LOCALE`, 1 year); `<LanguageToggle />`. `SettingsView.about` becomes `L10n`.
 
-- [ ] **Step 1: Write failing unit tests**
+- [x] **Step 1: Write failing unit tests**
 
 ```ts
 // l10n.test.ts
@@ -278,13 +278,13 @@ it("hi.json has every key of en.json", () => expect(missingKeys(en, hi)).toEqual
 
 `missingKeys` is a small helper inside the test file that walks nested objects.
 
-- [ ] **Step 2: Run**: `npm run test:unit`. Expected: FAIL.
+- [x] **Step 2: Run**: `npm run test:unit`. Expected: FAIL.
 
-- [ ] **Step 3: Implement** `l10n.ts`; `src/i18n/request.ts` with next-intl's "without i18n routing" setup: the locale comes from cookie `NEXT_LOCALE`, defaults to `en`, and anything else falls back to `en`. Add messages for `nav.*`, `home.*`, `menu.*`, `common.*` in both files; Hindi strings are real Hindi, not transliteration.
+- [x] **Step 3: Implement** `l10n.ts`; `src/i18n/request.ts` with next-intl's "without i18n routing" setup: the locale comes from cookie `NEXT_LOCALE`, defaults to `en`, and anything else falls back to `en`. Add messages for `nav.*`, `home.*`, `menu.*`, `common.*` in both files; Hindi strings are real Hindi, not transliteration.
 
-- [ ] **Step 4: Run unit tests.** Expected: PASS.
+- [x] **Step 4: Run unit tests.** Expected: PASS.
 
-- [ ] **Step 5: E2E** `tests/e2e/i18n.spec.ts`
+- [x] **Step 5: E2E** `tests/e2e/i18n.spec.ts`
 
 ```ts
 test("language toggle switches to Hindi and back", async ({ page }) => {
@@ -300,9 +300,9 @@ test("language toggle switches to Hindi and back", async ({ page }) => {
 
 Run: `npm run test:e2e -- i18n`. Expected: PASS.
 
-- [ ] **Step 6: Validate `Settings.about`** with `l10nSchema` in `getSettings()`; add an assertion to `settings.int.test.ts`: `expect(s.about.en.length).toBeGreaterThan(0)`. Seed `about` with en + hi text. Run `npm run test:int`. Expected: PASS.
+- [x] **Step 6: Validate `Settings.about`** with `l10nSchema` in `getSettings()`; add an assertion to `settings.int.test.ts`: `expect(s.about.en.length).toBeGreaterThan(0)`. Seed `about` with en + hi text. Run `npm run test:int`. Expected: PASS.
 
-- [ ] **Step 7: Commit**: `git commit -m "feat: en/hi i18n with cookie locale and L10n helper"`
+- [x] **Step 7: Commit**: `git commit -m "feat: en/hi i18n with cookie locale and L10n helper"`
 
 ---
 

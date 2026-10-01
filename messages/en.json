@@ -1,0 +1,43 @@
+{
+  "nav": {
+    "home": "Home",
+    "menu": "Menu"
+  },
+  "home": {
+    "viewMenu": "View menu",
+    "story": "Our story",
+    "signatureDishes": "Signature dishes",
+    "hours": "Opening hours",
+    "findUs": "Find us",
+    "googleReviews": "Google reviews",
+    "demo": "Fictional demo restaurant"
+  },
+  "menu": {
+    "title": "Menu",
+    "search": "Search dishes",
+    "all": "All dishes",
+    "vegOnly": "Vegetarian only",
+    "vegetarian": "Vegetarian",
+    "nonVegetarian": "Non-vegetarian",
+    "soldOut": "Sold out today",
+    "noResults": "No dishes found. Try another search.",
+    "empty": "The menu is being prepared. Please check back soon.",
+    "from": "From {price}",
+    "spice": "Spice level {level} of 3",
+    "BESTSELLER": "Bestseller",
+    "CHEFS_SPECIAL": "Chef’s special",
+    "NEW": "New"
+  },
+  "common": {
+    "english": "English",
+    "hindi": "हिन्दी",
+    "changingLanguage": "Changing language…",
+    "languageError": "Could not change language. Try again.",
+    "call": "Call",
+    "whatsapp": "Chat on WhatsApp",
+    "closed": "Closed",
+    "save": "Save",
+    "saving": "Saving…",
+    "cancel": "Cancel"
+  }
+}

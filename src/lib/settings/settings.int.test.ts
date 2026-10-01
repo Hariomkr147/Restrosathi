@@ -5,6 +5,7 @@ import { hoursSchema } from "./schema";
 it("returns the seeded restaurant", async () => {
   const s = await getSettings();
   expect(s.name).toBe("Saffron Tadka");
+  expect(s.about.en.length).toBeGreaterThan(0);
   expect(s.hours.mon[0]).toEqual({ open: "11:00", close: "23:00" });
 });
 
