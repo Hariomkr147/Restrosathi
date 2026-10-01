@@ -39,6 +39,16 @@ body {
   font-family: var(--font-body);
 }
 
+::selection {
+  background: var(--color-primary);
+  color: var(--color-primary-contrast);
+}
+
+input, textarea { caret-color: var(--color-primary); }
+.diet-veg { color: var(--color-veg); }
+.diet-nonveg { color: var(--color-nonveg); }
+.menu-category { scroll-margin-block-start: var(--size-menu-offset); }
+
 :focus-visible {
   outline: var(--focus-width) solid var(--color-focus);
   outline-offset: var(--focus-offset);

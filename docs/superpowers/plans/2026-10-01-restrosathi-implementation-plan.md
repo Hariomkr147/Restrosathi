@@ -416,7 +416,7 @@ it("returns seeded categories in order with sold-out items flagged", async () =>
 - Consumes: `getPublicMenu`, `PublicMenu` (Task 5); `localize`, `Locale` (Task 3); `formatINR` (Task 1).
 - Produces: `filterMenu(menu: PublicMenu, f: { query: string; vegOnly: boolean }): PublicMenu` (query matches `name.en`, `name.hi`, case-insensitive, trimmed; drops empty categories); `<DishCard item locale />` (reused in Phase 2 with an Add button) whose root has `data-testid={"dish-" + item.name.en}`.
 
-- [ ] **Step 1: Failing unit tests**
+- [x] **Step 1: Failing unit tests**
 
 ```ts
 it("vegOnly removes non-veg dishes", () => expect(names(filterMenu(menu, { query: "", vegOnly: true }))).not.toContain("Butter Chicken"));
@@ -425,13 +425,13 @@ it("matches English case-insensitively", () => expect(names(filterMenu(menu, { q
 it("drops empty categories", () => expect(filterMenu(menu, { query: "naan", vegOnly: false }).categories).toHaveLength(1));
 ```
 
-- [ ] **Step 2: Run** `npm run test:unit`. Expected: FAIL.
+- [x] **Step 2: Run** `npm run test:unit`. Expected: FAIL.
 
-- [ ] **Step 3: Implement** `filterMenu`; `/menu` as a dynamic server component (`export const dynamic = "force-dynamic"`) passing `getPublicMenu()` to the client `MenuView`: sticky category tabs (scroll-spy), search field, veg-only switch, dish cards with veg/non-veg mark (shape **and** colour, not colour alone), spice level, tags, photo (`next/image`, lazy below the fold), prices (`Half ₹180.00 · Full ₹320.00` for variants) and a "Sold out" badge. View-only: no Add button. `(public)/layout.tsx` holds the header with logo, nav (`Home`, `Menu`), and `LanguageToggle`.
+- [x] **Step 3: Implement** `filterMenu`; `/menu` as a dynamic server component (`export const dynamic = "force-dynamic"`) passing `getPublicMenu()` to the client `MenuView`: sticky category tabs (scroll-spy), search field, veg-only switch, dish cards with veg/non-veg mark (shape **and** colour, not colour alone), spice level, tags, photo (`next/image`, lazy below the fold), prices (`Half ₹180.00 · Full ₹320.00` for variants) and a "Sold out" badge. View-only: no Add button. `(public)/layout.tsx` holds the header with logo, nav (`Home`, `Menu`), and `LanguageToggle`.
 
-- [ ] **Step 4: Run** unit. Expected: PASS.
+- [x] **Step 4: Run** unit. Expected: PASS.
 
-- [ ] **Step 5: E2E** `tests/e2e/menu.spec.ts`
+- [x] **Step 5: E2E** `tests/e2e/menu.spec.ts`
 
 ```ts
 test("menu shows prices, filters veg, shows sold out", async ({ page }) => {
@@ -455,7 +455,7 @@ test("Hindi names with English fallback, no horizontal scroll at 360px", async (
 
 Run: `npm run test:e2e -- menu`. Expected: PASS.
 
-- [ ] **Step 6: Commit**: `git commit -m "feat: public menu page with search, veg filter and Hindi"`
+- [x] **Step 6: Commit**: `git commit -m "feat: public menu page with search, veg filter and Hindi"`
 
 ---
 

@@ -1,7 +1,9 @@
 {
   "nav": {
     "home": "Home",
-    "menu": "Menu"
+    "menu": "Menu",
+    "main": "Main navigation",
+    "skip": "Skip to content"
   },
   "home": {
     "viewMenu": "View menu",
@@ -15,6 +17,10 @@
   "menu": {
     "title": "Menu",
     "search": "Search dishes",
+    "categories": "Menu categories",
+    "loading": "Loading the menu…",
+    "loadError": "Could not load the menu. Please try again.",
+    "retry": "Try again",
     "all": "All dishes",
     "vegOnly": "Vegetarian only",
     "vegetarian": "Vegetarian",

@@ -19,7 +19,10 @@ test("unknown locale falls back to English and the toggle works with a keyboard"
   const size = await button.boundingBox();
   expect(size?.width).toBeGreaterThanOrEqual(44);
   expect(size?.height).toBeGreaterThanOrEqual(44);
-  await page.keyboard.press("Tab");
+  for (let index = 0; index < 10; index++) {
+    await page.keyboard.press("Tab");
+    if (await button.evaluate((element) => element === document.activeElement)) break;
+  }
   await expect(button).toBeFocused();
   expect(await button.evaluate((element) => getComputedStyle(element).outlineStyle)).not.toBe("none");
   await page.keyboard.press("Enter");

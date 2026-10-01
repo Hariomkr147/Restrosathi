@@ -48,6 +48,7 @@ next-env.d.ts
 # Local Codex skills and hooks
 /.agents/
 /.codex/
+/.impeccable/
 
 # Runner logs and stop file
 /.codex-logs/
