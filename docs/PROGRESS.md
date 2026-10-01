@@ -32,3 +32,9 @@ Entry format:
 - What I tried: checked PATH and the machine-wide and per-user standard Docker Desktop executable locations; the command and both executables were absent. The working tree was clean at the Task 2 prerequisite check.
 - What I need from you: make Docker Desktop available and running for this workspace, with working `docker version` and `docker compose version` commands, then resume the run.
 - State: Task 1 is complete (e5c7b49; verification recorded in e2ebfcb). Tasks 2-10 remain pending. No Task 2 code, tests, or checkbox changes were made. Phase 0 has not reached its exit check; Phase 1 has not started. The original Tasks 1-10 objective remains incomplete.
+
+## STOPPED at Task 2: reason 2 from AGENTS.md (2026-10-02)
+- Resolved prerequisite: Windows installed-app records identified Docker Desktop at `C:/Users/Hario/AppData/Local/Programs/DockerDesktop`. Its CLI reports a running Linux engine (29.8.1) and Docker Compose v5.5.1. The earlier PATH/standard-location checks missed this installation; Docker is now usable through its actual path.
+- What blocked: Task 2 requires `prisma` and `@prisma/client`, both explicitly allowed by the plan, but neither is declared in package.json. Task 2's file list omits package.json and package-lock.json; AGENTS.md says "Nothing else outside the task's own file list." Installing the required dependencies changes those files.
+- What I tried: inspected the Task 2 contract, package.json, Vitest configuration and AGENTS.md; `npm ls prisma @prisma/client --depth=0` reports an empty dependency tree. No Task 2 code, tests or checkbox changes were made.
+- What I need from you: allow package.json and package-lock.json updates when needed for dependencies already explicitly allowed by the plan, or amend the task file lists yourself. The spec and plan were left unchanged.
