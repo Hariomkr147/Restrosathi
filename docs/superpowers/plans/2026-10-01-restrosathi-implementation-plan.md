@@ -155,14 +155,14 @@ Test naming: `*.test.ts` = unit (no DB); `*.int.test.ts` = integration (test DB)
 **Interfaces:**
 - Produces: `formatINR(paise: number): string`; npm scripts `dev`, `build`, `start`, `lint`, `typecheck` (`tsc --noEmit`), `test:unit`, `test:int`, `test:e2e`; CSS variables `--color-surface`, `--color-surface-raised`, `--color-text`, `--color-text-muted`, `--color-primary`, `--color-primary-contrast`, `--color-accent`, `--color-veg`, `--color-nonveg`, `--color-danger`, `--color-focus`, `--radius-sm|md|lg`, `--duration-fast` (150ms), `--duration-base` (250ms), font families `--font-display`, `--font-body`.
 
-- [ ] **Step 0: Protect existing files.** Run `git status`; it must be clean (the repo already has `.gitattributes` with `* text=auto eol=lf` so Windows doesn't rewrite line endings). Then scaffold. After scaffolding, run `git status` again. If `AGENTS.md`, `PRODUCT.md` or any file under `docs/` was changed or overwritten, restore it with `git checkout -- <file>`.
+- [x] **Step 0: Protect existing files.** Run `git status`; it must be clean (the repo already has `.gitattributes` with `* text=auto eol=lf` so Windows doesn't rewrite line endings). Then scaffold. After scaffolding, run `git status` again. If `AGENTS.md`, `PRODUCT.md` or any file under `docs/` was changed or overwritten, restore it with `git checkout -- <file>`.
 
-- [ ] **Step 1: Scaffold**
+- [x] **Step 1: Scaffold**
 
 Run in the repo root: `npx create-next-app@latest . --ts --tailwind --eslint --app --src-dir --import-alias "@/*" --use-npm`, then `npx shadcn@latest init`, `npm i motion zod`, `npm i -D vitest @playwright/test tsx` and `npx playwright install chromium`.
 Expected: `npm run dev` serves the default page.
 
-- [ ] **Step 2: Write the failing unit test** `src/lib/money/format.test.ts`
+- [x] **Step 2: Write the failing unit test** `src/lib/money/format.test.ts`
 
 ```ts
 import { describe, it, expect } from "vitest";
@@ -177,13 +177,13 @@ describe("formatINR", () => {
 });
 ```
 
-- [ ] **Step 3: Run it**: `npm run test:unit`. Expected: FAIL (`formatINR` not found).
+- [x] **Step 3: Run it**: `npm run test:unit`. Expected: FAIL (`formatINR` not found).
 
-- [ ] **Step 4: Implement `formatINR(paise: number): string`** using `Intl.NumberFormat("en-IN", { style: "currency", currency: "INR" })`; throw `RangeError` when `!Number.isInteger(paise)`.
+- [x] **Step 4: Implement `formatINR(paise: number): string`** using `Intl.NumberFormat("en-IN", { style: "currency", currency: "INR" })`; throw `RangeError` when `!Number.isInteger(paise)`.
 
-- [ ] **Step 5: Run it**: `npm run test:unit`. Expected: PASS.
+- [x] **Step 5: Run it**: `npm run test:unit`. Expected: PASS.
 
-- [ ] **Step 6: Tokens + smoke E2E**
+- [x] **Step 6: Tokens + smoke E2E**
 
 Define the tokens above in `src/brand/theme.css` (warm, food-friendly palette; text on surface ≥ 4.5:1). Map them in `globals.css` with Tailwind v4 `@theme inline`. Set `body` background to `var(--color-surface)` and add a global `:focus-visible` outline using `--color-focus`, plus a `prefers-reduced-motion` rule that zeroes the durations. Write `tests/e2e/smoke.spec.ts`:
 
@@ -200,9 +200,9 @@ test("home renders with brand tokens", async ({ page }) => {
 `playwright.config.ts`: `webServer: { command: "npm run build && npm run start", port: 3000 }`, projects `mobile` (viewport 360×740) and `desktop`.
 Run: `npm run test:e2e`. Expected: PASS.
 
-- [ ] **Step 7: CI** `.github/workflows/ci.yml` on push: Node 22, `npm ci`, `lint`, `typecheck`, `test:unit`, `test:e2e` (the Postgres service and `test:int` are added in Task 2).
+- [x] **Step 7: CI** `.github/workflows/ci.yml` on push: Node 22, `npm ci`, `lint`, `typecheck`, `test:unit`, `test:e2e` (the Postgres service and `test:int` are added in Task 2).
 
-- [ ] **Step 8: Commit**: `git add -A && git commit -m "feat: app skeleton, brand tokens, formatINR, CI"`
+- [x] **Step 8: Commit**: `git add -A && git commit -m "feat: app skeleton, brand tokens, formatINR, CI"`
 
 ---
 

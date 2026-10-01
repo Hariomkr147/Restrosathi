@@ -1,0 +1,58 @@
+:root {
+  --color-surface: #fff8ef;
+  --color-surface-raised: #fffdfa;
+  --color-text: #2a211b;
+  --color-text-muted: #6d5848;
+  --color-primary: #963c22;
+  --color-primary-contrast: #fffdfa;
+  --color-accent: #8b6515;
+  --color-veg: #24623d;
+  --color-nonveg: #a22b2b;
+  --color-danger: #a22b2b;
+  --color-focus: #225a83;
+  --color-border: #cdbdab;
+
+  --spacing: 4px;
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --size-touch: 44px;
+  --width-content: 64rem;
+  --focus-width: 2px;
+  --focus-offset: 4px;
+
+  --font-display: Georgia, "Nirmala UI", serif;
+  --font-body: system-ui, "Nirmala UI", Mangal, sans-serif;
+  --text-xs: 0.75rem;
+  --text-sm: 0.875rem;
+  --text-base: 1rem;
+  --text-lg: 1.125rem;
+  --text-xl: 1.25rem;
+  --text-2xl: 1.5rem;
+  --text-3xl: 2rem;
+  --text-4xl: 2.5rem;
+
+  --duration-fast: 150ms;
+  --duration-base: 250ms;
+
+  /* shadcn aliases use the same brand tokens. */
+  --background: var(--color-surface);
+  --foreground: var(--color-text);
+  --primary: var(--color-primary);
+  --primary-foreground: var(--color-primary-contrast);
+  --secondary: var(--color-surface-raised);
+  --secondary-foreground: var(--color-text);
+  --muted: var(--color-surface-raised);
+  --muted-foreground: var(--color-text-muted);
+  --destructive: var(--color-danger);
+  --border: var(--color-border);
+  --input: var(--color-border);
+  --ring: var(--color-focus);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --duration-fast: 0ms;
+    --duration-base: 0ms;
+  }
+}
