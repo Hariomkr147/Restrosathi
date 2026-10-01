@@ -370,7 +370,7 @@ Cookie access in integration tests: mock `next/headers` `cookies()` with a small
   - `priceLine(item: PricingItem, choice: { variantId?: string; optionIds: string[] }): number` returns unit price in paise; throws `MenuChoiceError` with `.code` in `"VARIANT_REQUIRED" | "UNKNOWN_VARIANT" | "UNKNOWN_OPTION" | "GROUP_MIN" | "GROUP_MAX"`
   - `getPublicMenu(): Promise<PublicMenu>` where `PublicMenu = { categories: { id: string; name: L10n; items: PublicItem[] }[] }`; `PublicItem` contains item fields, variants, modifier groups with options, `available`, and `photoUrl`, all ordered by `sortOrder`. Includes sold-out items; omits empty categories.
 
-- [ ] **Step 1: Failing tests**
+- [x] **Step 1: Failing tests**
 
 ```ts
 // pricing.test.ts — fixture: dal (variants Half 18000 / Full 32000), naan (base 6000; group Extras min0 max2: butter +1000, cheese +3000), tikka (base 28000; group Spice min1 max1: mild 0, hot 0)
@@ -397,13 +397,13 @@ it("returns seeded categories in order with sold-out items flagged", async () =>
 });
 ```
 
-- [ ] **Step 2: Run** unit + integration. Expected: FAIL.
+- [x] **Step 2: Run** unit + integration. Expected: FAIL.
 
-- [ ] **Step 3: Implement** the models, schemas, `priceLine`, `getPublicMenu`. Seed about 20 Saffron Tadka dishes across Starters, Main Course, Breads, Rice, Desserts, Beverages, with Hindi names, at least: Dal Makhani (Half/Full), Butter Naan (Extras group), Paneer Tikka (Spice group, min 1), Butter Chicken (non-veg), Mutton Rogan Josh (`available: false`), one dish with **no Hindi name**, and one with a long Hindi name (≥ 40 characters).
+- [x] **Step 3: Implement** the models, schemas, `priceLine`, `getPublicMenu`. Seed about 20 Saffron Tadka dishes across Starters, Main Course, Breads, Rice, Desserts, Beverages, with Hindi names, at least: Dal Makhani (Half/Full), Butter Naan (Extras group), Paneer Tikka (Spice group, min 1), Butter Chicken (non-veg), Mutton Rogan Josh (`available: false`), one dish with **no Hindi name**, and one with a long Hindi name (≥ 40 characters).
 
-- [ ] **Step 4: Run** unit + integration. Expected: PASS.
+- [x] **Step 4: Run** unit + integration. Expected: PASS.
 
-- [ ] **Step 5: Commit**: `git commit -m "feat: menu model with variants, add-ons and server-side pricing"`
+- [x] **Step 5: Commit**: `git commit -m "feat: menu model with variants, add-ons and server-side pricing"`
 
 ---
 

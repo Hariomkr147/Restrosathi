@@ -66,3 +66,82 @@ model AuditLog {
 
   @@index([at])
 }
+
+enum MenuTag {
+  BESTSELLER
+  CHEFS_SPECIAL
+  NEW
+}
+
+model Category {
+  id        String     @id @default(cuid())
+  name      Json
+  sortOrder Int        @default(0)
+  items     MenuItem[]
+}
+
+model MenuItem {
+  id             String          @id @default(cuid())
+  categoryId     String
+  name           Json
+  description    Json?
+  basePricePaise Int?
+  isVeg          Boolean
+  spiceLevel     Int             @default(0)
+  tags           MenuTag[]       @default([])
+  photoUrl       String?
+  available      Boolean         @default(true)
+  sortOrder      Int             @default(0)
+  category       Category        @relation(fields: [categoryId], references: [id], onDelete: Restrict)
+  variants       MenuVariant[]
+  modifierGroups ModifierGroup[]
+  pairings       MenuPairing[]   @relation("PairingSource")
+  pairedBy       MenuPairing[]   @relation("PairingTarget")
+
+  @@index([categoryId, sortOrder])
+}
+
+model MenuVariant {
+  id         String   @id @default(cuid())
+  itemId     String
+  name       Json
+  pricePaise Int
+  sortOrder  Int      @default(0)
+  item       MenuItem @relation(fields: [itemId], references: [id], onDelete: Cascade)
+
+  @@index([itemId, sortOrder])
+}
+
+model ModifierGroup {
+  id        String           @id @default(cuid())
+  itemId    String
+  name      Json
+  min       Int
+  max       Int
+  sortOrder Int              @default(0)
+  item      MenuItem         @relation(fields: [itemId], references: [id], onDelete: Cascade)
+  options   ModifierOption[]
+
+  @@index([itemId, sortOrder])
+}
+
+model ModifierOption {
+  id              String        @id @default(cuid())
+  groupId         String
+  name            Json
+  priceDeltaPaise Int
+  sortOrder       Int           @default(0)
+  group           ModifierGroup @relation(fields: [groupId], references: [id], onDelete: Cascade)
+
+  @@index([groupId, sortOrder])
+}
+
+model MenuPairing {
+  itemId       String
+  pairedItemId String
+  sortOrder    Int      @default(0)
+  item         MenuItem @relation("PairingSource", fields: [itemId], references: [id], onDelete: Cascade)
+  pairedItem   MenuItem @relation("PairingTarget", fields: [pairedItemId], references: [id], onDelete: Cascade)
+
+  @@id([itemId, pairedItemId])
+}
