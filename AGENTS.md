@@ -8,8 +8,10 @@ Codex does not open files that this file mentions, so open these yourself at the
 2. `docs/superpowers/plans/2026-10-01-restrosathi-implementation-plan.md` (the plan: how, task by task)
 3. `PRODUCT.md` (product truth). `DESIGN.md` too, once it exists.
 4. `docs/PROGRESS.md` (what is done, and why any earlier run stopped). Newest entries last.
+5. `docs/superpowers/plans/2026-10-02-conventions.md` and, for the current task, its phase plan file listed in `docs/QUEUE.md`. `docs/QUEUE.md` is the order of work.
+6. `docs/HUMAN-TODO.md` (append to it; see "Human steps" below).
 
-The spec and plan are authoritative. Do not edit them, except to tick a finished step's checkbox in the plan. If something in them is wrong, unclear or contradicts the code, **stop and tell me**; do not work around it.
+The spec and the plan files are authoritative. Do not edit them, except to tick a finished step's checkbox. If something in them is wrong, unclear or contradicts the code, **stop and tell me**; do not work around it.
 
 ## Product
 
@@ -17,15 +19,16 @@ RestroSathi is a single-restaurant operating system for the fictional demo resta
 
 ## How to work
 
-There are two modes. I choose the mode in my prompt.
+There are three modes. I choose the mode in my prompt.
 
 - **Single-task mode** ("Do Task N"): do only that task, commit, then stop and report.
 - **Continuous mode** ("Complete Phase N" or a `/goal`): work through every unticked task of the named phase, in plan order, without waiting for me between tasks. Never go past the end of that phase.
+- **Queue mode** ("Run the queue"): work through `docs/QUEUE.md` from the first item not yet logged in `docs/PROGRESS.md`, task after task and phase after phase, without waiting for me, until the queue is finished or a stop condition is hit. At the end of a phase do its Gate row, create the next phase's branch from the current commit, and carry on. Do not stop at a phase boundary in this mode.
 
 Rules for both modes:
 
 - Do each task exactly as written, steps in order, failing test first.
-- **Only Phases 0 and 1 have step-by-step tasks.** Phases 2–6 are a roadmap. Do not start a phase, or invent its tasks, until its detailed plan exists in `docs/superpowers/plans/`.
+- **Every phase now has a step-by-step plan file** (listed in `docs/QUEUE.md`). Do the tasks in those files. Do not invent tasks that are not in them. Where a phase plan and the roadmap in Part A of the main plan differ, the phase plan wins.
 - Do not silently expand scope. Features from later phases stay hidden behind `FEATURES` in `src/lib/features.ts`.
 - Inspect the existing code and tests before changing anything.
 - Run the focused tests first. Before calling a task done, run its verification commands and read the real output.
@@ -41,7 +44,13 @@ Repeat until the phase is finished or a stop condition below is hit:
 3. Append one entry to `docs/PROGRESS.md` (task, commit hash, tests run and result, anything notable) and commit it with the task commit or as a follow-up `docs:` commit.
 4. Go straight to the next task. Do not ask "shall I continue?".
 
-When the last task of the phase is done: run the full lint, typecheck, unit, integration and e2e commands, check each exit criterion for that phase, write a **Phase summary** in `docs/PROGRESS.md`, then **stop**. Do not start the next phase and do not merge to `main`.
+When the last task of a phase is done, do the phase's **Gate** (its gate section in the plan file): the full lint, typecheck, unit, integration and e2e commands, every exit criterion, and a summary headed exactly `## Phase N summary` in `docs/PROGRESS.md`. In continuous mode then **stop**. In queue mode commit, create the next phase branch from this commit, and carry on. In both modes: never merge to `main`, never delete branches, never force-push.
+
+Headings in `docs/PROGRESS.md` must be exactly `## Task N: <title>` and `## Phase N summary` so scripts can find them.
+
+### Human steps (never block on them)
+
+Some steps need a person: a real server or domain, WhatsApp pairing, API keys, a real bucket, real devices, Strix, the pilot. When the plan marks a step **[HUMAN]**, or you hit one, build everything around it with fakes and tests, append an item to `docs/HUMAN-TODO.md` (what, why it needs a person, exact steps), and **continue**. Never put real secrets in the repo; `.env.example` holds fictional placeholders only. Never use a real external service in tests.
 
 ### Fix small problems yourself (do not stop for these)
 
@@ -59,9 +68,10 @@ Stop only for a real blocker. Leave the repo clean (`git stash` unfinished work 
 1. The same test or command still fails after **3** different fix attempts.
 2. Doing the task would change **what the product does** (behaviour, a price or tax rule, an auth rule, data shape) compared with the spec, not just how the steps are ordered.
 3. A gate or budget fails (accessibility, 150 KB JS, 360 px, Hindi) and the only way to pass is to weaken it.
-4. It needs something only I can give: a secret or API key, a paid service, a new dependency outside the allowed list, installing software on my machine.
+4. The **code** of the task cannot be written or tested without something only I can give (a new dependency outside the allowed list, installing software on my machine, a paid service with no fake or local stand-in). A missing real API key, SIM, server or bucket is **not** a stop: use the fake and log a human step.
 5. The next action is destructive or irreversible (deleting data or branches, force-push, dropping a database that is not the test database).
-6. The phase is finished, or the next task belongs to a phase with no detailed plan.
+6. The queue (queue mode) or the phase (continuous mode) is finished.
+7. You notice your usage or time limit is close: finish or stash the current task cleanly, write the progress entry, and stop.
 
 Never route around a stop condition by weakening tests, the spec or a gate. For anything not on this list, decide, log it under Deviations and continue.
 
@@ -129,7 +139,7 @@ Use the smallest set that covers the task. Skills are invoked with `$name`. If a
 ## Security
 
 - Security scanning is a deliberate step, never automatic. Scan only systems I own, preferably local or staging, using test accounts and test data.
-- Run a code-level security review (`$find-security-vulnerabilities-in-code`, if installed) **before the Phase 2 demo URL is shared**, and again when Phase 3 billing is complete. Full testing happens in Phase 6.
+- Each phase's Gate includes a code-level security review you write yourself (`docs/security/phase-N-review.md`) and an authorization-matrix test. Running Strix against a live staging site is a **human** step (`docs/HUMAN-TODO.md`): before the Phase 2 demo URL is shared, after Phase 3, and in full in Phase 6.
 - Read scan output before applying fixes. A truncated scan is not a clean result.
 
 ## Environment

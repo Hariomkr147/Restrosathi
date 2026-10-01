@@ -77,9 +77,31 @@ Two things the script cannot fix for you:
 - **Sandbox.** `codex exec` runs in the `workspace-write` sandbox by default, with network off. Task 1 (`npm install`) and the Postgres container from Task 2 need network and Docker. If they fail with permission or network errors, either allow network for the sandbox in `~/.codex/config.toml` (`[sandbox_workspace_write]` / `network_access = true`), or run with `SANDBOX=danger-full-access scripts/run-phase.sh 1 4`. The second removes the sandbox, so use it only inside WSL2 or a VM, on a branch, with nothing secret on that machine. I could not test this on your machine, so try Task 1 alone first.
 - **It only checks what the plan has.** Passing tests mean the task matches the plan, not that the screen looks good or that billing is right.
 
+### Option C: run the whole queue overnight (queue mode)
+
+Every phase now has a detailed plan, and `docs/QUEUE.md` lists all 47 items in order (Phase 1's remaining tasks, then Phases 2–6, with a "Gate" row at the end of each phase). Queue mode does not stop at a phase boundary. It still stops at the real blockers in `AGENTS.md`, and it never stops for human-only steps (real server, API keys, WhatsApp pairing, bucket, devices): those go into `docs/HUMAN-TODO.md`.
+
+**With `/goal` (what you use in the Codex app):** replace the current goal by sending this once. It also continues any half-finished task already in the working tree.
+
+```text
+/goal Run the queue in docs/QUEUE.md (queue mode in AGENTS.md) from the first item not yet logged in docs/PROGRESS.md, all the way to Gate 6.
+Read AGENTS.md, PRODUCT.md, the v2 spec, docs/superpowers/plans/2026-10-02-conventions.md, docs/QUEUE.md, docs/PROGRESS.md and docs/HUMAN-TODO.md first. If the working tree holds uncommitted work for the current task, continue that task instead of restarting it.
+For each item follow its plan file: test first, tick checkboxes, one commit per task, then a PROGRESS entry. Do each Gate row at the end of its phase, then create the next phase's branch from that commit and carry on. Never merge to main.
+Fix small plan problems yourself and log them under Deviations. Human-only steps go to docs/HUMAN-TODO.md and never block you. Stop only for the stop conditions in AGENTS.md.
+Stopping condition: Gate 6 is done and the final report is written in docs/PROGRESS.md.
+```
+
+If the session keeps dropping ("Context compaction" failures), pause with `/goal pause`, start a **new** session and send the same goal again. Nothing is lost: progress lives in git and `docs/PROGRESS.md`, and Codex resumes at the first item not logged.
+
+**With the script (WSL or any bash with `codex` installed):** `scripts/run-queue.sh` does one `codex exec` per item with a fresh context and checks lint, typecheck, unit and integration tests after every item (and the e2e suite after every Gate). `scripts/run-queue.sh 6 15` runs only queue rows 6–15. `touch .stop` halts it before the next item.
+
+**What to expect:** 42 more items. Each takes 20–40 minutes at the pace of Phase 1, so a full run is **days of Codex time, not one night**; it will stop when your Codex usage limit is reached (that is normal; send the goal again later). Check `docs/PROGRESS.md` and `git log` in the morning.
+
+**What you still do yourself:** read `docs/HUMAN-TODO.md`; look at each phase's result on a phone before trusting it (especially the customer pages and the staff board); read `docs/PROGRESS.md` Deviations; merge phase branches to `main` only after you have looked. Anything involving money (Phase 3) deserves your own check of invoice numbers, GST and round-off.
+
 ### Which to use
 
-Use Option B for the long runs. Use Option A if you would rather watch one session. Either way, run one phase, then read `docs/PROGRESS.md` and look at the app before starting the next.
+Option C (the queue) is the one for leaving it running. Use Option B (`run-phase.sh`) for one phase at a time, or Option A if you would rather watch one session. After each phase, read `docs/PROGRESS.md` and look at the app.
 
 ### Where you should still look yourself
 
