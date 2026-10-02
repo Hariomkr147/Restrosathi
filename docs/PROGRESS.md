@@ -180,3 +180,13 @@ Entry format:
 - The image reader reopened an old frame at an overwritten path. Compared SHA-256 hashes and supplied a byte-identical copy of the current print capture to the reviewer; the final capture matched current QR codes and aligned card tops. No image pixels or tests were edited to hide a defect.
 - Used fresh generic finish/documenter agents because the harness has no named-profile selector. Physical Android remains deferred in HUMAN-TODO; print emulation is not a physical printer/scanner pass.
 - Task 11 commit: afe919e.
+
+## Task 12: Dining sessions (one open session per table, enforced by the database)
+- Commit 686b3d9 on phase-2-qr-ordering. Red focused integration suite: missing sessions module. After migration-based setup, all existing 96 integration tests and 56 unit tests passed while the new suite remained red. Final focused sessions: 8 passed; full integration: 11 files / 104 passed; production E2E: 80 passed (2.7m), no retries/skips. Lint/typecheck/whitespace checks exit0; existing native-image advisory remains.
+- Dine-in and takeaway sessions, UTC timestamps, shared transaction advisory locks, one active session per table, database CHECK and partial unique index. Ten simultaneous transactions return one session id across three loops. Bill-requested sessions remain active; close timestamps are preserved and a later opening gets a new id. Direct inserts exercise both database backstops.
+- Test setup now resets only the separately guarded restrosathi_test database with real migrations, then seeds. Applied the new additive migration to development without resetting it. No public endpoint or UI was added in this task; future actions retain their own authentication/public contracts. Ponytail full review: Lean already. Ship. All Task12 steps and queue row ticked.
+- Task11 CI at c3fbaec succeeded: https://github.com/Hariomkr147/Restrosathi/actions/runs/36997791209.
+### Deviations
+- Step2's preimplementation browser verification cannot build because Next typechecks the newly written tests and their missing session module/model. Preserved the expected red test, completed implementation, then ran the entire 80-test browser suite successfully; no test or build check was excluded.
+- Generated additive SQL by diffing the saved pre-task Prisma schema against the new schema, then appended commented raw SQL. This avoids a shadow-database reset and preserves development data; generated statements were inspected before applying.
+- Added the conventions' connection_limit=20 and pool_timeout=30 to the test URL in local configuration, .env.example and CI so ten concurrent interactive transactions have the prescribed pool. No dependency was added.
