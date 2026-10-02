@@ -71,7 +71,9 @@
     "STAFF": "Staff",
     "navigation": "Administration",
     "settings": "Settings",
-    "menu": "Menu editor"
+    "menu": "Menu editor",
+    "tables": "Tables",
+    "printTables": "Print table QR codes"
   },
   "common": {
     "english": "English",
@@ -197,5 +199,35 @@
       "UNSUPPORTED_TYPE": "Choose a valid, still JPEG, PNG or WebP photo.",
       "UPLOAD_FAILED": "Could not upload the photo. Check your connection and retry."
     }
+  },
+  "tables": {
+    "title": "Tables",
+    "print": "Print table QR codes",
+    "newLabel": "New table label",
+    "label": "Table label",
+    "labelHint": "Use 1–20 characters. Each label must be unique.",
+    "add": "Add table",
+    "rename": "Rename",
+    "regenerate": "Regenerate code",
+    "regenerateFor": "Regenerate code for {label}?",
+    "regenerateWarning": "The printed QR will stop working. Print a new QR sheet after regenerating this code.",
+    "cancel": "Cancel",
+    "active": "Active",
+    "inactive": "Inactive",
+    "openLink": "Open table link",
+    "saving": "Saving…",
+    "saved": "Saved",
+    "empty": "No tables yet. Add a table label to create its QR code.",
+    "noActive": "No active tables. Ask the owner to activate a table before printing.",
+    "tableLabel": "Table {label}",
+    "scanInstruction": "Scan to see the menu and order",
+    "qrFor": "QR code for table {label}",
+    "printNow": "Print",
+    "INVALID_LABEL": "Enter a table label with 1–20 characters.",
+    "INVALID_INPUT": "Check the table details and retry.",
+    "LABEL_TAKEN": "This label is already used. Choose a different label.",
+    "NOT_FOUND": "This table no longer exists. Refresh the page.",
+    "FORBIDDEN": "Owner permission is required. Log in as the owner.",
+    "FAILED": "Could not save. Check your connection and retry."
   }
 }

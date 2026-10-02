@@ -19,6 +19,9 @@
   --size-touch: 44px;
   --width-content: 64rem;
   --size-menu-offset: 9rem;
+  --size-qr: 12rem;
+  --size-dialog: 32rem;
+  --print-margin: 10mm;
   --focus-width: 2px;
   --focus-offset: 4px;
 

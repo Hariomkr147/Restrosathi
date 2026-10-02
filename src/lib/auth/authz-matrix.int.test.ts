@@ -7,6 +7,7 @@ import { updateSettings } from "../../app/admin/settings/actions";
 import { logout } from "../../app/login/actions";
 import { setLocale } from "../../app/actions/locale";
 import { POST } from "../../app/api/menu-photo/route";
+import * as tables from "../../app/admin/tables/actions";
 
 vi.mock("next/cache", () => ({ revalidatePath: vi.fn() }));
 const roles = [
@@ -25,6 +26,17 @@ const ownerActions = [
   { name: "uploadMenuPhoto", run: () => menu.uploadMenuPhoto(new FormData()), error: "UNSUPPORTED_TYPE" },
 ];
 for (const { role, signIn } of roles) {
+  for (const action of [
+    { name: "createTable", run: () => tables.createTable(""), error: "INVALID_LABEL" },
+    { name: "renameTable", run: () => tables.renameTable("__absent", ""), error: "INVALID_LABEL" },
+    { name: "setTableActive", run: () => tables.setTableActive("__absent", false), error: "NOT_FOUND" },
+    { name: "regenerateTableCode", run: () => tables.regenerateTableCode("__absent"), error: "NOT_FOUND" },
+  ]) {
+    it(`${role}: ${action.name} requires owner permission`, async () => {
+      await signIn();
+      expect(await action.run()).toMatchObject({ ok: false, error: role === "owner" ? action.error : "FORBIDDEN" });
+    });
+  }
   for (const action of ownerActions) {
     it(`${role}: ${action.name} requires owner permission before validation/work`, async () => {
       await signIn();

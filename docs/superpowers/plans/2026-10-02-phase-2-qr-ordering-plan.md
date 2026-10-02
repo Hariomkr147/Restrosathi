@@ -26,15 +26,15 @@
 - `listTables()`, `createTable(label)`, `renameTable(id, label)`, `setTableActive(id, active)`, `regenerateTableCode(id)`, `findActiveTableByCode(code)`.
 - Server actions in `src/app/admin/tables/actions.ts`: all `requireUser("OWNER")`; each writes `audit()` (`table.create`, `table.rename`, `table.active`, `table.regenerate`).
 
-- [ ] **Step 1: Write failing tests.**
+- [x] **Step 1: Write failing tests.**
   - `code.test.ts`: length 10; only allowed characters; 2,000 generated codes contain no duplicates; `tableUrl("ABC")` ends with `/t/ABC`.
   - `tables.int.test.ts`: create then find by code; label must be unique (`LABEL_TAKEN`); label 1–20 chars after trim; `regenerateTableCode` changes the code and the **old code no longer resolves**; inactive table is not found by code; anonymous and STAFF calling any mutating action are rejected, OWNER succeeds; each mutation leaves an audit row.
   - `tables.spec.ts` (e2e): owner opens `/admin/tables`, adds a table, sees it in the list and on `/admin/tables/print` with a QR (an `<svg>` per table) and its label; staff can open the print page but has no add/rename/regenerate controls.
-- [ ] **Step 2: Run** `npm run test:unit` and `npm run test:int`. Expected: FAIL.
-- [ ] **Step 3: Implement** the model + migration, code generator, `qrSvg`, actions and pages. The print page uses an A4 print stylesheet (`@media print`: 2 columns of QR cards, each with restaurant name from Settings, "Table <label>", "Scan to see the menu and order", the QR, and the short URL in small text; hides the admin nav). Regenerate asks for confirmation (a dialog with a clear warning that the printed QR stops working).
-- [ ] **Step 4: Run** unit and integration tests, then `npm run test:e2e -- tables`. Expected: PASS. Run lint and typecheck.
-- [ ] **Step 5: UI pass** (`$impeccable shape`, `audit`, `harden` for the tables page; print page checked in print emulation at A4).
-- [ ] **Step 6: Commit** `feat: tables, random codes and printable QR sheet`, then add the PROGRESS entry.
+- [x] **Step 2: Run** `npm run test:unit` and `npm run test:int`. Expected: FAIL.
+- [x] **Step 3: Implement** the model + migration, code generator, `qrSvg`, actions and pages. The print page uses an A4 print stylesheet (`@media print`: 2 columns of QR cards, each with restaurant name from Settings, "Table <label>", "Scan to see the menu and order", the QR, and the short URL in small text; hides the admin nav). Regenerate asks for confirmation (a dialog with a clear warning that the printed QR stops working).
+- [x] **Step 4: Run** unit and integration tests, then `npm run test:e2e -- tables`. Expected: PASS. Run lint and typecheck.
+- [x] **Step 5: UI pass** (`$impeccable shape`, `audit`, `harden` for the tables page; print page checked in print emulation at A4).
+- [x] **Step 6: Commit** `feat: tables, random codes and printable QR sheet`, then add the PROGRESS entry.
 
 ---
 

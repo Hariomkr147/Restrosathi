@@ -2,6 +2,7 @@ import { PrismaClient } from "@prisma/client";
 import { z } from "zod";
 import { hashSecret } from "../src/lib/auth/password";
 import { itemInputSchema, type ItemInput } from "../src/lib/menu/schemas";
+import { generateTableCode } from "../src/lib/tables/code";
 
 const prisma = new PrismaClient();
 
@@ -34,6 +35,14 @@ try {
     where: { id: "staff-ravi" }, update: {},
     create: { id: "staff-ravi", name: "Ravi", pinHash: await hashSecret(staffPin), role: "STAFF" },
   });
+
+  for (let index = 1; index <= 8; index++) {
+    const label = `T${index}`;
+    await prisma.restaurantTable.upsert({ where: { label }, update: {}, create: {
+      id: `table-${index}`, label, sortOrder: index - 1,
+      code: process.env.NODE_ENV === "production" ? generateTableCode() : `TESTCODE0${index}`,
+    } });
+  }
 
   // Fictional demo menu, including missing and long Hindi text for layout checks.
   const categories = [

@@ -145,3 +145,11 @@ model MenuPairing {
 
   @@id([itemId, pairedItemId])
 }
+
+model RestaurantTable {
+  id        String  @id @default(cuid())
+  label     String  @unique
+  code      String  @unique
+  active    Boolean @default(true)
+  sortOrder Int     @default(0)
+}
