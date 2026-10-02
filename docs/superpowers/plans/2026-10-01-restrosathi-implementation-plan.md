@@ -572,7 +572,7 @@ it("stores a WebP without EXIF", async () => {
 - Consumes: pages from Tasks 4–9.
 - Produces: CI gates that later phases extend with `/t/[code]` and admin pages.
 
-- [ ] **Step 1: Write the gates**
+- [x] **Step 1: Write the gates**
 
 ```ts
 // a11y.spec.ts — for "/", "/menu", "/login", "/login/staff" in en and hi:
@@ -585,8 +585,8 @@ expect(totalJsBytes).toBeLessThanOrEqual(150 * 1024);
 
 `totalJsBytes` sums `(await response.request().sizes()).responseBodySize` for responses whose `resourceType()` is `"script"`, collected during `page.goto("/menu", { waitUntil: "networkidle" })` against the production build.
 
-- [ ] **Step 2: Run** `npm run test:e2e -- a11y perf visual` (first run with `--update-snapshots` for the baseline). Expected: a11y and perf PASS. If either fails, fix the page (contrast via tokens, labels, lazy-loading, moving code to server components) and do not loosen the gate.
-- [ ] **Step 3: Commit**: `git commit -m "test: axe, JS budget and Hindi 360px visual gates"`
+- [x] **Step 2: Run** `npm run test:e2e -- a11y perf visual` (first run with `--update-snapshots` for the baseline). Expected: a11y and perf PASS. If either fails, fix the page (contrast via tokens, labels, lazy-loading, moving code to server components) and do not loosen the gate.
+- [x] **Step 3: Commit**: `git commit -m "test: axe, JS budget and Hindi 360px visual gates"`
 
 **Phase 1 exit check:** full test suite + CI green; owner can change settings and menu from `/admin`; manual pass on a real Android phone at 360 px in both languages.
 

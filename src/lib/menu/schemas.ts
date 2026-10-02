@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { l10nSchema } from "../i18n/l10n";
+import { l10nSchema } from "../i18n/schema";
 
 const price = z.number().int().positive().max(2147483647);
 const modifierGroup = z.object({

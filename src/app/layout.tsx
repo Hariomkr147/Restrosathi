@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import type { ReactNode } from "react";
-import { NextIntlClientProvider } from "next-intl";
 import { getLocale } from "next-intl/server";
 import { getSettings } from "@/lib/settings";
 import { localize, type Locale } from "@/lib/i18n/l10n";
@@ -20,9 +19,7 @@ export default async function RootLayout({ children }: { children: ReactNode }) 
   return (
     <html lang={locale}>
       <body>
-        <NextIntlClientProvider>
-          {children}
-        </NextIntlClientProvider>
+        {children}
       </body>
     </html>
   );

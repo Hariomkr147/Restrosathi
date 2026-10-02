@@ -1,5 +1,6 @@
 import { prisma } from "../db";
-import { l10nSchema, type L10n } from "../i18n/l10n";
+import type { L10n } from "../i18n/l10n";
+import { l10nSchema } from "../i18n/schema";
 import { itemInputSchema, type ItemInput } from "./schemas";
 
 export type PublicItem = Omit<ItemInput, "basePricePaise" | "description" | "variants" | "modifierGroups"> & {

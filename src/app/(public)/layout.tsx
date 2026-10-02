@@ -6,10 +6,12 @@ import { getSettings } from "@/lib/settings";
 import { FEATURES } from "@/lib/features";
 import { HoursList } from "@/components/home/HoursAndMap";
 import { FloatingContact } from "@/components/FloatingContact";
+import { MenuTextProvider } from "@/components/menu/MenuText";
+import { getMenuText } from "@/lib/menu/text";
 
 export default async function PublicLayout({ children }: { children: ReactNode }) {
   const [settings, t, home] = await Promise.all([getSettings(), getTranslations("nav"), getTranslations("home")]);
-  return <>
+  return <MenuTextProvider value={await getMenuText()}>
     <a href="#main" className="sr-only focus:not-sr-only focus:absolute focus:z-20 focus:inline-flex focus:min-h-touch focus:items-center focus:bg-secondary focus:px-4 focus:py-2">{t("skip")}</a>
     <header className="border-b border-border">
       <div className="mx-auto flex w-full max-w-content flex-wrap items-center justify-between gap-4 px-6 py-4">
@@ -35,5 +37,5 @@ export default async function PublicLayout({ children }: { children: ReactNode }
       </div>
     </footer>
     <FloatingContact phone={settings.phone} whatsappPhone={settings.whatsappPhone} />
-  </>;
+  </MenuTextProvider>;
 }

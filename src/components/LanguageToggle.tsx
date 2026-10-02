@@ -1,31 +1,12 @@
-"use client";
+import { getLocale, getTranslations } from "next-intl/server";
+import type { Locale } from "@/lib/i18n/l10n";
+import { LanguageToggleClient } from "./LanguageToggleClient";
+import { buttonVariants } from "./ui/button";
+import { cn } from "@/lib/utils";
 
-import { useState, useTransition } from "react";
-import { useLocale, useTranslations } from "next-intl";
-import { setLocale } from "@/app/actions/locale";
-import { Button } from "./ui/button";
-
-export function LanguageToggle() {
-  const locale = useLocale();
-  const t = useTranslations("common");
-  const next = locale === "en" ? "hi" : "en";
-  const [pending, startTransition] = useTransition();
-  const [error, setError] = useState(false);
-
-  return (
-    <div className="flex min-w-0 flex-col items-end gap-2">
-      <Button type="button" variant="outline" lang={pending ? locale : next} disabled={pending} aria-busy={pending} aria-invalid={error || undefined}
-        className="h-auto max-w-full break-words py-2 text-base"
-        onClick={() => {
-          setError(false);
-          startTransition(async () => {
-            try { await setLocale(next); }
-            catch { setError(true); }
-          });
-        }}>
-        {pending ? t("changingLanguage") : t(next === "hi" ? "hindi" : "english")}
-      </Button>
-      {error && <p role="alert" className="text-sm text-destructive">{t("languageError")}</p>}
-    </div>
-  );
+export async function LanguageToggle() {
+  const [locale, t] = await Promise.all([getLocale(), getTranslations("common")]);
+  return <LanguageToggleClient locale={locale as Locale} className={cn(buttonVariants({ variant: "outline" }), "h-auto max-w-full break-words py-2 text-base")} text={{
+    english: t("english"), hindi: t("hindi"), changingLanguage: t("changingLanguage"), languageError: t("languageError"),
+  }} />;
 }

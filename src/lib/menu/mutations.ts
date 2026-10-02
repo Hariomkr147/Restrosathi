@@ -3,7 +3,7 @@ import { z } from "zod";
 import { prisma } from "../db";
 import { requireUser } from "../auth/session";
 import { audit } from "../audit";
-import { l10nSchema } from "../i18n/l10n";
+import { l10nSchema } from "../i18n/schema";
 import { itemInputSchema } from "./schemas";
 import { processMenuPhoto, UploadError } from "./images";
 
