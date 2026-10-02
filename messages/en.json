@@ -68,7 +68,9 @@
     "welcome": "Welcome, {name}.",
     "role": "Role: {role}",
     "OWNER": "Owner",
-    "STAFF": "Staff"
+    "STAFF": "Staff",
+    "navigation": "Administration",
+    "settings": "Settings"
   },
   "common": {
     "english": "English",
@@ -78,10 +80,55 @@
     "call": "Call",
     "whatsapp": "Chat on WhatsApp",
     "contact": "Contact the restaurant",
-    "days": { "mon": "Monday", "tue": "Tuesday", "wed": "Wednesday", "thu": "Thursday", "fri": "Friday", "sat": "Saturday", "sun": "Sunday" },
+    "days": {
+      "mon": "Monday",
+      "tue": "Tuesday",
+      "wed": "Wednesday",
+      "thu": "Thursday",
+      "fri": "Friday",
+      "sat": "Saturday",
+      "sun": "Sunday"
+    },
     "closed": "Closed",
     "save": "Save",
     "saving": "Saving…",
     "cancel": "Cancel"
+  },
+  "settings": {
+    "title": "Restaurant settings",
+    "basics": "Basics",
+    "name": "Restaurant name",
+    "address": "Address",
+    "about": "About the restaurant",
+    "about-en": "About in English",
+    "about-hi": "About in Hindi (optional)",
+    "contact": "Contact",
+    "phone": "Phone number",
+    "whatsappPhone": "WhatsApp number",
+    "phoneHint": "Use +91 followed by 10 digits.",
+    "links": "Links",
+    "mapEmbedUrl": "Google Maps embed URL (optional)",
+    "googleReviewUrl": "Google review URL (optional)",
+    "linkHint": "Use an HTTPS URL, or leave blank.",
+    "hours": "Weekly opening hours",
+    "hoursHint": "Times are local to Asia/Kolkata. Closing after midnight is valid.",
+    "open": "Opens",
+    "close": "Closes",
+    "addShift": "Add second shift",
+    "removeShift": "Remove shift",
+    "save": "Save settings",
+    "saving": "Saving…",
+    "saved": "Saved",
+    "network": "Could not save. Check your connection or sign in again, then retry.",
+    "errors": {
+      "name": "Enter a name between 1 and 80 characters.",
+      "address": "Enter an address.",
+      "about": "Enter the English description.",
+      "phone": "Use +91 followed by 10 digits.",
+      "whatsappPhone": "Use +91 followed by 10 digits.",
+      "mapEmbedUrl": "Enter a valid HTTPS URL, or leave blank.",
+      "googleReviewUrl": "Enter a valid HTTPS URL, or leave blank.",
+      "hours": "Enter valid opening and closing times in HH:MM format."
+    }
   }
 }

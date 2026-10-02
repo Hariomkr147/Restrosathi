@@ -8,9 +8,9 @@ export async function audit(entry: {
   entity: string;
   entityId: string;
   data?: unknown;
-}): Promise<void> {
+}, db: Prisma.TransactionClient = prisma): Promise<void> {
   const data = entry.data === undefined ? undefined : z.json().parse(entry.data);
-  await prisma.auditLog.create({
+  await db.auditLog.create({
     data: { ...entry, data: data === null ? Prisma.JsonNull : data },
   });
 }

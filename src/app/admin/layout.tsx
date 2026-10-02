@@ -3,6 +3,7 @@ import { getTranslations } from "next-intl/server";
 import { requirePageUser } from "@/lib/auth/session";
 import { LogoutButton } from "../login/LoginForm";
 import { LanguageToggle } from "@/components/LanguageToggle";
+import Link from "next/link";
 
 export default async function AdminLayout({ children }: { children: ReactNode }) {
   const user = await requirePageUser();
@@ -16,6 +17,10 @@ export default async function AdminLayout({ children }: { children: ReactNode })
       </div>
       <LogoutButton />
     </header>
+    <nav aria-label={t("navigation")} className="mx-auto flex w-full max-w-content flex-wrap gap-4 px-6">
+      <Link href="/admin" className="inline-flex min-h-touch min-w-touch items-center text-primary underline">{t("title")}</Link>
+      {user.role === "OWNER" && <Link href="/admin/settings" className="inline-flex min-h-touch min-w-touch items-center text-primary underline">{t("settings")}</Link>}
+    </nav>
     {children}
   </>;
 }

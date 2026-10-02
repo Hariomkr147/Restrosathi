@@ -8,6 +8,7 @@ export default defineConfig({
   testDir: "./tests/e2e",
   forbidOnly: !!process.env.CI,
   retries: 0,
+  workers: 1, // The public/admin checks share one restaurant's seeded settings and menu.
   reporter: [["list"], ["html", { open: "never" }]],
   use: {
     baseURL: "http://localhost:3000",

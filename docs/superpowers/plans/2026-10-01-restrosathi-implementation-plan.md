@@ -507,11 +507,11 @@ it("builds a wa.me link", () => expect(whatsappChatUrl("+919876543210", "Hi")).t
 - Consumes: `requireUser`, `AuthError` (Task 4); `audit` (Task 2); `hoursSchema`, `l10nSchema`.
 - Produces: `settingsInputSchema` (name 1–80 chars, `about: L10n`, address, `phone` and `whatsappPhone` as `+91` + 10 digits, optional `https://` URLs for map and reviews, `hours`); server action `updateSettings(input: unknown): Promise<{ ok: true } | { ok: false; fieldErrors: Record<string, string[]> }>` (OWNER only; writes `audit({ action: "settings.update", entity: "Settings", entityId: "1", data: { before, after } })`).
 
-- [ ] **Step 1: Failing integration tests**: staff session → `updateSettings(valid)` rejects with `AuthError`; owner → valid input persists and creates one `settings.update` audit row; owner → `hours.mon[0].open = "25:00"` returns `{ ok: false }` with a `hours` field error; overnight `18:00–01:00` saves.
-- [ ] **Step 2: Run** `npm run test:int`. Expected: FAIL.
-- [ ] **Step 3: Implement** the action and the page: grouped form (Basics, About in English + Hindi side by side, Contact, Links, Hours per day with "Closed" and "Add second shift"), inline field errors announced via `aria-live`, and a "Saved" toast.
-- [ ] **Step 4: Run** `npm run test:int`. Expected: PASS.
-- [ ] **Step 5: Commit**: `git commit -m "feat: owner settings editor with audit"`
+- [x] **Step 1: Failing integration tests**: staff session → `updateSettings(valid)` rejects with `AuthError`; owner → valid input persists and creates one `settings.update` audit row; owner → `hours.mon[0].open = "25:00"` returns `{ ok: false }` with a `hours` field error; overnight `18:00–01:00` saves.
+- [x] **Step 2: Run** `npm run test:int`. Expected: FAIL.
+- [x] **Step 3: Implement** the action and the page: grouped form (Basics, About in English + Hindi side by side, Contact, Links, Hours per day with "Closed" and "Add second shift"), inline field errors announced via `aria-live`, and a "Saved" toast.
+- [x] **Step 4: Run** `npm run test:int`. Expected: PASS.
+- [x] **Step 5: Commit**: `git commit -m "feat: owner settings editor with audit"`
 
 ---
 
