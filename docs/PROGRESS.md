@@ -127,3 +127,17 @@ Entry format:
 - Queue startup stashed the verified Task8 work while new planning commits were added. Inspected and reapplied that exact Task8 stash non-destructively before committing; recovery stash retained. This explains the documenter's temporary inability to find the E2E assertion; restored source contains it at line52.
 ### Decisions for Hariom
 - Under the updated queue instructions, continue beyond Phase1 through the detailed phase plans. Human-only steps go to HUMAN-TODO; no further questions during the run.
+
+## Task 9: Menu editor, sold-out switch, photo upload
+- Commit e01c4c2 on phase-1-menu-site. Failing integration suites first (missing image/mutation modules); final integration: 8 files / 44 tests passed. Unit: 9 files / 53 passed. Final production menu-admin E2E: 4 passed (48.8s). Lint, typecheck and whitespace checks exited 0.
+- Owner category/item editing, up/down ordering, base-price or named portions, bilingual fields, modifier choices, dietary/spice/tags and safe photo preview/upload. Staff availability switches immediately update the public menu. Exact decimal draft prices become integer paise. Price and availability audits are atomic; concurrent replacements lock the parent item so only one complete variant set remains.
+- Uploads validate content and size, strip metadata, resize to 1200px and store UUID WebP files locally. Public serving checks resolved paths, rejects traversal and supplies immutable caching. Negative tests cover anonymous/staff access, cross-origin upload, bounded chunked bodies and invalid structures.
+- Impeccable audit/harden18/20 observed scope; detector[] exit0; four English/Hindi360 captures inspected. Fresh finish reviewer: ship/no material fixes; documenter preserved the incumbent design files and reported existing documentation drift. Ponytail full review: Lean already. Ship. Formal axe/performance gates follow in Task10. All Task9 steps complete.
+### Deviations
+- Added a bounded authenticated same-origin multipart POST route for the 5MB photo flow, keeping the spec's global server-action limit at 100KB. Added supporting form components, exact decimal parser, localized messages, route tests and range/choice validation tests.
+- Docker Desktop was stopped; started the existing installation hidden and brought the existing Compose database up without resetting development data. Replaced a corrupt synthetic PNG fixture with a valid generated test PNG; read Sharp test metadata from a buffer to avoid Windows file-cache cleanup locks.
+- Anchored /uploads/ in gitignore so runtime photos are ignored while src/app/uploads remains tracked. Marked runtime filesystem paths with Turbopack's tracing annotation; final build has no whole-project upload tracing warnings.
+- New concurrency test first reproduced duplicate variant sets; added a parent-row lock shared by item editing and availability writes. Network-retry assertion initially matched Next's route announcer too; scoped it to the actual localized save error.
+- Used fresh generic finish/documenter agents because this harness has no named-profile selector. No new storage abstraction or AWS dependency was introduced.
+### Decisions for Hariom
+- Photos use a 40-million-pixel decode ceiling and reject multi-page/animated inputs to bound image-processing memory. Safe still JPEG/PNG/WebP images up to 5MB retain the planned conversion behaviour.

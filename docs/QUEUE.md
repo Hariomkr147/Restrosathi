@@ -8,7 +8,7 @@ How to read it: a **Task** row is done when `docs/PROGRESS.md` has an entry head
 |---|---|---|---|---|---|
 | 1 | Task 7 | Home page, SEO, feature flags | `2026-10-01-restrosathi-implementation-plan.md` (Part B) | `phase-1-menu-site` | [x] |
 | 2 | Task 8 | Settings editor | same | `phase-1-menu-site` | [x] |
-| 3 | Task 9 | Menu editor, sold-out switch, photo upload | same | `phase-1-menu-site` | [ ] |
+| 3 | Task 9 | Menu editor, sold-out switch, photo upload | same | `phase-1-menu-site` | [x] |
 | 4 | Task 10 | Accessibility, performance, Hindi gates | same | `phase-1-menu-site` | [ ] |
 | 5 | Gate 1 | Phase 1 exit checks + summary | same (Part A, Phase 1) | `phase-1-menu-site` | [ ] |
 | 6 | Task 11 | Tables, QR codes, printable sheet | `2026-10-02-phase-2-qr-ordering-plan.md` | `phase-2-qr-ordering` | [ ] |
