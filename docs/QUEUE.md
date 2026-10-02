@@ -14,7 +14,7 @@ How to read it: a **Task** row is done when `docs/PROGRESS.md` has an entry head
 | 6 | Task 11 | Tables, QR codes, printable sheet | `2026-10-02-phase-2-qr-ordering-plan.md` | `phase-2-qr-ordering` | [x] |
 | 7 | Task 12 | Dining sessions, one active per table | same | `phase-2-qr-ordering` | [x] |
 | 8 | Task 13 | Order placement, idempotency, rate limits | same | `phase-2-qr-ordering` | [x] |
-| 9 | Task 14 | Order state machine, line voids | same | `phase-2-qr-ordering` | [ ] |
+| 9 | Task 14 | Order state machine, line voids | same | `phase-2-qr-ordering` | [x] |
 | 10 | Task 15 | Customer table page `/t/[code]` | same | `phase-2-qr-ordering` | [ ] |
 | 11 | Task 16 | Staff board with reliability features | same | `phase-2-qr-ordering` | [ ] |
 | 12 | Task 17 | KOT print | same | `phase-2-qr-ordering` | [ ] |

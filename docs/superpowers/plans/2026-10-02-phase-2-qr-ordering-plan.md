@@ -108,13 +108,13 @@ Behaviour: rate limits are `device:<id>` 20 orders/hour and `ip:<ip>` 60 orders/
 - `voidLine(lineId, reason, actorId)`: allowed only when the parent order is `PREPARING`, `READY` or `SERVED` and the line is not already voided; reason 3–200 chars; sets `voidedAt`, `voidReason`, `voidedById`; audit `order.void_line`. (Task 22 adds the refusal when the bill is already settled.)
 - Server actions in `actions.ts` call `requireUser()` (STAFF or OWNER).
 
-- [ ] **Step 1: Write failing tests.**
+- [x] **Step 1: Write failing tests.**
   - `state.test.ts`: table-driven over all 25 `from × to` pairs — exactly 4 are allowed (`NEW→PREPARING`, `NEW→REJECTED`, `PREPARING→READY`, `READY→SERVED`); the other 21 are false.
   - `transitions.int.test.ts`: each valid step stamps the right timestamp and writes an audit row; every invalid step returns `INVALID_TRANSITION` and changes nothing; reject without a reason → `REASON_REQUIRED`; **concurrent accept** (two `Promise.all` calls) → exactly one `ok`; void on a `NEW` order refused, on `PREPARING` allowed, twice refused; anonymous calls through the server actions are rejected.
-- [ ] **Step 2: Run.** Expected: FAIL.
-- [ ] **Step 3: Implement.**
-- [ ] **Step 4: Run** unit and integration tests. Expected: PASS.
-- [ ] **Step 5: Commit** `feat: order state machine with audit and line voids`, then PROGRESS.
+- [x] **Step 2: Run.** Expected: FAIL.
+- [x] **Step 3: Implement.**
+- [x] **Step 4: Run** unit and integration tests. Expected: PASS.
+- [x] **Step 5: Commit** `feat: order state machine with audit and line voids`, then PROGRESS.
 
 ---
 

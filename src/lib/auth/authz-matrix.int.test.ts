@@ -9,6 +9,7 @@ import { setLocale } from "../../app/actions/locale";
 import { POST } from "../../app/api/menu-photo/route";
 import * as tables from "../../app/admin/tables/actions";
 import { placeOrderAction } from "../../app/t/[code]/actions";
+import * as orders from "../../app/admin/orders/actions";
 
 vi.mock("next/cache", () => ({ revalidatePath: vi.fn() }));
 const roles = [
@@ -27,6 +28,17 @@ const ownerActions = [
   { name: "uploadMenuPhoto", run: () => menu.uploadMenuPhoto(new FormData()), error: "UNSUPPORTED_TYPE" },
 ];
 for (const { role, signIn } of roles) {
+  for (const action of [
+    { name: "acceptOrder", run: () => orders.acceptOrder("__absent") },
+    { name: "rejectOrder", run: () => orders.rejectOrder("__absent", "Kitchen closed") },
+    { name: "markReady", run: () => orders.markReady("__absent") },
+    { name: "markServed", run: () => orders.markServed("__absent") },
+    { name: "voidLine", run: () => orders.voidLine("__absent", "Made twice") },
+  ]) {
+    it(`${role}: ${action.name} requires a signed-in user`, async () => {
+      await signIn(); expect(await action.run()).toEqual({ ok: false, error: role === "anonymous" ? "FORBIDDEN" : "NOT_FOUND" });
+    });
+  }
   // Public: QR ordering does not require a diner to log in.
   it(`${role}: placeOrderAction is explicitly public and validates input`, async () => {
     await signIn();
