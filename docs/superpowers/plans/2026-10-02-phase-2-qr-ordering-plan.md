@@ -52,18 +52,18 @@
 - `openTakeawaySession(tx, { customerName? }): Promise<DiningSession>`
 - `markBillRequested(tx, sessionId)`, `closeSession(tx, sessionId)` (sets `CLOSED`, `closedAt`).
 
-- [ ] **Step 1: Write failing tests** in `sessions.int.test.ts`:
+- [x] **Step 1: Write failing tests** in `sessions.int.test.ts`:
   - two calls to `getOrOpenTableSession` in sequence return the same id;
   - **10 concurrent calls** (`Promise.all`, each in its own transaction) for a table with no session create exactly one row and all return its id;
   - after `closeSession`, the next call creates a **new** session;
   - takeaway sessions: 3 can be open at once;
   - a `DINE_IN` row inserted without `tableId` is rejected (add a CHECK constraint: `kind = 'TAKEAWAY' OR "tableId" IS NOT NULL`, also appended by hand);
   - the partial index exists (`SELECT indexname FROM pg_indexes WHERE indexname = 'DiningSession_one_active_per_table'`).
-- [ ] **Step 2: Change the test setup** in `tests/setup/db.ts` to apply migrations: `prisma migrate reset --force --skip-generate --skip-seed` against `TEST_DATABASE_URL`, then run the seed. Keep the safety check that the URL points at `restrosathi_test`. Re-run the whole suite to prove nothing else broke. (Log this under Deviations if you changed the exact command.)
-- [ ] **Step 3: Run** the new tests. Expected: FAIL (module missing), then implement.
-- [ ] **Step 4: Implement** the model, migration (generated statements first, then the raw SQL with a comment) and `src/lib/sessions/index.ts`.
-- [ ] **Step 5: Run** `npm run test:int` and `npm run test:e2e`. Expected: PASS.
-- [ ] **Step 6: Commit** `feat: dining sessions with one active session per table`, then PROGRESS.
+- [x] **Step 2: Change the test setup** in `tests/setup/db.ts` to apply migrations: `prisma migrate reset --force --skip-generate --skip-seed` against `TEST_DATABASE_URL`, then run the seed. Keep the safety check that the URL points at `restrosathi_test`. Re-run the whole suite to prove nothing else broke. (Log this under Deviations if you changed the exact command.)
+- [x] **Step 3: Run** the new tests. Expected: FAIL (module missing), then implement.
+- [x] **Step 4: Implement** the model, migration (generated statements first, then the raw SQL with a comment) and `src/lib/sessions/index.ts`.
+- [x] **Step 5: Run** `npm run test:int` and `npm run test:e2e`. Expected: PASS.
+- [x] **Step 6: Commit** `feat: dining sessions with one active session per table`, then PROGRESS.
 
 ---
 

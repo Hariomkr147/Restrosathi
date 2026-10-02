@@ -147,9 +147,33 @@ model MenuPairing {
 }
 
 model RestaurantTable {
-  id        String  @id @default(cuid())
-  label     String  @unique
-  code      String  @unique
-  active    Boolean @default(true)
-  sortOrder Int     @default(0)
+  id        String          @id @default(cuid())
+  label     String          @unique
+  code      String          @unique
+  active    Boolean         @default(true)
+  sortOrder Int             @default(0)
+  sessions  DiningSession[]
+}
+
+enum SessionKind {
+  DINE_IN
+  TAKEAWAY
+}
+
+enum SessionStatus {
+  OPEN
+  BILL_REQUESTED
+  CLOSED
+}
+
+model DiningSession {
+  id            String           @id @default(cuid())
+  kind          SessionKind
+  tableId       String?
+  status        SessionStatus    @default(OPEN)
+  openedAt      DateTime         @default(now()) @db.Timestamptz(3)
+  closedAt      DateTime?        @db.Timestamptz(3)
+  customerName  String?
+  customerPhone String?
+  table         RestaurantTable? @relation(fields: [tableId], references: [id], onDelete: Restrict)
 }
