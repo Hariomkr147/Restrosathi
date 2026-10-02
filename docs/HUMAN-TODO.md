@@ -17,3 +17,5 @@ Format:
 - [ ] (Phase 4, Task 28) Pair the spare SIM with WA-AKG, create its API key, register the webhook, and verify the three endpoint paths against its `/docs` page; see `docs/WA-AKG.md`.
 - [ ] (Phase 6) Real backup bucket, encryption key stored safely, restore drill on a fresh VPS; see `docs/RESTORE.md`.
 - [ ] (Phase 6) Real-device QA and the pilot checklist with the first restaurant.
+
+- [ ] (Phase 1 gate) Android 360px manual check, deferred at your request ('skip for now'). Needs a physical Android phone. On the app's local/staging URL, set a 360px CSS viewport, check home/menu in English and Hindi, toggle language, search/filter, tap menu/contact controls, and confirm no horizontal scroll. Automated browser checks are separate evidence.

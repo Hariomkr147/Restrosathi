@@ -115,3 +115,15 @@ Entry format:
 ### Deviations
 - Added HeroEntrance, message keys, SITE_URL and owned placeholder image/provenance as necessary task support files; used installed Sharp rather than introducing a dependency before Task9.
 - Used fresh generic independent critique/finish/documenter agents because named agent profiles are unavailable in this harness; proceeded under authorized continuous mode. Read-only browser API cannot inject an overlay; fresh hidden-tab browser evidence and CLI detector used, with no claimed overlay.
+
+## Task 8: Settings editor (owner)
+- Commit d3570f4 on phase-1-menu-site. Red integration run: 6 failed (missing updateSettings), 19 existing passed. Final integration: 5 files / 25 tests passed; unit: 8 files / 49 passed. Final production settings E2E: 2 passed (34.0s). Lint, typecheck and whitespace checks exited 0.
+- Owner-only validated settings editor, bilingual grouped native form, optional HTTPS links, +91 contacts, closed/two-shift controls and overnight hours. Settings write and before/after audit commit atomically. Inline errors, busy controls, Saved feedback and network retry preserve drafts. Closed/reopen restores edited shifts; editing any field or hours clears old Saved feedback.
+- Impeccable shape used the authoritative Task8/Operate brief; audit/harden18/20 observed scope, detector[] exit0, desktop/Hindi360 captures inspected. Fresh finish reviewer found stale Saved status; fixed and E2E asserts status disappears after editing. Verdict pass scored that fix resolved/ship. Ordinary-extension documenter preserved existing design files; existing documentation drift left unchanged. Ponytail full: Lean already. Ship. No dependency added.
+- Task7 CI f8496f36a9c28a820ad2cae65a3c23454f2d5a8e succeeded: https://github.com/Hariomkr147/Restrosathi/actions/runs/36930246651.
+### Deviations
+- Added SettingsForm, localized validation keys, reachable owner navigation, settings E2E and an optional transaction-client parameter to audit for atomic persistence.
+- Set Playwright workers=1 because public/admin checks mutate the same seeded restaurant settings/menu; assertions, timeouts, retries and gates remain unchanged. Keyboard focus check switches to keyboard modality before testing focus-visible.
+- Queue startup stashed the verified Task8 work while new planning commits were added. Inspected and reapplied that exact Task8 stash non-destructively before committing; recovery stash retained. This explains the documenter's temporary inability to find the E2E assertion; restored source contains it at line52.
+### Decisions for Hariom
+- Under the updated queue instructions, continue beyond Phase1 through the detailed phase plans. Human-only steps go to HUMAN-TODO; no further questions during the run.
