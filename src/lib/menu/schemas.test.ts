@@ -19,6 +19,7 @@ it.each([
 ])("rejects malformed item fields %j", (fields) => expect(itemInputSchema.safeParse({ ...naanInput, ...fields }).success).toBe(false));
 it.each([
   { min: -1, max: 1, options: [{ name: { en: "Butter" }, priceDeltaPaise: 0 }] },
+  { min: 0, max: 2147483648, options: [{ name: { en: "Butter" }, priceDeltaPaise: 0 }] },
   { min: 2, max: 1, options: [{ name: { en: "Butter" }, priceDeltaPaise: 0 }] },
   { min: 2, max: 2, options: [{ name: { en: "Butter" }, priceDeltaPaise: 0 }] },
   { min: 0, max: 1, options: [] },
