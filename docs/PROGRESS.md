@@ -201,3 +201,11 @@ Entry format:
 - Generated SQL from the saved pre-task schema, preserving Task12's hand-written partial index/CHECK. The migration contains no DROP of these constraints.
 ### Decisions for Hariom
 - Device/IP rate checks run before table/session creation but inside the same transaction, after an idempotency-key advisory lock. Literal pretransaction hit writes would charge racing duplicate requests, contradicting the task's no-hit duplicate rule. The optional transaction client on checkRate keeps all hit writes atomic and rolled back on failed creation; the outside-transaction unique-conflict fallback remains.
+
+## Task 14: Order state machine and line voids
+- Commit f7f17ba on phase-2-qr-ordering. Red unit/integration suites first: missing state/transition/action modules. Focused canonical-state25 passed; focused transition34 passed; final unit12 files /86 passed; integration15 files /179 passed. Lint/typecheck/whitespace exit0 with the existing native-image advisory. No UI or dependency added.
+- Exactly four canonical state transitions; conditional updates give concurrent accepts one winner and one audit across three loops. Accepted/ready/served/rejected timestamps and bounded rejection reasons are atomic with the audit. Invalid transitions leave rows and audits unchanged.
+- Line voids require a3–200-character reason, a preparing/ready/served parent and an unvoided line; simultaneous voids audit once. A failed audit rolls both transitions and voids back. Staff/owner actions requireUser and derive actorId from the session; anonymous calls reject before mutation. Authorization matrix now covers63 cases, including all five actions for every role.
+- Ponytail full review: Lean already. Ship. All Task14 steps and queue row ticked. Task12 CI at237edef succeeded: https://github.com/Hariomkr147/Restrosathi/actions/runs/36998594109.
+### Deviations
+- Extended the existing authz matrix and added audit-rollback/concurrent-void checks as required protection. Unit tests cover all25 state pairs; integration tests exercise all16 invalid calls available through the four transition functions (there is no operation that targets NEW), plus valid transitions and terminal-state void refusals.
