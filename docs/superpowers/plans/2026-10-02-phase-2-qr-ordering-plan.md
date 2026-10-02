@@ -85,14 +85,14 @@
 
 Behaviour: rate limits are `device:<id>` 20 orders/hour and `ip:<ip>` 60 orders/hour (both checked before the transaction; the IP cap is loose and configurable with `RATE_LIMIT_IP_ORDERS_PER_HOUR`, default 60; never IP alone), and `session:<sessionId>` 30 orders/hour (checked inside the transaction once the session is resolved). A duplicate submit (same idempotency key) does not consume a rate-limit hit. Everything else happens in one transaction: load items with variants and modifier groups; each item must exist and be `available`; price each line with `priceLine`; store snapshots (names as the stored `{ en, hi? }` JSON); `getOrOpenTableSession`; create the order (`NEW`, source `QR`) and its lines. A session in `BILL_REQUESTED` still accepts orders and stays in that status. The order is never created with a client-supplied price.
 
-- [ ] **Step 1: Write failing tests.**
+- [x] **Step 1: Write failing tests.**
   - `schemas.test.ts`: qty 0 and 21 rejected; 31 lines rejected; note of 201 characters rejected; a payload containing `unitPricePaise: 1` parses and the field is absent in the output.
   - `rate-limit.int.test.ts`: the 3rd call with limit 2 returns `false`; hits older than the window do not count (use a tiny window and wait, or insert aged rows).
   - `place.int.test.ts`: happy path stores the computed price (variant + options) and snapshots; sold-out item → `ITEM_UNAVAILABLE` and **no order row**; an invalid variant/option/min/max → `CHOICE_INVALID`; inactive or unknown table code → `TABLE_NOT_FOUND`; same idempotency key twice → one order, second result `duplicate: true` with the same id; **5 concurrent calls with the same key → exactly one order**; two different keys → two orders in the **same** session; the 21st order from one device within an hour → `RATE_LIMITED`; ordering while the session is `BILL_REQUESTED` works and keeps that status; a closed session never receives lines (a new order after close opens a fresh session).
-- [ ] **Step 2: Run** tests. Expected: FAIL.
-- [ ] **Step 3: Implement** models, migration, helpers, `placeOrder` and the public action.
-- [ ] **Step 4: Run** unit and integration tests, lint, typecheck. Expected: PASS.
-- [ ] **Step 5: Commit** `feat: idempotent server-priced order placement with rate limits`, then PROGRESS.
+- [x] **Step 2: Run** tests. Expected: FAIL.
+- [x] **Step 3: Implement** models, migration, helpers, `placeOrder` and the public action.
+- [x] **Step 4: Run** unit and integration tests, lint, typecheck. Expected: PASS.
+- [x] **Step 5: Commit** `feat: idempotent server-priced order placement with rate limits`, then PROGRESS.
 
 ---
 

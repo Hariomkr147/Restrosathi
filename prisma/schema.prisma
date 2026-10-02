@@ -97,6 +97,7 @@ model MenuItem {
   modifierGroups ModifierGroup[]
   pairings       MenuPairing[]   @relation("PairingSource")
   pairedBy       MenuPairing[]   @relation("PairingTarget")
+  orderLines     OrderLine[]
 
   @@index([categoryId, sortOrder])
 }
@@ -176,4 +177,64 @@ model DiningSession {
   customerName  String?
   customerPhone String?
   table         RestaurantTable? @relation(fields: [tableId], references: [id], onDelete: Restrict)
+  orders        Order[]
+}
+
+enum OrderStatus {
+  NEW
+  PREPARING
+  READY
+  SERVED
+  REJECTED
+}
+
+enum OrderSource {
+  QR
+  STAFF
+}
+
+model Order {
+  id             String        @id @default(cuid())
+  sessionId      String
+  idempotencyKey String        @unique
+  source         OrderSource
+  status         OrderStatus   @default(NEW)
+  placedAt       DateTime      @default(now()) @db.Timestamptz(3)
+  acceptedAt     DateTime?     @db.Timestamptz(3)
+  readyAt        DateTime?     @db.Timestamptz(3)
+  servedAt       DateTime?     @db.Timestamptz(3)
+  rejectedAt     DateTime?     @db.Timestamptz(3)
+  rejectReason   String?
+  customerName   String?
+  session        DiningSession @relation(fields: [sessionId], references: [id], onDelete: Restrict)
+  lines          OrderLine[]
+
+  @@index([sessionId, placedAt])
+}
+
+model OrderLine {
+  id                String    @id @default(cuid())
+  orderId           String
+  itemId            String?
+  nameSnapshot      Json
+  variantSnapshot   Json?
+  modifiersSnapshot Json
+  qty               Int
+  unitPricePaise    Int
+  note              String?
+  voidedAt          DateTime? @db.Timestamptz(3)
+  voidReason        String?
+  voidedById        String?
+  order             Order     @relation(fields: [orderId], references: [id], onDelete: Restrict)
+  item              MenuItem? @relation(fields: [itemId], references: [id], onDelete: SetNull)
+
+  @@index([orderId])
+}
+
+model RateHit {
+  id  String   @id @default(cuid())
+  key String
+  at  DateTime @default(now()) @db.Timestamptz(3)
+
+  @@index([key, at])
 }

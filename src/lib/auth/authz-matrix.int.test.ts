@@ -8,6 +8,7 @@ import { logout } from "../../app/login/actions";
 import { setLocale } from "../../app/actions/locale";
 import { POST } from "../../app/api/menu-photo/route";
 import * as tables from "../../app/admin/tables/actions";
+import { placeOrderAction } from "../../app/t/[code]/actions";
 
 vi.mock("next/cache", () => ({ revalidatePath: vi.fn() }));
 const roles = [
@@ -26,6 +27,11 @@ const ownerActions = [
   { name: "uploadMenuPhoto", run: () => menu.uploadMenuPhoto(new FormData()), error: "UNSUPPORTED_TYPE" },
 ];
 for (const { role, signIn } of roles) {
+  // Public: QR ordering does not require a diner to log in.
+  it(`${role}: placeOrderAction is explicitly public and validates input`, async () => {
+    await signIn();
+    expect(await placeOrderAction({})).toEqual({ ok: false, error: "INVALID_INPUT" });
+  });
   for (const action of [
     { name: "createTable", run: () => tables.createTable(""), error: "INVALID_LABEL" },
     { name: "renameTable", run: () => tables.renameTable("__absent", ""), error: "INVALID_LABEL" },
