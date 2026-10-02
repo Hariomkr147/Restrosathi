@@ -53,3 +53,4 @@ next-env.d.ts
 # Runner logs and stop file
 /.codex-logs/
 /.stop
+/uploads/

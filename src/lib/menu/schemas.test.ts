@@ -14,12 +14,13 @@ it("rejects an item with neither base price nor variants", () => expect(itemInpu
 it("rejects an item with both", () => expect(itemInputSchema.safeParse(both).success).toBe(false));
 it("rejects zero price", () => expect(itemInputSchema.safeParse({ ...naanInput, basePricePaise: 0 }).success).toBe(false));
 it.each([
-  { basePricePaise: 10.5 }, { categoryId: "" }, { name: { en: " " } }, { spiceLevel: 4 }, { spiceLevel: 0.5 }, { tags: ["UNKNOWN"] },
+  { basePricePaise: 10.5 }, { basePricePaise: 2147483648 }, { categoryId: "" }, { name: { en: " " } }, { spiceLevel: 4 }, { spiceLevel: 0.5 }, { tags: ["UNKNOWN"] },
   { variants: [{ name: { en: "Half" }, pricePaise: -1 }], basePricePaise: undefined },
 ])("rejects malformed item fields %j", (fields) => expect(itemInputSchema.safeParse({ ...naanInput, ...fields }).success).toBe(false));
 it.each([
   { min: -1, max: 1, options: [{ name: { en: "Butter" }, priceDeltaPaise: 0 }] },
   { min: 2, max: 1, options: [{ name: { en: "Butter" }, priceDeltaPaise: 0 }] },
+  { min: 2, max: 2, options: [{ name: { en: "Butter" }, priceDeltaPaise: 0 }] },
   { min: 0, max: 1, options: [] },
   { min: 0, max: 1, options: [{ name: { en: "Butter" }, priceDeltaPaise: -1 }] },
 ])("rejects malformed modifier groups %j", (group) =>

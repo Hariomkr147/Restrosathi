@@ -528,7 +528,7 @@ it("builds a wa.me link", () => expect(whatsappChatUrl("+919876543210", "Hi")).t
   - Actions: `upsertCategory`, `deleteCategory(id)` (OWNER; throws `MenuEditError("CATEGORY_NOT_EMPTY")` if it has items), `upsertItem(input)` (OWNER; validates with `itemInputSchema`; replaces variants and groups in one transaction; audits `menu.price_change` with before/after prices when any price changes), `setItemAvailability(id, available)` (STAFF or OWNER; audits `menu.availability`), `deleteItem(id)` (OWNER), `uploadMenuPhoto(formData)` (OWNER).
   - Route `GET /uploads/[...path]`: serves files under `UPLOAD_DIR` only (rejects `..`), with `Cache-Control: public, max-age=31536000, immutable`.
 
-- [ ] **Step 1: Failing integration tests**
+- [x] **Step 1: Failing integration tests**
 
 ```ts
 it("staff cannot edit items", async () => { asStaff(); await expect(upsertItem(validItem)).rejects.toBeInstanceOf(AuthError); });
@@ -554,11 +554,11 @@ it("stores a WebP without EXIF", async () => {
 
 `heicLike` is a buffer starting with the `ftypheic` box (no real HEIC needed).
 
-- [ ] **Step 2: Run** `npm run test:int`. Expected: FAIL.
-- [ ] **Step 3: Implement** the interfaces. Admin UI: `/admin/menu` lists categories and items with a large sold-out switch per item (usable by staff), reorder by up/down buttons, "Add item"; `/admin/menu/[itemId]` (owner) edits names (en + hi), description, price **or** variants (toggle), modifier groups with options, veg, spice, tags, photo (preview, error messages per `UploadError.code` in both languages), with "Goes well with" pairings deferred to Phase 2 Task 15.
-- [ ] **Step 4: Run** `npm run test:int`. Expected: PASS.
-- [ ] **Step 5: E2E** `tests/e2e/menu-admin.spec.ts`: staff logs in, switches "Paneer Tikka" to sold out; a new page on `/menu` shows its "Sold out" badge; switching back removes it. Run: `npm run test:e2e -- menu-admin`. Expected: PASS.
-- [ ] **Step 6: Commit**: `git commit -m "feat: menu editor, sold-out switch, safe photo uploads"`
+- [x] **Step 2: Run** `npm run test:int`. Expected: FAIL.
+- [x] **Step 3: Implement** the interfaces. Admin UI: `/admin/menu` lists categories and items with a large sold-out switch per item (usable by staff), reorder by up/down buttons, "Add item"; `/admin/menu/[itemId]` (owner) edits names (en + hi), description, price **or** variants (toggle), modifier groups with options, veg, spice, tags, photo (preview, error messages per `UploadError.code` in both languages), with "Goes well with" pairings deferred to Phase 2 Task 15.
+- [x] **Step 4: Run** `npm run test:int`. Expected: PASS.
+- [x] **Step 5: E2E** `tests/e2e/menu-admin.spec.ts`: staff logs in, switches "Paneer Tikka" to sold out; a new page on `/menu` shows its "Sold out" badge; switching back removes it. Run: `npm run test:e2e -- menu-admin`. Expected: PASS.
+- [x] **Step 6: Commit**: `git commit -m "feat: menu editor, sold-out switch, safe photo uploads"`
 
 ---
 

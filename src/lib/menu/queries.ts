@@ -12,9 +12,12 @@ export type PublicItem = Omit<ItemInput, "basePricePaise" | "description" | "var
 };
 export type PublicMenu = { categories: { id: string; name: L10n; items: PublicItem[] }[] };
 
-export async function getPublicMenu(): Promise<PublicMenu> {
+export async function getPublicMenu(): Promise<PublicMenu> { return readMenu(false); }
+export async function getAdminMenu(): Promise<PublicMenu> { return readMenu(true); }
+
+async function readMenu(includeEmpty: boolean): Promise<PublicMenu> {
   const categories = await prisma.category.findMany({
-    where: { items: { some: {} } }, orderBy: [{ sortOrder: "asc" }, { id: "asc" }],
+    where: includeEmpty ? {} : { items: { some: {} } }, orderBy: [{ sortOrder: "asc" }, { id: "asc" }],
     include: { items: {
       orderBy: [{ sortOrder: "asc" }, { id: "asc" }],
       include: {
