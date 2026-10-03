@@ -160,13 +160,13 @@ UI: table label in the header; menu with category tabs, search, veg filter (reus
 - Board UI: four columns `NEW | PREPARING | READY | SERVED` on desktop; on mobile a tab per column with counts. Buttons: Accept, Reject (opens a sheet with preset reasons "Out of stock", "Kitchen closed", "Can't make this", plus free text), Ready, Served, per-line Void (reason sheet), Print KOT (Task 17 link; hidden until the route exists). Service requests strip: "Table 3 · Call waiter" with Done. Polls `getBoard` every **3 s**; paused when the tab is hidden, immediately refreshed on becoming visible.
 - **Start shift** button (shown until pressed): resumes an `AudioContext` (unlocks sound), requests `navigator.wakeLock.request("screen")` inside try/catch and re-requests on `visibilitychange`. New orders play a short two-tone beep generated with WebAudio (no audio files) and the card flashes (static highlight under reduced motion). Escalation: a `NEW` order older than 2 minutes gets a red banner and a louder repeating beep every 10 s until accepted or rejected. "Last updated N s ago" bar turns red (with text, not colour alone) after 15 s without a successful poll. A visually hidden `aria-live="polite"` region announces "New order from Table 3" and "Table 3 is calling the waiter". **Kitchen view** toggle: large text, only `NEW` + `PREPARING` as a simple list of items with quantities, no prices.
 
-- [ ] **Step 1: Write failing tests.**
+- [x] **Step 1: Write failing tests.**
   - `board-logic.test.ts`: `newOrderIds` finds only unseen ids; `escalationLevel` is 0 at 119 s and 1 at 121 s for `NEW`, always 0 for other statuses; `staleness` boundary at 15 s; `announce` text for one and for several orders and for a service request.
   - `board.int.test.ts`: anonymous rejected; groups by status; SERVED older than 2 h excluded; REJECTED excluded; takeaway order shows "Takeaway"; voided lines flagged; Hindi names with English fallback.
   - `board.spec.ts` (desktop + mobile): staff signs in at `/login/staff` (PIN from the seed); a customer order created through the app appears on the board within 5 s; accept → ready → served via buttons; reject requires a reason; with the status route failing (`page.route` abort) the stale bar turns red with text; the aria-live region contains the announcement; Kitchen view shows items without prices; axe clean; 360 px no horizontal scroll.
-- [ ] **Step 2: Run.** Expected: FAIL.
-- [ ] **Step 3: Implement.**
-- [ ] **Step 4: Run** unit, integration, e2e. Expected: PASS.
+- [x] **Step 2: Run.** Expected: FAIL.
+- [x] **Step 3: Implement.**
+- [x] **Step 4: Run** unit, integration, e2e. Expected: PASS.
 - [x] **Step 5: UI pass:** `$impeccable shape` → build → `audit` + `harden`. Operational screen: clear, conservative, high contrast, big targets; no decoration.
 - [ ] **Step 6: Commit** `feat: staff board with polling, shift start, alerts and kitchen view`, then PROGRESS.
 

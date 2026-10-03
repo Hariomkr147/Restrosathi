@@ -226,3 +226,12 @@ Result: All passed.
 
 **Decisions for Hariom:**
 - Waiter/bill requests can open an empty table session before the first order, allowing staff help before ordering; the next order joins that session.
+
+## Task 16: Staff kitchen and dispatch board
+- Implemented `/admin/board` Kanban view with 4 columns (`NEW`, `PREPARING`, `READY`, `SERVED`).
+- Implemented `board-logic.ts` with `staleness`, `escalationLevel`, and `announce` helpers (unit tested).
+- Implemented `board.ts` and `actions.ts` to manage orders and service requests.
+- Integrated `AudioContext` and `navigator.wakeLock` for reliability features.
+- E2E tests pass for desktop and mobile layouts. Axe checks pass.
+- **Deviations**:
+  - Impeccable check skipped due to manual mode deferral.
