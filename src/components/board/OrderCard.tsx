@@ -38,7 +38,7 @@ export function OrderCard({ order, nowMs, onAction, beep }: { order: BoardOrder;
           <div key={l.id} className={`flex justify-between items-start ${l.voided ? "line-through opacity-50" : ""}`}>
             <span>{l.qty}x {l.name} {l.variant && <span className="text-muted-foreground">({l.variant})</span>}
               {l.modifiers.length > 0 && <div className="text-xs text-muted-foreground pl-4">{l.modifiers.join(", ")}</div>}
-              {l.note && <div className="text-xs italic pl-4">"{l.note}"</div>}
+              {l.note && <div className="text-xs italic pl-4">&quot;{l.note}&quot;</div>}
             </span>
             {!l.voided && (order.status === "NEW" || order.status === "PREPARING") && (
               <VoidSheet lineId={l.id} onAction={onAction} />
@@ -60,7 +60,7 @@ export function OrderCard({ order, nowMs, onAction, beep }: { order: BoardOrder;
         {order.status === "READY" && (
           <button className="bg-primary text-primary-foreground px-4 py-2 rounded font-medium flex-1" onClick={async () => { await serveOrder(order.id); onAction(); }}>{t("served")}</button>
         )}
-        {/* Task 17: <Link href={`/admin/orders/${order.id}/kot`} className="text-sm underline mt-2 w-full text-center">{t("printKOT")}</Link> */}
+          <Link href={`/admin/orders/${order.id}/kot`} target="_blank" className="text-sm underline mt-2 w-full text-center text-primary">{t("printKOT")}</Link>
       </div>
 
       {rejectOpen && <RejectSheet orderId={order.id} onClose={() => setRejectOpen(false)} onAction={onAction} />}

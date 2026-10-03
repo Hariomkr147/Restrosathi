@@ -11,11 +11,31 @@ export function BoardClient({ initialData }: { initialData: { now: string; order
   const [data, setData] = useState(initialData);
   const [shiftStarted, setShiftStarted] = useState(false);
   const [kitchenView, setKitchenView] = useState(false);
-  const [lastOkMs, setLastOkMs] = useState(Date.now());
-  const [nowMs, setNowMs] = useState(Date.now());
+  const [lastOkMs, setLastOkMs] = useState(() => Date.now());
+  const [nowMs, setNowMs] = useState(() => Date.now());
   const [announcement, setAnnouncement] = useState("");
+  
+  const columns = ["NEW", "PREPARING", "READY", "SERVED"] as const;
+  const [activeTab, setActiveTab] = useState<typeof columns[number]>("NEW");
+
   const audioCtxRef = useRef<AudioContext | null>(null);
   const wakeLockRef = useRef<WakeLockSentinel | null>(null);
+
+  function beep(escalated = false) {
+    const ctx = audioCtxRef.current;
+    if (!ctx) return;
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+    osc.type = "sine";
+    osc.frequency.setValueAtTime(escalated ? 880 : 440, ctx.currentTime);
+    osc.frequency.setValueAtTime(escalated ? 1108 : 554, ctx.currentTime + 0.1);
+    gain.gain.setValueAtTime(escalated ? 1 : 0.5, ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.3);
+    osc.start();
+    osc.stop(ctx.currentTime + 0.3);
+  }
 
   const fetchBoard = useCallback(async () => {
     try {
@@ -24,7 +44,8 @@ export function BoardClient({ initialData }: { initialData: { now: string; order
       const newData = await res.json();
       
       const newOrders = newOrderIds(data.orders, newData.orders);
-      const newReqs = newOrderIds(data.requests as any, newData.requests as any); // just using ids
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const newReqs = newOrderIds(data.requests as any, newData.requests as any);
       
       if (newOrders.length > 0 || newReqs.length > 0) {
         setAnnouncement(announce(newOrders.length, newReqs.length, {
@@ -36,10 +57,20 @@ export function BoardClient({ initialData }: { initialData: { now: string; order
       
       setData(newData);
       setLastOkMs(Date.now());
-    } catch (e) {
+    } catch {
       // Handle silently, staleness will catch it
     }
   }, [data, t]);
+
+  async function requestWakeLock() {
+    try {
+      if (navigator.wakeLock) {
+        wakeLockRef.current = await navigator.wakeLock.request("screen");
+      }
+    } catch {
+      // Ignore
+    }
+  }
 
   useEffect(() => {
     if (!shiftStarted) return;
@@ -61,35 +92,12 @@ export function BoardClient({ initialData }: { initialData: { now: string; order
     };
   }, [shiftStarted, fetchBoard]);
 
-  const requestWakeLock = async () => {
-    try {
-      if (navigator.wakeLock) {
-        wakeLockRef.current = await navigator.wakeLock.request("screen");
-      }
-    } catch (e) {}
-  };
-
   const startShift = () => {
     setShiftStarted(true);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     audioCtxRef.current = new (window.AudioContext || (window as any).webkitAudioContext)();
     audioCtxRef.current?.resume();
     requestWakeLock();
-  };
-
-  const beep = (escalated = false) => {
-    const ctx = audioCtxRef.current;
-    if (!ctx) return;
-    const osc = ctx.createOscillator();
-    const gain = ctx.createGain();
-    osc.connect(gain);
-    gain.connect(ctx.destination);
-    osc.type = "sine";
-    osc.frequency.setValueAtTime(escalated ? 880 : 440, ctx.currentTime);
-    osc.frequency.setValueAtTime(escalated ? 1108 : 554, ctx.currentTime + 0.1);
-    gain.gain.setValueAtTime(escalated ? 1 : 0.5, ctx.currentTime);
-    gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.3);
-    osc.start();
-    osc.stop(ctx.currentTime + 0.3);
   };
 
   const isStale = staleness(lastOkMs, nowMs) === "stale";
@@ -122,9 +130,6 @@ export function BoardClient({ initialData }: { initialData: { now: string; order
       </div>
     );
   }
-
-  const columns = ["NEW", "PREPARING", "READY", "SERVED"] as const;
-  const [activeTab, setActiveTab] = useState<typeof columns[number]>("NEW");
 
   return (
     <div className="flex flex-col h-[calc(100vh-80px)] overflow-hidden">

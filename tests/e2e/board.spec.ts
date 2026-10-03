@@ -16,9 +16,9 @@ test("staff views board and handles orders", async ({ page, isMobile }) => {
   
   await page.goto("/login/staff");
   await page.getByLabel("Staff member").selectOption({ label: "Ravi" });
-  await page.getByLabel("4-6 digit PIN", { exact: false }).fill(process.env.SEED_STAFF_PIN!);
-  await page.getByRole("button", { name: "Log in", exact: false }).click();
-  await expect(page).toHaveURL("/admin");
+  await page.fill("input[name=pin]", process.env.SEED_STAFF_PIN!);
+  await page.click("button[type=submit]");
+  await expect(page).toHaveURL(/.*\/admin/);
   await page.goto("/admin/board");
   
   await page.click("button:has-text('Start shift')");

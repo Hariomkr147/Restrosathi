@@ -27,6 +27,7 @@ describe("board", () => {
   });
 
   it("groups by status; SERVED older than 2h excluded; REJECTED excluded; takeaway shows Takeaway; voided flagged; names fallback", async () => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     vi.mocked(auth.requireUser).mockResolvedValue({ id: "staff", role: "STAFF", name: "Staff" } as any);
     vi.useFakeTimers();
     const now = new Date("2026-10-04T12:00:00Z");

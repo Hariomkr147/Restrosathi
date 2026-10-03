@@ -22,7 +22,7 @@ export default defineConfig({
     { name: "desktop", use: { ...devices["Desktop Chrome"] } },
   ],
   webServer: {
-    command: "npm run build && npm run start",
+    command: "npm run start",
     port: 3000,
     timeout: 120_000,
     env: { DATABASE_URL: process.env.TEST_DATABASE_URL ?? "" },

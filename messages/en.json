@@ -131,6 +131,7 @@
     "board": "Kitchen board"
   },
   "common": {
+    "print": "Print",
     "english": "English",
     "hindi": "हिन्दी",
     "changingLanguage": "Changing language…",
