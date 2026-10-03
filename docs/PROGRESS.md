@@ -235,3 +235,11 @@ Result: All passed.
 - E2E tests pass for desktop and mobile layouts. Axe checks pass.
 - **Deviations**:
   - Impeccable check skipped due to manual mode deferral.
+
+## Task 17: KOT print (80 mm)
+- Commit: d0a63e5
+- Tests run: 
+pm run test:int -- src/lib/orders/kot.int.test.ts (pass), 
+pm run test:e2e -- tests/e2e/kot.spec.ts (pass).
+- Notable: Discovered Settings.name is a scalar String in Prisma schema, adapted kot.ts to read it directly instead of parsing as JSON localized object. Fixed early return hook rules in BoardClient.tsx.
+
