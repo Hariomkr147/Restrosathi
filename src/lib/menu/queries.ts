@@ -4,7 +4,7 @@ import { l10nSchema } from "../i18n/schema";
 import { itemInputSchema, type ItemInput } from "./schemas";
 
 export type PublicItem = Omit<ItemInput, "basePricePaise" | "description" | "variants" | "modifierGroups"> & {
-  id: string; basePricePaise: number | null; description: L10n | null; photoUrl: string | null; sortOrder: number;
+  id: string; basePricePaise: number | null; description: L10n | null; photoUrl: string | null; sortOrder: number; pairingIds?: string[];
   variants: (ItemInput["variants"][number] & { id: string; sortOrder: number })[];
   modifierGroups: (Omit<ItemInput["modifierGroups"][number], "options"> & {
     id: string; sortOrder: number;
@@ -23,6 +23,7 @@ async function readMenu(includeEmpty: boolean): Promise<PublicMenu> {
       orderBy: [{ sortOrder: "asc" }, { id: "asc" }],
       include: {
         variants: { orderBy: [{ sortOrder: "asc" }, { id: "asc" }] },
+        pairings: { orderBy: { sortOrder: "asc" }, select: { pairedItemId: true } },
         modifierGroups: { orderBy: [{ sortOrder: "asc" }, { id: "asc" }], include: { options: { orderBy: [{ sortOrder: "asc" }, { id: "asc" }] } } },
       },
     } },
@@ -31,7 +32,7 @@ async function readMenu(includeEmpty: boolean): Promise<PublicMenu> {
     id: category.id, name: l10nSchema.parse(category.name),
     items: category.items.map((item) => {
       const view = {
-        ...item, name: l10nSchema.parse(item.name), description: item.description === null ? null : l10nSchema.parse(item.description),
+        ...item, pairingIds: item.pairings.map(({ pairedItemId }) => pairedItemId), name: l10nSchema.parse(item.name), description: item.description === null ? null : l10nSchema.parse(item.description),
         variants: item.variants.map((variant) => ({ ...variant, name: l10nSchema.parse(variant.name) })),
         modifierGroups: item.modifierGroups.map((group) => ({
           ...group, name: l10nSchema.parse(group.name),

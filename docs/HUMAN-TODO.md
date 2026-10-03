@@ -19,3 +19,6 @@ Format:
 - [ ] (Phase 6) Real-device QA and the pilot checklist with the first restaurant.
 
 - [ ] (Phase 1 gate) Android 360px manual check, deferred at your request ('skip for now'). Needs a physical Android phone. On the app's local/staging URL, set a 360px CSS viewport, check home/menu in English and Hindi, toggle language, search/filter, tap menu/contact controls, and confirm no horizontal scroll. Automated browser checks are separate evidence.
+
+- [ ] (Phase 2, Task 15) Visual review of UI captures in .impeccable/review/ for table-order screen. Parent review is batched per queue mode.
+- [ ] (Phase 2, Task 15) Android 360px manual check, deferred at your request ('skip for now'). Needs a physical Android phone.

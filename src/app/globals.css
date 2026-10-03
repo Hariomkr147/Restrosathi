@@ -50,6 +50,9 @@ input, textarea { caret-color: var(--color-primary); }
 .menu-category { scroll-margin-block-start: var(--size-menu-offset); }
 .table-code-dialog { width: min(var(--size-dialog), calc(100% - var(--spacing) * 8)); margin: auto; }
 .table-code-dialog::backdrop { background: color-mix(in srgb, var(--color-text) 40%, transparent); }
+.order-sheet { width: min(var(--size-dialog), 100%); max-height: var(--size-sheet); margin: auto auto 0; inset-block-start: auto; animation: sheet-reveal var(--duration-base) ease-out; }
+.order-sheet::backdrop { background: color-mix(in srgb, var(--color-text) 40%, transparent); }
+@keyframes sheet-reveal { from { clip-path: inset(100% 0 0 0); } to { clip-path: inset(0); } }
 .qr-code { width: min(100%, var(--size-qr)); }
 .qr-code svg { display: block; width: 100%; height: auto; }
 .qr-card { break-inside: avoid; }

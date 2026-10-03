@@ -8,7 +8,7 @@ import { logout } from "../../app/login/actions";
 import { setLocale } from "../../app/actions/locale";
 import { POST } from "../../app/api/menu-photo/route";
 import * as tables from "../../app/admin/tables/actions";
-import { placeOrderAction } from "../../app/t/[code]/actions";
+import { placeOrderAction, serviceRequestAction } from "../../app/t/[code]/actions";
 import * as orders from "../../app/admin/orders/actions";
 
 vi.mock("next/cache", () => ({ revalidatePath: vi.fn() }));
@@ -28,6 +28,9 @@ const ownerActions = [
   { name: "uploadMenuPhoto", run: () => menu.uploadMenuPhoto(new FormData()), error: "UNSUPPORTED_TYPE" },
 ];
 for (const { role, signIn } of roles) {
+  it(`${role}: serviceRequestAction is explicitly public and validates input`, async () => {
+    await signIn(); expect(await serviceRequestAction("", "CALL_WAITER")).toEqual({ ok: false, error: "INVALID_INPUT" });
+  });
   for (const action of [
     { name: "acceptOrder", run: () => orders.acceptOrder("__absent") },
     { name: "rejectOrder", run: () => orders.rejectOrder("__absent", "Kitchen closed") },

@@ -209,3 +209,20 @@ Entry format:
 - Ponytail full review: Lean already. Ship. All Task14 steps and queue row ticked. Task12 CI at237edef succeeded: https://github.com/Hariomkr147/Restrosathi/actions/runs/36998594109.
 ### Deviations
 - Extended the existing authz matrix and added audit-rollback/concurrent-void checks as required protection. Unit tests cover all25 state pairs; integration tests exercise all16 invalid calls available through the four transition functions (there is no operation that targets NEW), plus valid transitions and terminal-state void refusals.
+
+## Task 15: Customer table page `/t/[code]`
+
+Tests run: unit, int, e2e (table-order menu smoke), lint, typecheck.
+Result: All passed.
+
+**Deviations:**
+- Added supporting native sheet/quantity/text components, layout-level code validation and parent not-found boundary, public-action auth matrix coverage, helpers and hardening tests. No new dependency.
+- Database tests initially could not connect because Docker Desktop was stopped; restarted the existing installation hidden, started Compose Postgres, verified readiness, preserved development data.
+- Prisma migration generated from saved pre-task schema so it does not remove earlier raw session constraints; SQL reviewed before additive apply.
+- Next loading boundaries stream 200 if not-found is raised after streaming; invalid-code validation moved into the layout to meet the explicit HTTP 404 contract.
+- An npm-script grep containing `|` was misparsed by Windows cmd. Used a simple selector/full focused files instead; no assertion or gate changed.
+- Fixed ItemSheet displaying NaN for cleared input. Added safe parsing test and robust condition.
+- Fixed OrderScreen swallowing 10s status poll timeouts by distinguishing them from component-abort.
+
+**Decisions for Hariom:**
+- Waiter/bill requests can open an empty table session before the first order, allowing staff help before ordering; the next order joins that session.

@@ -4,10 +4,10 @@ import { useEffect, useState } from "react";
 import { useMenuText } from "./MenuText";
 import { localize, type Locale } from "@/lib/i18n/l10n";
 import { filterMenu } from "@/lib/menu/filter";
-import type { PublicMenu } from "@/lib/menu/queries";
+import type { PublicMenu, PublicItem } from "@/lib/menu/queries";
 import { DishCard } from "./DishCard";
 
-export function MenuView({ menu, locale }: { menu: PublicMenu; locale: Locale }) {
+export function MenuView({ menu, locale, onAdd, addText, buttonClass }: { menu: PublicMenu; locale: Locale; onAdd?: (item: PublicItem) => void; addText?: string; buttonClass?: string }) {
   const text = useMenuText();
   const [query, setQuery] = useState("");
   const [vegOnly, setVegOnly] = useState(false);
@@ -55,7 +55,9 @@ export function MenuView({ menu, locale }: { menu: PublicMenu; locale: Locale })
     {!filtered.categories.length && <p role="status" className="py-8">{text.noResults}</p>}
     {filtered.categories.map((category) => <section key={category.id} id={`category-${category.id}`} className="menu-category mt-10" aria-labelledby={`heading-${category.id}`}>
       <h2 id={`heading-${category.id}`} className="break-words font-heading text-2xl text-primary">{localize(category.name, locale)}</h2>
-      <div className="grid gap-x-8 md:grid-cols-2">{category.items.map((item) => <DishCard key={item.id} item={item} locale={locale} />)}</div>
+      <div className="grid gap-x-8 md:grid-cols-2">{category.items.map((item) => <DishCard key={item.id} item={item} locale={locale}>
+        {onAdd && item.available && <button type="button" className={`${buttonClass} mt-4`} onClick={() => onAdd(item)}>{addText}</button>}
+      </DishCard>)}</div>
     </section>)}
   </>;
 }

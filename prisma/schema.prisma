@@ -178,6 +178,24 @@ model DiningSession {
   customerPhone String?
   table         RestaurantTable? @relation(fields: [tableId], references: [id], onDelete: Restrict)
   orders        Order[]
+  requests      ServiceRequest[]
+}
+
+enum ServiceKind {
+  CALL_WAITER
+  REQUEST_BILL
+}
+
+model ServiceRequest {
+  id           String        @id @default(cuid())
+  sessionId    String
+  kind         ServiceKind
+  createdAt    DateTime      @default(now()) @db.Timestamptz(3)
+  resolvedAt   DateTime?     @db.Timestamptz(3)
+  resolvedById String?
+  session      DiningSession @relation(fields: [sessionId], references: [id], onDelete: Restrict)
+
+  @@index([sessionId, kind, resolvedAt])
 }
 
 enum OrderStatus {

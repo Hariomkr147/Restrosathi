@@ -4,8 +4,9 @@ import { useMenuText } from "./MenuText";
 import { localize, type Locale } from "@/lib/i18n/l10n";
 import { formatINR } from "@/lib/money/format";
 import type { PublicItem } from "@/lib/menu/queries";
+import type { ReactNode } from "react";
 
-export function DishCard({ item, locale }: { item: PublicItem; locale: Locale }) {
+export function DishCard({ item, locale, children }: { item: PublicItem; locale: Locale; children?: ReactNode }) {
   const text = useMenuText();
   const name = localize(item.name, locale);
   return <article data-testid={"dish-" + item.name.en} className="min-w-0 border-b border-border py-6">
@@ -28,5 +29,6 @@ export function DishCard({ item, locale }: { item: PublicItem; locale: Locale })
       {item.tags.map((tag) => <span key={tag} className="rounded-sm bg-secondary px-2 py-1 text-primary">{text[tag]}</span>)}
       {!item.available && <span className="rounded-sm border border-destructive px-2 py-1 font-medium text-destructive">{text.soldOut}</span>}
     </div>}
+    {children}
   </article>;
 }

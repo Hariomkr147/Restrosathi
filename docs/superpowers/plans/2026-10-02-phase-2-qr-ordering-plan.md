@@ -134,16 +134,16 @@ Behaviour: rate limits are `device:<id>` 20 orders/hour and `ip:<ip>` 60 orders/
 
 UI: table label in the header; menu with category tabs, search, veg filter (reuse Phase 1 menu components); **Add** opens a bottom sheet (variant radios; modifier groups showing min/max and blocking Add until valid; per-line note; qty stepper); "goes well with" row from `MenuPairing`; cart button with count opens the cart sheet; optional name field; **Place order** disabled while pending; idempotency key = `crypto.randomUUID()` created when the cart first becomes non-empty and kept until success; after success the cart clears and the tracker shows **Received → Preparing → Ready → Served** (or **Not accepted: <reason>**), polling `/api/t/[code]/status` every **3 s** (paused when the tab is hidden). **Call waiter** and **Request bill** buttons (disabled with "Requested" after use). Bill view: lines, quantities and the amount; label **"Amount so far"** until a bill exists; **no payment button**. Sold-out items have no Add button. The public `/menu` page stays view-only.
 
-- [ ] **Step 1: Write failing tests.**
+- [x] **Step 1: Write failing tests.**
   - `cart.test.ts`: add merges identical lines, different notes do not merge, qty bounds 1–20, remove, clear, count.
   - `session-view.int.test.ts`: returns null for unknown or inactive codes; shows only that table's current session (table A's code never exposes table B's orders — create two tables with orders and assert); voided and rejected lines are excluded from `amountPaise`; closed sessions are not returned.
   - `service-requests.int.test.ts`: first CALL_WAITER creates a row; second returns `already: true` and creates none; REQUEST_BILL sets the session to `BILL_REQUESTED`; unknown code rejected; rate limit trips.
   - `table-order.spec.ts` (mobile 360 px **and** desktop; `resetOperationalData()` in `beforeEach`): open `/t/TESTCODE01` (from `TABLE_CODES`); pick a dish with variants, choose a variant and an add-on, add a note; place the order; see "Received"; double-click Place order → only one order in the DB; a sold-out dish (`markSoldOut` from `tests/helpers/db.ts`) has no Add button; Hindi toggle shows Hindi labels and a 40-character Hindi dish name (`createLongHindiItem()`) does not scroll horizontally; with Chromium network throttling to Fast 4G (1.6 Mbps down, 150 ms RTT, via a CDP session) the page shows the menu within 3 s of navigation start (spec section 1); axe: zero serious/critical violations; first-load JS ≤ 150 KB gzipped (measure the same way as the `/menu` gate in Task 10); unknown code shows the friendly "This table link isn't valid" page with status 404.
-- [ ] **Step 2: Run.** Expected: FAIL.
-- [ ] **Step 3: Implement** (client bundle discipline: keep the sheet and cart code lean; lazy-load the bottom sheet and AI panel; no heavy libraries).
-- [ ] **Step 4: Run** unit, integration, e2e (table-order, menu, smoke). Expected: PASS. Lint, typecheck.
-- [ ] **Step 5: UI pass:** `$impeccable shape` → build → `audit` + `harden` + `critique` + `polish` (this is a customer-facing screen). Do not change any rule from this task's Interfaces.
-- [ ] **Step 6: Commit** `feat: customer table page with ordering, tracker, call waiter and bill view`, then PROGRESS.
+- [x] **Step 2: Run.** Expected: FAIL.
+- [x] **Step 3: Implement** (client bundle discipline: keep the sheet and cart code lean; lazy-load the bottom sheet and AI panel; no heavy libraries).
+- [x] **Step 4: Run** unit, integration, e2e (table-order, menu, smoke). Expected: PASS. Lint, typecheck.
+- [x] **Step 5: UI pass:** `$impeccable shape` → build → `audit` + `harden` + `critique` + `polish` (this is a customer-facing screen). Do not change any rule from this task's Interfaces.
+- [x] **Step 6: Commit** `feat: customer table page with ordering, tracker, call waiter and bill view`, then PROGRESS.
 
 ---
 
@@ -167,7 +167,7 @@ UI: table label in the header; menu with category tabs, search, veg filter (reus
 - [ ] **Step 2: Run.** Expected: FAIL.
 - [ ] **Step 3: Implement.**
 - [ ] **Step 4: Run** unit, integration, e2e. Expected: PASS.
-- [ ] **Step 5: UI pass:** `$impeccable shape` → build → `audit` + `harden`. Operational screen: clear, conservative, high contrast, big targets; no decoration.
+- [x] **Step 5: UI pass:** `$impeccable shape` → build → `audit` + `harden`. Operational screen: clear, conservative, high contrast, big targets; no decoration.
 - [ ] **Step 6: Commit** `feat: staff board with polling, shift start, alerts and kitchen view`, then PROGRESS.
 
 ---
