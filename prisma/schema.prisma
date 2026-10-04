@@ -256,3 +256,17 @@ model RateHit {
 
   @@index([key, at])
 }
+
+model AiUsage {
+  month  String  @id
+  calls  Int     @default(0)
+  warned Boolean @default(false)
+}
+
+model AiDeviceUsage {
+  deviceId String
+  day      String
+  calls    Int    @default(0)
+
+  @@id([deviceId, day])
+}

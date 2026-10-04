@@ -6,6 +6,7 @@ import type { Locale } from "@/lib/i18n/l10n";
 import { cartReducer, cartCount, cartLineKey, type CartLine, type CartAction } from "@/lib/orders/cart";
 import { placeOrderAction, serviceRequestAction } from "@/app/t/[code]/actions";
 import { MenuView } from "../menu/MenuView";
+import { AskMenu } from "./AskMenu";
 import { useTableText } from "./TableText";
 import { StatusTracker } from "./StatusTracker";
 import { BillView } from "./BillView";
@@ -78,6 +79,7 @@ export function OrderScreen({ menu, locale, code, initialView }: { menu: PublicM
   }
   return <>
     <MenuView menu={menu} locale={locale} onAdd={(item) => { setError(null); setSelected(item); }} addText={text.add} buttonClass={text.buttonClass} />
+      <AskMenu menu={menu} locale={locale} onAdd={(item) => { setError(null); setSelected(item); }} />
     {notice && <p role="status" className="mt-4">{notice}</p>}
     {error && !cartOpen && !selected && <p role="alert" className="mt-4 break-words text-destructive">{error}</p>}
     {statusError && <p role="status" className="mt-4 break-words text-muted-foreground">{statusError}</p>}
@@ -100,3 +102,4 @@ export function OrderScreen({ menu, locale, code, initialView }: { menu: PublicM
     </Suspense>
   </>;
 }
+

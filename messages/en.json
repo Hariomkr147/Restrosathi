@@ -319,5 +319,17 @@
       "CALL_WAITER": "Call waiter",
       "REQUEST_BILL": "Request bill"
     }
+  },
+  "assistant": {
+    "button": "Ask the menu",
+    "title": "Ask the menu",
+    "placeholder": "E.g. What is spicy?",
+    "send": "Send",
+    "allergy": "Please confirm with staff directly about any allergies to ensure your safety.",
+    "fallback": "I am sorry, I am having trouble understanding right now. Please browse the menu or ask staff.",
+    "limit_device": "You have reached the daily limit for questions.",
+    "limit_month": "The restaurant has reached its AI limit for this month.",
+    "too_long": "Please keep your question shorter.",
+    "empty": "Please type a question."
   }
 }

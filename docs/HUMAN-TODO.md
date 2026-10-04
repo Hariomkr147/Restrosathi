@@ -22,3 +22,5 @@ Format:
 
 - [ ] (Phase 2, Task 15) Visual review of UI captures in .impeccable/review/ for table-order screen. Parent review is batched per queue mode.
 - [ ] (Phase 2, Task 15) Android 360px manual check, deferred at your request ('skip for now'). Needs a physical Android phone.
+- [ ] Run AI eval with real key: \
+pm run eval:ai\ with \ANTHROPIC_API_KEY\ set in .env
