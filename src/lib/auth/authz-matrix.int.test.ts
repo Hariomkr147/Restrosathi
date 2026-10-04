@@ -11,6 +11,7 @@ import * as tables from "../../app/admin/tables/actions";
 import { placeOrderAction, serviceRequestAction } from "../../app/t/[code]/actions";
 import * as orders from "../../app/admin/orders/actions";
 import * as board from "../../app/admin/board/actions";
+import * as staffOrders from "../../app/admin/orders/new/actions";
 import { askMenuAction } from "../ai/actions";
 import { GET as getHealth } from "../../app/api/health/route";
 
@@ -131,6 +132,15 @@ for (const { role, signIn } of roles) {
       }
     });
   }
+
+  it(`${role}: placeStaffOrderAction requires staff or owner`, async () => {
+    await signIn();
+    if (role === "anonymous") {
+      await expect(staffOrders.placeStaffOrderAction({})).rejects.toBeInstanceOf(AuthError);
+    } else {
+      expect(await staffOrders.placeStaffOrderAction({})).toEqual({ ok: false, error: "INVALID_INPUT" });
+    }
+  });
 }
 // Public: password/PIN login establishes authentication (auth.int.test.ts).
 // Public: GET /uploads serves validated menu images to diners (routes.int.test.ts).

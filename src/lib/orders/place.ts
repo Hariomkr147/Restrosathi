@@ -1,16 +1,37 @@
 import { Prisma } from "@prisma/client";
+import { z } from "zod";
 import { prisma } from "../db";
 import { MenuChoiceError, priceLine } from "../menu/pricing";
 import { checkRate } from "../rate-limit";
 import { getOrOpenTableSession } from "../sessions";
 import { placeOrderInput } from "./schemas";
 
-type Failure = { ok: false; error: "TABLE_NOT_FOUND" | "ITEM_UNAVAILABLE" | "CHOICE_INVALID" | "RATE_LIMITED" | "INVALID_INPUT"; itemId?: string };
-type Result = { ok: true; orderId: string; duplicate: boolean } | Failure;
-class PlacementError extends Error {
-  constructor(public error: Failure["error"], public itemId?: string) { super(error); }
+export type Failure = { ok: false; error: "TABLE_NOT_FOUND" | "ITEM_UNAVAILABLE" | "CHOICE_INVALID" | "RATE_LIMITED" | "INVALID_INPUT"; itemId?: string };
+export type Result = { ok: true; orderId: string; duplicate: boolean } | Failure;
+export class PlacementError extends Error {
+  constructor(public error: Failure["error"] | "SESSION_CLOSED", public itemId?: string) { super(error); }
 }
 const hour = 3_600_000;
+
+export function prepareOrderLines(menu: (Prisma.MenuItemGetPayload<{ include: { variants: true; modifierGroups: { include: { options: true } } } }>)[], items: z.infer<typeof placeOrderInput>["items"]) {
+  return items.map((choice) => {
+    const item = menu.find(({ id }) => id === choice.itemId);
+    if (!item?.available) throw new PlacementError("ITEM_UNAVAILABLE", choice.itemId);
+    let unitPricePaise: number;
+    try { unitPricePaise = priceLine(item, choice); }
+    catch (error) {
+      if (error instanceof MenuChoiceError) throw new PlacementError("CHOICE_INVALID", item.id);
+      throw error;
+    }
+    if (!Number.isSafeInteger(unitPricePaise) || unitPricePaise < 1 || unitPricePaise > 2147483647) throw new PlacementError("CHOICE_INVALID", item.id);
+    const variant = item.variants.find(({ id }) => id === choice.variantId);
+    const selected = new Set(choice.optionIds);
+    return { itemId: item.id, nameSnapshot: item.name as Prisma.InputJsonValue,
+      variantSnapshot: variant ? variant.name as Prisma.InputJsonValue : Prisma.DbNull,
+      modifiersSnapshot: item.modifierGroups.flatMap((group) => group.options.filter(({ id }) => selected.has(id)).map(({ name }) => name)) as Prisma.InputJsonValue,
+      qty: choice.qty, unitPricePaise, note: choice.note };
+  });
+}
 
 // Public QR mutation: choices are validated and prices always come from the database.
 export async function placeOrder(input: unknown, ctx: { deviceId: string; ip: string }): Promise<Result> {
@@ -34,23 +55,7 @@ export async function placeOrder(input: unknown, ctx: { deviceId: string; ip: st
       if (!table) throw new PlacementError("TABLE_NOT_FOUND");
       const menu = await tx.menuItem.findMany({ where: { id: { in: data.items.map(({ itemId }) => itemId) } },
         include: { variants: true, modifierGroups: { include: { options: true } } } });
-      const lines = data.items.map((choice) => {
-        const item = menu.find(({ id }) => id === choice.itemId);
-        if (!item?.available) throw new PlacementError("ITEM_UNAVAILABLE", choice.itemId);
-        let unitPricePaise: number;
-        try { unitPricePaise = priceLine(item, choice); }
-        catch (error) {
-          if (error instanceof MenuChoiceError) throw new PlacementError("CHOICE_INVALID", item.id);
-          throw error;
-        }
-        if (!Number.isSafeInteger(unitPricePaise) || unitPricePaise < 1 || unitPricePaise > 2147483647) throw new PlacementError("CHOICE_INVALID", item.id);
-        const variant = item.variants.find(({ id }) => id === choice.variantId);
-        const selected = new Set(choice.optionIds);
-        return { itemId: item.id, nameSnapshot: item.name as Prisma.InputJsonValue,
-          variantSnapshot: variant ? variant.name as Prisma.InputJsonValue : Prisma.DbNull,
-          modifiersSnapshot: item.modifierGroups.flatMap((group) => group.options.filter(({ id }) => selected.has(id)).map(({ name }) => name)) as Prisma.InputJsonValue,
-          qty: choice.qty, unitPricePaise, note: choice.note };
-      });
+      const lines = prepareOrderLines(menu, data.items);
       const session = await getOrOpenTableSession(tx, table.id);
       if (!await checkRate(`session:${session.id}`, 30, hour, tx)) throw new PlacementError("RATE_LIMITED");
       const order = await tx.order.create({ data: { sessionId: session.id, idempotencyKey: data.idempotencyKey,
@@ -64,7 +69,7 @@ export async function placeOrder(input: unknown, ctx: { deviceId: string; ip: st
       const winner = await prisma.order.findUnique({ where: { idempotencyKey: data.idempotencyKey } });
       if (winner) return { ok: true, orderId: winner.id, duplicate: true };
     }
-    if (error instanceof PlacementError) return { ok: false, error: error.error, ...(error.itemId ? { itemId: error.itemId } : {}) };
+    if (error instanceof PlacementError) return { ok: false, error: error.error as Failure["error"], ...(error.itemId ? { itemId: error.itemId } : {}) };
     throw error;
   }
 }

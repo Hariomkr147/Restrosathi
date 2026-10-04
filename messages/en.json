@@ -128,7 +128,8 @@
     "menu": "Menu editor",
     "tables": "Tables",
     "printTables": "Print table QR codes",
-    "board": "Kitchen board"
+    "board": "Kitchen board",
+    "newOrder": "New order"
   },
   "common": {
     "print": "Print",
@@ -319,6 +320,20 @@
       "CALL_WAITER": "Call waiter",
       "REQUEST_BILL": "Request bill"
     }
+  },
+  "staffOrder": {
+    "title": "New order",
+    "table": "Table",
+    "takeaway": "Takeaway",
+    "selectTable": "Select table",
+    "customerName": "Customer name (optional)",
+    "tableOccupied": "Occupied",
+    "emptyCart": "No items added.",
+    "addItems": "Add items",
+    "review": "Review order",
+    "submit": "Place order",
+    "submitting": "Placing...",
+    "success": "Order placed"
   },
   "assistant": {
     "button": "Ask the menu",
