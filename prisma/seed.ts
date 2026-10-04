@@ -3,10 +3,12 @@ import { z } from "zod";
 import { hashSecret } from "../src/lib/auth/password";
 import { itemInputSchema, type ItemInput } from "../src/lib/menu/schemas";
 import { generateTableCode } from "../src/lib/tables/code";
+import { assertSafeSeedEnv } from "./seed-guard";
 
 const prisma = new PrismaClient();
 
 try {
+  assertSafeSeedEnv(process.env);
   const ownerPassword = z.string().min(8).max(128).parse(process.env.SEED_OWNER_PASSWORD);
   const staffPin = z.string().regex(/^\d{4,6}$/).parse(process.env.SEED_STAFF_PIN);
   await prisma.settings.upsert({

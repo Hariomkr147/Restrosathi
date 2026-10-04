@@ -1,0 +1,16 @@
+Dockerfile
+.dockerignore
+node_modules
+npm-debug.log
+README.md
+.next
+.git
+.gitignore
+test-results/
+playwright-report/
+docs/
+uploads/
+backups/
+.env*
+vitest.config.ts
+vitest.workspace.ts

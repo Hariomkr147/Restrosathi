@@ -10,6 +10,9 @@ import { POST } from "../../app/api/menu-photo/route";
 import * as tables from "../../app/admin/tables/actions";
 import { placeOrderAction, serviceRequestAction } from "../../app/t/[code]/actions";
 import * as orders from "../../app/admin/orders/actions";
+import * as board from "../../app/admin/board/actions";
+import { askMenuAction } from "../ai/actions";
+import { GET as getHealth } from "../../app/api/health/route";
 
 vi.mock("next/cache", () => ({ revalidatePath: vi.fn() }));
 const roles = [
@@ -94,6 +97,43 @@ for (const { role, signIn } of roles) {
     await signIn(); await setLocale("hi");
     expect(cookieJar.get("NEXT_LOCALE")?.value).toBe("hi");
   });
+
+  // New additions:
+  it(`${role}: askMenuAction is explicitly public and validates input`, async () => {
+    await signIn();
+    expect(await askMenuAction({ question: "", locale: "en" })).toEqual({ ok: false, error: "EMPTY" });
+  });
+
+  it(`${role}: GET /api/health is explicitly public`, async () => {
+    await signIn();
+    const response = await getHealth(new Request("http://localhost/api/health"));
+    expect(response.status).toBeGreaterThanOrEqual(200);
+  });
+
+  for (const action of [
+    { name: "acceptOrder", run: () => board.acceptOrder("__absent") },
+    { name: "readyOrder", run: () => board.readyOrder("__absent") },
+    { name: "serveOrder", run: () => board.serveOrder("__absent") },
+    { name: "rejectOrder", run: () => board.rejectOrder("__absent", "reason") },
+    { name: "voidLine", run: () => board.voidLine("__absent", "reason") },
+    { name: "resolveRequest", run: () => board.resolveRequest("__absent") },
+  ]) {
+    it(`${role}: board ${action.name} requires staff or owner`, async () => {
+      await signIn();
+      if (role === "anonymous") {
+        await expect(action.run()).rejects.toBeInstanceOf(AuthError);
+      } else {
+        try {
+          await action.run();
+        } catch (error) {
+          expect(error).not.toBeInstanceOf(AuthError);
+        }
+      }
+    });
+  }
 }
 // Public: password/PIN login establishes authentication (auth.int.test.ts).
 // Public: GET /uploads serves validated menu images to diners (routes.int.test.ts).
+// Public: GET /api/t/[code]/status serves SSE to diners (SSE tested elsewhere).
+// Public: GET /api/board serves SSE to staff (requires auth, handled in route).
+

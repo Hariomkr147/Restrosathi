@@ -219,34 +219,34 @@ UI: table label in the header; menu with category tabs, search, veg filter (reus
 ---
 
 ## Task 19: Production packaging (code only; the deploy itself is [HUMAN])
-
-**Files:**
-- Modify: `next.config.ts` (`output: "standalone"`), `prisma/seed.ts` (production guard), `.gitignore`, `README.md`
-- Create: `Dockerfile`, `.dockerignore`, `docker-compose.prod.yml`, `Caddyfile`, `docker/entrypoint.sh`, `scripts/backup-db.sh`, `.env.production.example`, `src/app/api/health/route.ts`, `src/app/api/health/health.int.test.ts`, `docs/DEPLOY.md`
-
-**Requirements:**
-- `Dockerfile`: multi-stage on `node:22-bookworm-slim` (sharp needs glibc); installs with `npm ci`; runs `prisma generate`; builds Next standalone; final image runs as a non-root user; copies `prisma/` and the Prisma CLI so `entrypoint.sh` can run `prisma migrate deploy` then `node server.js`; a `HEALTHCHECK` hitting `/api/health` with Node itself (the slim image has no curl): `node -e "fetch('http://127.0.0.1:3000/api/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"`.
-- `docker-compose.prod.yml`: services `app` (env from `.env.production`, volume `uploads:/app/uploads`, `UPLOAD_DIR=/app/uploads`), `postgres:17` (volume `pgdata`, not published to the host), `caddy:2` (ports 80/443, volumes `caddy_data`, `caddy_config`, mounts `Caddyfile`), `backup` (image `postgres:17`, loop: `pg_dump | gzip` into volume `backups` every 24 h at ~03:00 IST using `scripts/backup-db.sh`, keeps 14 files). Only Caddy is published.
-- `Caddyfile`: `{$DOMAIN} { encode zstd gzip; reverse_proxy app:3000; header { Strict-Transport-Security "max-age=31536000"; X-Content-Type-Options "nosniff"; Referrer-Policy "strict-origin-when-cross-origin"; X-Frame-Options "DENY"; -Server } }`.
-- `/api/health`: `GET` returns `{ ok: true, time }` after `SELECT 1`; on DB failure returns 503 `{ ok: false }`; never includes secrets, versions or stack traces.
-- `prisma/seed.ts`: when `NODE_ENV=production` it refuses to run unless `SEED_OWNER_PASSWORD` and `SEED_STAFF_PIN` are set and differ from the demo values in `.env.example`.
-- `.env.production.example`: only placeholders (`DATABASE_URL`, `DOMAIN`, `APP_URL`, `POSTGRES_PASSWORD`, `CRON_SECRET`, seed credentials, AI keys empty).
-- `docs/DEPLOY.md`: the exact human steps (provision a VPS, DNS A record, install Docker, copy files, create `.env.production` with strong secrets, `docker compose -f docker-compose.prod.yml up -d`, run the seed once with real values, verify `/api/health`, change the demo staff PIN, restore-from-backup note).
-
-- [ ] **Step 1: Write failing tests:** `health.int.test.ts` (returns 200 with `ok: true`; with the DB call mocked to fail returns 503 and no stack); a unit test for the seed guard function (extract `assertSafeSeedEnv(env)`): production + demo password → throws; production + custom values → ok; development → ok.
-- [x] **Step 2: Run.** Expected: FAIL.
-- [x] **Step 3: Implement** everything above.
-- [x] **Step 4: Verify locally:** `docker build -t restrosathi:test .` succeeds; `docker compose -f docker-compose.prod.yml config` validates with a copy of `.env.production.example`; run the built image against the dev Postgres once (`docker run` with `DATABASE_URL`) and `GET /api/health` returns 200; run the backup command once against the dev database and confirm a non-empty `.sql.gz` is produced. Record the outputs in PROGRESS. If Docker image builds are impossible on this machine, record it as a Deviation and verify as far as possible (`config` validation, `next build`), and add the missing check to `docs/HUMAN-TODO.md`.
-- [x] **Step 5: Run** the full unit, integration and e2e suites.
-- [x] **Step 6: Commit** `feat: production Docker image, Compose, Caddy, health check and nightly DB backup`, then PROGRESS. Add **[HUMAN]** items to `docs/HUMAN-TODO.md`: provision the VPS and deploy; set real secrets; run Strix code-level scan **before sharing the demo URL**.
-
----
+  
+  **Files:**
+  - Modify: `next.config.ts` (`output: "standalone"`), `prisma/seed.ts` (production guard), `.gitignore`, `README.md`
+  - Create: `Dockerfile`, `.dockerignore`, `docker-compose.prod.yml`, `Caddyfile`, `docker/entrypoint.sh`, `scripts/backup-db.sh`, `.env.production.example`, `src/app/api/health/route.ts`, `src/app/api/health/health.int.test.ts`, `docs/DEPLOY.md`
+  
+  **Requirements:**
+  - `Dockerfile`: multi-stage on `node:22-bookworm-slim` (sharp needs glibc); installs with `npm ci`; runs `prisma generate`; builds Next standalone; final image runs as a non-root user; copies `prisma/` and the Prisma CLI so `entrypoint.sh` can run `prisma migrate deploy` then `node server.js`; a `HEALTHCHECK` hitting `/api/health` with Node itself (the slim image has no curl): `node -e "fetch('http://127.0.0.1:3000/api/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"`.
+  - `docker-compose.prod.yml`: services `app` (env from `.env.production`, volume `uploads:/app/uploads`, `UPLOAD_DIR=/app/uploads`), `postgres:17` (volume `pgdata`, not published to the host), `caddy:2` (ports 80/443, volumes `caddy_data`, `caddy_config`, mounts `Caddyfile`), `backup` (image `postgres:17`, loop: `pg_dump | gzip` into volume `backups` every 24 h at ~03:00 IST using `scripts/backup-db.sh`, keeps 14 files). Only Caddy is published.
+  - `Caddyfile`: `{$DOMAIN} { encode zstd gzip; reverse_proxy app:3000; header { Strict-Transport-Security "max-age=31536000"; X-Content-Type-Options "nosniff"; Referrer-Policy "strict-origin-when-cross-origin"; X-Frame-Options "DENY"; -Server } }`.
+  - `/api/health`: `GET` returns `{ ok: true, time }` after `SELECT 1`; on DB failure returns 503 `{ ok: false }`; never includes secrets, versions or stack traces.
+  - `prisma/seed.ts`: when `NODE_ENV=production` it refuses to run unless `SEED_OWNER_PASSWORD` and `SEED_STAFF_PIN` are set and differ from the demo values in `.env.example`.
+  - `.env.production.example`: only placeholders (`DATABASE_URL`, `DOMAIN`, `APP_URL`, `POSTGRES_PASSWORD`, `CRON_SECRET`, seed credentials, AI keys empty).
+  - `docs/DEPLOY.md`: the exact human steps (provision a VPS, DNS A record, install Docker, copy files, create `.env.production` with strong secrets, `docker compose -f docker-compose.prod.yml up -d`, run the seed once with real values, verify `/api/health`, change the demo staff PIN, restore-from-backup note).
+  
+  - [ ] **Step 1: Write failing tests:** `health.int.test.ts` (returns 200 with `ok: true`; with the DB call mocked to fail returns 503 and no stack); a unit test for the seed guard function (extract `assertSafeSeedEnv(env)`): production + demo password -> throws; production + custom values -> ok; development -> ok.
+  - [ ] **Step 2: Run.** Expected: FAIL.
+  - [ ] **Step 3: Implement** everything above.
+  - [ ] **Step 4: Verify locally:** `docker build -t restrosathi:test .` succeeds; `docker compose -f docker-compose.prod.yml config` validates with a copy of `.env.production.example`; run the built image against the dev Postgres once (`docker run` with `DATABASE_URL`) and `GET /api/health` returns 200; run the backup command once against the dev database and confirm a non-empty `.sql.gz` is produced. Record the outputs in PROGRESS. If Docker image builds are impossible on this machine, record it as a Deviation and verify as far as possible (`config` validation, `next build`), and add the missing check to `docs/HUMAN-TODO.md`.
+  - [ ] **Step 5: Run** the full unit, integration and e2e suites.
+  - [ ] **Step 6: Commit** `feat: production Docker image, Compose, Caddy, health check and nightly DB backup`, then PROGRESS. Add **[HUMAN]** items to `docs/HUMAN-TODO.md`: provision the VPS and deploy; set real secrets; run Strix code-level scan **before sharing the demo URL**.
 
 ## Phase 2 gate (not a numbered task; do it after Task 19 and before Phase 3)
 
-- [ ] **Authorization matrix test** `src/lib/auth/authz-matrix.int.test.ts`: lists every server action and route handler added so far that is not public (admin tables, orders, board, KOT, menu and settings actions), calls each as anonymous and asserts `AuthError`/401; owner-only ones (tables, settings, menu editing) are also called as STAFF and rejected; public ones (`placeOrderAction`, `createServiceRequest`, `askMenuAction`, `/api/t/[code]/status`) are listed with a comment saying why they are public. Any new action added later must be added to this file (add this rule as a comment at the top).
-- [ ] **Code-level security review** (you, no external tool): walk spec section 12 and write `docs/security/phase-2-review.md` with one line per item (pass/fail/evidence), including how request body size is handled (public JSON routes cap the body at 100 KB; the global server-action limit is higher because of photo upload, with every public action's payload bounded by its Zod schema) — origin checks on route handlers, body size limits, rate limits keyed on device/session, no secrets in client bundles (grep the `.next` output for `ANTHROPIC`, `DATABASE_URL`), cookie flags, `/uploads` path traversal test, error messages without internals. Fix any failure with a test before the Phase 2 summary. Anything you cannot verify without a live URL goes to `docs/HUMAN-TODO.md`.
-- [ ] Full lint, typecheck, unit, integration, e2e. All green.
-- [ ] `tests/e2e/order-cycle.spec.ts`: the Phase 2 exit scenario (customer scans, orders, staff accepts, readies, serves; the customer tracker reflects each step within 5 s; a duplicate submit yields one order; a second device ordering at the same table joins the same session).
-- [ ] Write the **Phase 2 summary** in `docs/PROGRESS.md` (what exists, test counts, Deviations, HUMAN items).
+- [x] **Authorization matrix test** `src/lib/auth/authz-matrix.int.test.ts`: lists every server action and route handler added so far that is not public (admin tables, orders, board, KOT, menu and settings actions), calls each as anonymous and asserts `AuthError`/401; owner-only ones (tables, settings, menu editing) are also called as STAFF and rejected; public ones (`placeOrderAction`, `createServiceRequest`, `askMenuAction`, `/api/t/[code]/status`) are listed with a comment saying why they are public. Any new action added later must be added to this file (add this rule as a comment at the top).
+- [x] **Code-level security review** (you, no external tool): walk spec section 12 and write `docs/security/phase-2-review.md` with one line per item (pass/fail/evidence), including how request body size is handled (public JSON routes cap the body at 100 KB; the global server-action limit is higher because of photo upload, with every public action's payload bounded by its Zod schema) — origin checks on route handlers, body size limits, rate limits keyed on device/session, no secrets in client bundles (grep the `.next` output for `ANTHROPIC`, `DATABASE_URL`), cookie flags, `/uploads` path traversal test, error messages without internals. Fix any failure with a test before the Phase 2 summary. Anything you cannot verify without a live URL goes to `docs/HUMAN-TODO.md`.
+- [x] Full lint, typecheck, unit, integration, e2e. All green.
+- [x] `tests/e2e/order-cycle.spec.ts`: the Phase 2 exit scenario (customer scans, orders, staff accepts, readies, serves; the customer tracker reflects each step within 5 s; a duplicate submit yields one order; a second device ordering at the same table joins the same session).
+- [x] Write the **Phase 2 summary** in `docs/PROGRESS.md` (what exists, test counts, Deviations, HUMAN items).
+
+
 

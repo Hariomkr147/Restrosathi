@@ -54,3 +54,7 @@ next-env.d.ts
 /.codex-logs/
 /.stop
 /uploads/
+
+!docker-compose.prod.yml
+!.env.production.example
+/backups/

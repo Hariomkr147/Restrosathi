@@ -1,0 +1,69 @@
+version: '3.8'
+
+services:
+  app:
+    build: .
+    restart: always
+    env_file:
+      - .env.production
+    environment:
+      - UPLOAD_DIR=/app/uploads
+    volumes:
+      - uploads:/app/uploads
+    depends_on:
+      postgres:
+        condition: service_started
+
+  postgres:
+    image: postgres:17
+    restart: always
+    env_file:
+      - .env.production
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_DB: restrosathi
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+  caddy:
+    image: caddy:2
+    restart: always
+    env_file:
+      - .env.production
+    ports:
+      - "80:80"
+      - "443:443"
+
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile
+      - caddy_data:/data
+      - caddy_config:/config
+    depends_on:
+      - app
+
+  backup:
+    image: postgres:17
+    restart: always
+    env_file:
+      - .env.production
+
+    volumes:
+      - ./scripts/backup-db.sh:/usr/local/bin/backup-db.sh
+      - backups:/backups
+    entrypoint: >
+      /bin/sh -c "chmod +x /usr/local/bin/backup-db.sh && while true; do
+        sleep \$(( \$(date -d '03:00 tomorrow' +%s) - \$(date +%s) ));
+        /usr/local/bin/backup-db.sh;
+      done"
+    depends_on:
+      postgres:
+        condition: service_started
+
+volumes:
+  uploads:
+  pgdata:
+  caddy_data:
+  caddy_config:
+  backups:
+
+

@@ -247,3 +247,10 @@ pm run test:e2e -- tests/e2e/kot.spec.ts (pass).
 ## Task 18: AI menu assistant
 - Commit: 99eb9b3836dcf159c2aa30ae799dda60edb06447
 - Result: All tests pass. Implemented AI usage cap, allergy detection, and AskMenu UI.
+
+## Phase 2 summary
+- Features: Tables, QR code generation, ordering flow (customer, kitchen, staff), service requests (waiter, bill), billing interface, translation keys for Hindi, AI menu assistant (AskMenu UI, cap, quotas, prompt constraints).
+- Test counts: 102 unit, 90 integration, 104 e2e tests.
+- Deviations: Next.js E2E tests run locally using 
+ode .next/standalone/server.js and required manual copy of public assets. 360px physical Android check skipped (deferred by user).
+- HUMAN items: VPS provisioning and deploy, setting real secrets, Strix code-level scan before sharing demo URL, running AI eval with real key.

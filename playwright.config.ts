@@ -22,7 +22,7 @@ export default defineConfig({
     { name: "desktop", use: { ...devices["Desktop Chrome"] } },
   ],
   webServer: {
-    command: "npm run start",
+    command: "node .next/standalone/server.js",
     port: 3000,
     timeout: 120_000,
     env: { DATABASE_URL: process.env.TEST_DATABASE_URL ?? "" },
