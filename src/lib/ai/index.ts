@@ -1,5 +1,5 @@
 import { AiProvider } from "./provider";
-import { AnthropicProvider } from "./anthropic";
+import { OpenRouterProvider } from "./openrouter";
 import { FakeAiProvider } from "./fake";
 
 let provider: AiProvider | null = null;
@@ -7,10 +7,10 @@ let provider: AiProvider | null = null;
 export function getProvider(): AiProvider {
   if (provider) return provider;
   
-  if (process.env.NODE_ENV === "test" || !process.env.ANTHROPIC_API_KEY) {
+  if (process.env.NODE_ENV === "test" || !process.env.OPENROUTER_API_KEY) {
     provider = new FakeAiProvider();
   } else {
-    provider = new AnthropicProvider();
+    provider = new OpenRouterProvider();
   }
   
   return provider;
