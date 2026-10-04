@@ -4,7 +4,7 @@ import { prisma } from "../db";
 import { audit } from "../audit";
 import { canTransition } from "./state";
 
-type Result = { ok: true } | { ok: false; error: "NOT_FOUND" | "INVALID_TRANSITION" | "REASON_REQUIRED" };
+type Result = { ok: true } | { ok: false; error: "NOT_FOUND" | "INVALID_TRANSITION" | "REASON_REQUIRED" | "BILL_LOCKED" };
 const idInput = z.string().min(1).max(100);
 const reasonInput = z.string().trim().min(3).max(200);
 
@@ -39,7 +39,9 @@ export async function voidLine(lineId: string, reason: string, actorId: string):
   if (!parsed.success) return { ok: false, error: "REASON_REQUIRED" };
   if (!idInput.safeParse(lineId).success) return { ok: false, error: "NOT_FOUND" };
   return prisma.$transaction(async (tx) => {
-    if (!await tx.orderLine.findUnique({ where: { id: lineId }, select: { id: true } })) return { ok: false, error: "NOT_FOUND" };
+    const line = await tx.orderLine.findUnique({ where: { id: lineId }, select: { id: true, order: { select: { session: { select: { bill: { select: { status: true } } } } } } } });
+    if (!line) return { ok: false, error: "NOT_FOUND" };
+    if (line.order.session.bill && (line.order.session.bill.status === "SETTLED" || line.order.session.bill.status === "CANCELLED")) return { ok: false, error: "BILL_LOCKED" };
     const changed = await tx.orderLine.updateMany({ where: { id: lineId, voidedAt: null, order: { status: { in: ["PREPARING", "READY", "SERVED"] } } },
       data: { voidedAt: new Date(), voidReason: parsed.data, voidedById: actorId } });
     if (!changed.count) return { ok: false, error: "INVALID_TRANSITION" };

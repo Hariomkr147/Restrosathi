@@ -192,6 +192,7 @@ model DiningSession {
   table         RestaurantTable? @relation(fields: [tableId], references: [id], onDelete: Restrict)
   orders        Order[]
   requests      ServiceRequest[]
+  bill          Bill?
 }
 
 enum ServiceKind {
@@ -283,3 +284,71 @@ model AiDeviceUsage {
 
   @@id([deviceId, day])
 }
+
+
+enum DocType {
+  BILL
+  BILL_OF_SUPPLY
+  TAX_INVOICE
+}
+
+enum BillStatus {
+  OPEN
+  SETTLED
+  CANCELLED
+}
+
+enum DiscountType {
+  FLAT
+  PERCENT
+}
+
+model Bill {
+  id                String         @id @default(cuid())
+  sessionId         String         @unique
+  docType           DocType
+  status            BillStatus     @default(OPEN)
+  number            String?        @unique
+  taxMode           TaxMode
+  gstRatePercent    Int
+  pricesIncludeTax  Boolean
+  header            Json
+  subtotalPaise     Int
+  discountType      DiscountType?
+  discountValue     Int?
+  discountPaise     Int
+  discountReason    String?
+  taxableValuePaise Int
+  cgstPaise         Int
+  sgstPaise         Int
+  roundOffPaise     Int
+  totalPaise        Int
+  customerName      String?
+  customerPhone     String?
+  generatedAt       DateTime       @default(now()) @db.Timestamptz(3)
+  generatedById     String
+  settledAt         DateTime?      @db.Timestamptz(3)
+  settledById       String?
+  cancelledAt       DateTime?      @db.Timestamptz(3)
+  cancelledById     String?
+  cancelReason      String?
+
+  session           DiningSession  @relation(fields: [sessionId], references: [id], onDelete: Restrict)
+  lines             BillLine[]
+}
+
+model BillLine {
+  id                String   @id @default(cuid())
+  billId            String
+  name              Json
+  variant           Json?
+  modifiers         Json
+  qty               Int
+  unitPricePaise    Int
+  linePaise         Int
+
+  bill              Bill     @relation(fields: [billId], references: [id], onDelete: Cascade)
+
+  @@index([billId])
+}
+
