@@ -254,3 +254,8 @@ pm run test:e2e -- tests/e2e/kot.spec.ts (pass).
 - Deviations: Next.js E2E tests run locally using 
 ode .next/standalone/server.js and required manual copy of public assets. 360px physical Android check skipped (deferred by user).
 - HUMAN items: VPS provisioning and deploy, setting real secrets, Strix code-level scan before sharing demo URL, running AI eval with real key.
+
+## Task 20: Staff-entered orders, takeaway (2026-10-05, branch phase-3-billing, commit 34660f3)
+- Tests: 
+px vitest run staff-order and uthz passed. Lint and typecheck passed.
+- Notes: Staff orders bypass rate limits but use the same advisory lock pattern for idempotency and order creation. Staff can order to an existing dining session (TABLE) or create new TAKEAWAY sessions. Added new layout surface under /admin/orders/new.

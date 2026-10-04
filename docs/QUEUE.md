@@ -21,7 +21,7 @@ How to read it: a **Task** row is done when `docs/PROGRESS.md` has an entry head
 | 13 | Task 18 | AI menu assistant | same | `phase-2-qr-ordering` | [ ] |
 | 14 | Task 19 | Production packaging (code only) | same | `phase-2-qr-ordering` | [ ] |
 | 15 | Gate 2 | Authz matrix, security review, exit E2E, summary | same (Phase 2 gate) | `phase-2-qr-ordering` | [ ] |
-| 16 | Task 20 | Staff-entered orders, takeaway | `2026-10-02-phase-3-billing-plan.md` | `phase-3-billing` | [ ] |
+| 16 | Task 20 | Staff-entered orders, takeaway | `2026-10-02-phase-3-billing-plan.md` | `phase-3-billing` | [x] |
 | 17 | Task 21 | Billing engine, tax settings | same | `phase-3-billing` | [ ] |
 | 18 | Task 22 | Generate bill, discounts, bill screens | same | `phase-3-billing` | [ ] |
 | 19 | Task 23 | Invoice numbers, settlement | same | `phase-3-billing` | [ ] |
