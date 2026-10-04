@@ -29,4 +29,18 @@ export const settingsInputSchema = z.object({
   mapEmbedUrl: optionalHttps,
   googleReviewUrl: optionalHttps,
   hours: hoursSchema,
+  taxMode: z.enum(["NONE", "COMPOSITION", "REGULAR"]).default("NONE"),
+  gstRatePercent: z.coerce.number().int().min(0).max(28).default(5),
+  pricesIncludeTax: z.coerce.boolean().default(true),
+  gstin: z.string().trim().regex(/^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z][1-9A-Z]Z[0-9A-Z]$/, "Invalid GSTIN format").or(z.literal("")).nullable().optional(),
+  fssai: z.string().trim().regex(/^\d{14}$/, "FSSAI must be 14 digits").or(z.literal("")).nullable().optional(),
+  staffCanDiscount: z.coerce.boolean().default(false),
+}).superRefine((data, ctx) => {
+  if (data.taxMode === "REGULAR" && (!data.gstin || data.gstin.trim() === "")) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      message: "GSTIN is required for REGULAR tax mode",
+      path: ["gstin"],
+    });
+  }
 });

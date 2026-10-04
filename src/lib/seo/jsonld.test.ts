@@ -9,6 +9,7 @@ const settings: SettingsView = {
   name: "Saffron Tadka", about: { en: "Fictional demo restaurant" }, address: "Demo address, India (fictional)",
   phone: "+919999900000", whatsappPhone: "+919999900000", mapEmbedUrl: null, googleReviewUrl: null,
   hours: allDays([{ open: "11:00", close: "23:00" }]),
+  taxMode: "NONE", gstRatePercent: 5, pricesIncludeTax: true, gstin: null, fssai: null, staffCanDiscount: false, taxModeConfirmedAt: null,
 };
 const url = "https://saffrontadka.example";
 

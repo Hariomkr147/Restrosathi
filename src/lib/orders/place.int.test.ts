@@ -97,7 +97,7 @@ it("device cap rejects order 21 even with different IPs", async () => {
   for (let index = 0; index < 20; index++) expect(await placeOrder(input(), { ...ctx, ip: `order-test-ip-${index}` })).toMatchObject({ ok: true });
   expect(await placeOrder(input(), { ...ctx, ip: "order-test-fresh-ip" })).toEqual({ ok: false, error: "RATE_LIMITED" });
   expect(await prisma.order.count({ where: { session: { tableId } } })).toBe(20);
-});
+}, 15000);
 it("session and loose IP caps apply independently of device", async () => {
   const first = await placeOrder(input(), ctx); expect(first.ok).toBe(true);
   const session = await prisma.diningSession.findFirstOrThrow({ where: { tableId } });

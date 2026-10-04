@@ -17,6 +17,7 @@ export function SettingsForm({ settings }: { settings: SettingsView }) {
   const previousHours = useRef<Hours>({ ...settings.hours });
   const [fieldErrors, setFieldErrors] = useState<Record<string, string[]>>({});
   const [status, setStatus] = useState<"saved" | "network" | null>(null);
+  const [taxMode, setTaxMode] = useState(settings.taxMode);
   const [pending, startTransition] = useTransition();
   function editHours(value: Hours) { setHours(value); setStatus(null); }
   function error(field: string) {
@@ -45,6 +46,8 @@ export function SettingsForm({ settings }: { settings: SettingsView }) {
         const result = await updateSettings({
           name: value("name"), address: value("address"), phone: value("phone"), whatsappPhone: value("whatsappPhone"),
           about: { en: value("about-en"), hi: value("about-hi") }, mapEmbedUrl: value("mapEmbedUrl"), googleReviewUrl: value("googleReviewUrl"), hours,
+          taxMode: value("taxMode"), gstRatePercent: parseInt(value("gstRatePercent") || "5", 10), pricesIncludeTax: form.get("pricesIncludeTax") === "on",
+          gstin: value("gstin"), fssai: value("fssai"), staffCanDiscount: form.get("staffCanDiscount") === "on"
         });
         if (result.ok) setStatus("saved"); else setFieldErrors(result.fieldErrors);
       } catch { setStatus("network"); }
@@ -82,6 +85,39 @@ export function SettingsForm({ settings }: { settings: SettingsView }) {
           </div>)}
           {hours[day].length === 1 && <Button type="button" variant="outline" className="h-auto whitespace-normal py-2" onClick={() => editHours({ ...hours, [day]: [...hours[day], { open: "18:00", close: "23:00" }] })}>{t("addShift")}</Button>}
         </fieldset>)}{error("hours")}
+      </fieldset>
+      <fieldset className="min-w-0 space-y-4">
+        <legend className="mb-4 font-heading text-2xl">{t("taxBilling")}</legend>
+        <p className="text-sm text-muted-foreground">{t("taxWarning")}</p>
+        <div className="grid gap-4 md:grid-cols-2">
+          <div className="min-w-0 space-y-2">
+            <label htmlFor="taxMode" className="block font-medium">{t("taxMode")}</label>
+            <select id="taxMode" name="taxMode" className={inputClass} value={taxMode} onChange={e => setTaxMode(e.target.value as any)}>
+              <option value="NONE">{t("taxModes.NONE")}</option>
+              <option value="COMPOSITION">{t("taxModes.COMPOSITION")}</option>
+              <option value="REGULAR">{t("taxModes.REGULAR")}</option>
+            </select>
+          </div>
+          <div className="min-w-0 space-y-2">
+            <label htmlFor="gstRatePercent" className="block font-medium">{t("gstRatePercent")}</label>
+            <input id="gstRatePercent" name="gstRatePercent" type="number" min="0" max="28" className={inputClass} defaultValue={settings.gstRatePercent} required aria-invalid={!!fieldErrors.gstRatePercent} />
+            {error("gstRatePercent")}
+          </div>
+        </div>
+        <label className="flex items-center gap-3 py-2"><input type="checkbox" name="pricesIncludeTax" defaultChecked={settings.pricesIncludeTax} />{t("pricesIncludeTax")}</label>
+        <div className="grid gap-4 md:grid-cols-2">
+          <div className="min-w-0 space-y-2">
+            <label htmlFor="gstin" className="block font-medium">GSTIN</label>
+            <input id="gstin" name="gstin" className={inputClass} defaultValue={settings.gstin ?? ""} aria-invalid={!!fieldErrors.gstin} aria-describedby={fieldErrors.gstin ? "error-gstin" : undefined} />
+            {error("gstin")}
+          </div>
+          <div className="min-w-0 space-y-2">
+            <label htmlFor="fssai" className="block font-medium">FSSAI</label>
+            <input id="fssai" name="fssai" className={inputClass} defaultValue={settings.fssai ?? ""} aria-invalid={!!fieldErrors.fssai} aria-describedby={fieldErrors.fssai ? "error-fssai" : undefined} />
+            {error("fssai")}
+          </div>
+        </div>
+        <label className="flex items-center gap-3 py-2"><input type="checkbox" name="staffCanDiscount" defaultChecked={settings.staffCanDiscount} />{t("staffCanDiscount")}</label>
       </fieldset>
       <Button type="submit" disabled={pending} aria-busy={pending}>{t(pending ? "saving" : "save")}</Button>
     </fieldset>

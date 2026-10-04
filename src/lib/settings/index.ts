@@ -13,6 +13,13 @@ export type SettingsView = {
   mapEmbedUrl: string | null;
   googleReviewUrl: string | null;
   hours: Hours;
+  taxMode: "NONE" | "COMPOSITION" | "REGULAR";
+  gstRatePercent: number;
+  pricesIncludeTax: boolean;
+  gstin: string | null;
+  fssai: string | null;
+  staffCanDiscount: boolean;
+  taxModeConfirmedAt: Date | null;
 };
 
 export async function getSettings(): Promise<SettingsView> {
@@ -30,8 +37,8 @@ export async function updateSettings(input: unknown): Promise<{ ok: true } | { o
   };
   await prisma.$transaction(async (tx) => {
     const before = await tx.settings.findUniqueOrThrow({ where: { id: 1 } });
-    const after = await tx.settings.update({ where: { id: 1 }, data: result.data });
-    await audit({ actorId: user.id, action: "settings.update", entity: "Settings", entityId: "1", data: { before, after } }, tx);
+    const after = await tx.settings.update({ where: { id: 1 }, data: { ...result.data, taxModeConfirmedAt: new Date() } });
+    await audit({ actorId: user.id, action: "settings.update", entity: "Settings", entityId: "1", data: JSON.parse(JSON.stringify({ before, after })) }, tx);
   });
   return { ok: true };
 }

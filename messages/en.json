@@ -176,6 +176,17 @@
     "close": "Closes",
     "addShift": "Add second shift",
     "removeShift": "Remove shift",
+    "taxBilling": "Tax & Billing",
+    "taxWarning": "If you change your GSTIN or tax mode during the year, your invoice series will continue. Please consult your CA.",
+    "taxMode": "Tax Mode",
+    "taxModes": {
+      "NONE": "Not Registered",
+      "COMPOSITION": "Composition Scheme",
+      "REGULAR": "Regular GST"
+    },
+    "gstRatePercent": "GST Rate (%)",
+    "pricesIncludeTax": "Menu prices already include GST",
+    "staffCanDiscount": "Staff can give arbitrary discounts",
     "save": "Save settings",
     "saving": "Saving…",
     "saved": "Saved",

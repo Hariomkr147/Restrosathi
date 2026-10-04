@@ -8,15 +8,28 @@ datasource db {
 }
 
 model Settings {
-  id              Int     @id @default(1)
-  name            String
-  about           Json
-  address         String
-  phone           String
-  whatsappPhone   String
-  mapEmbedUrl     String?
-  googleReviewUrl String?
-  hours           Json
+  id                 Int       @id @default(1)
+  name               String
+  about              Json
+  address            String
+  phone              String
+  whatsappPhone      String
+  mapEmbedUrl        String?
+  googleReviewUrl    String?
+  hours              Json
+  taxMode            TaxMode   @default(NONE)
+  gstRatePercent     Int       @default(5)
+  pricesIncludeTax   Boolean   @default(true)
+  gstin              String?
+  fssai              String?
+  staffCanDiscount   Boolean   @default(false)
+  taxModeConfirmedAt DateTime? @db.Timestamptz(3)
+}
+
+enum TaxMode {
+  NONE
+  COMPOSITION
+  REGULAR
 }
 
 enum Role {
