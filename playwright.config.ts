@@ -25,6 +25,9 @@ export default defineConfig({
     command: "node .next/standalone/server.js",
     port: 3000,
     timeout: 120_000,
-    env: { DATABASE_URL: process.env.TEST_DATABASE_URL ?? "" },
+    env: {
+      DATABASE_URL: process.env.TEST_DATABASE_URL ?? "",
+      UPLOAD_DIR: ".next/standalone/public/uploads",
+    },
   },
 });
