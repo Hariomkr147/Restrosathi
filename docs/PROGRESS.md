@@ -243,3 +243,7 @@ pm run test:int -- src/lib/orders/kot.int.test.ts (pass),
 pm run test:e2e -- tests/e2e/kot.spec.ts (pass).
 - Notable: Discovered Settings.name is a scalar String in Prisma schema, adapted kot.ts to read it directly instead of parsing as JSON localized object. Fixed early return hook rules in BoardClient.tsx.
 
+
+## Task 18: AI menu assistant
+- Commit: 99eb9b3836dcf159c2aa30ae799dda60edb06447
+- Result: All tests pass. Implemented AI usage cap, allergy detection, and AskMenu UI.

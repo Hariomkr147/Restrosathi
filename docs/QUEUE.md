@@ -68,3 +68,4 @@ Anything a person must do (real server, real WhatsApp pairing, API keys, real bu
 ## Nothing stops the queue
 
 Queue mode never asks a question and never marks itself blocked. A task it cannot finish is parked (see "No-stop protocol" in `AGENTS.md`) and the queue moves on. When the last Gate is done, or the usage limit is close, Codex writes `docs/FINAL-REQUEST.md` (keys, access, decisions, parked tasks) and prints it. That is the only time it asks for anything.
+
