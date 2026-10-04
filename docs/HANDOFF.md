@@ -187,6 +187,7 @@ It is already downloaded locally. Earlier full Linux gates used verified Node 22
 - All money integer paise, `formatINR`; UTC storage and Asia/Kolkata display. Localized DB text `{ en, hi? }`, fallback to English, real Hindi UI keys.
 - Theme values only `src/brand/theme.css`; 44px targets, WCAG AA, active HTML lang, reduced motion, 360px no horizontal overflow, menu/table initial JS ≤150 KB gzip.
 - Protected mutations use `requireUser()` and derive actor from session. Public exceptions are explicit in plan/authz matrix. Every future protected action/route must extend the matrix.
+- Changed AI provider from Anthropic to OpenRouter to support custom OpenAI-compatible endpoints ('OPENROUTER_API_KEY').
 - Server pricing/choice validation remains authoritative; no client amount is trusted. Same-key concurrent orders produce one order/rate hit.
 - Shared table/session transaction locks; one nonclosed session/table is protected by raw CHECK + partial unique index in migration `20261002021000_dining_sessions`. **Do not let Prisma-generated migrations DROP those raw constraints.** Review SQL.
 - Task 13 deliberately takes the idempotency advisory lock and device/IP rate checks inside the same atomic transaction, before table/session creation, to avoid charging concurrent retries or failed placement. This documented decision is already in PROGRESS; do not regress it to unconditional pretransaction hits.
