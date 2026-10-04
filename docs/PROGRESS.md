@@ -259,3 +259,11 @@ ode .next/standalone/server.js and required manual copy of public assets. 360px 
 - Tests: 
 px vitest run staff-order and uthz passed. Lint and typecheck passed.
 - Notes: Staff orders bypass rate limits but use the same advisory lock pattern for idempotency and order creation. Staff can order to an existing dining session (TABLE) or create new TAKEAWAY sessions. Added new layout surface under /admin/orders/new.
+
+## Task 21: Billing engine, tax settings
+
+- Implemented src/lib/billing/calc.ts and tax rules in SettingsForm.tsx.
+- Fixed hydration issue by copying .next/static assets to .next/standalone/.next/static on Windows.
+- Fixed Settings update audit logging bug with Date objects by serializing.
+- All tests pass.
+- Commit: 82567dd
