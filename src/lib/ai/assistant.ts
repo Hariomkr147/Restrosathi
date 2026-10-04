@@ -10,7 +10,7 @@ const AiResponseSchema = z.object({
 });
 
 type AssistantResult = 
-  | { ok: true; reply: string; items: Array<{ id: string; name: any; pricePaise: number; isVeg: boolean }> }
+  | { ok: true; reply: string; items: Array<{ id: string; name: unknown; pricePaise: number; isVeg: boolean }> }
   | { ok: false; error: "LIMIT_DEVICE" | "LIMIT_MONTH" | "TOO_LONG" | "EMPTY" };
 
 export async function askMenuAssistant(params: { question: string; deviceId: string; locale: string }): Promise<AssistantResult> {

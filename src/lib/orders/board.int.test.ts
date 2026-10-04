@@ -13,7 +13,7 @@ describe("board", () => {
   beforeEach(async () => {
     vi.clearAllMocks();
     await db.$transaction([
-      db.orderLine.deleteMany(), db.order.deleteMany(), db.serviceRequest.deleteMany(), db.diningSession.deleteMany(), db.restaurantTable.deleteMany(), db.menuItem.deleteMany()
+      db.orderLine.deleteMany(), db.order.deleteMany(), db.serviceRequest.deleteMany(), db.diningSession.deleteMany()
     ]);
   });
   afterEach(() => {

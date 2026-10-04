@@ -101,8 +101,7 @@ describe("askMenuAssistant", () => {
   it("question of 301 characters -> TOO_LONG", async () => {
     const q = "a".repeat(301);
     const res = await askMenuAssistant({ question: q, deviceId: "d6", locale: "en" });
-    expect(res.ok).toBe(false);
-    expect((res as any).error).toBe("TOO_LONG");
+    expect(res).toMatchObject({ ok: false, error: "TOO_LONG" });
   });
   
   it("context passed to provider contains no sold-out items", async () => {
