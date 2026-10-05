@@ -34,9 +34,14 @@ export default async function ViewBillPage({ params }: { params: Promise<{ billI
           <h1 className="text-2xl font-bold">{t("title")} {bill.number || ""}</h1>
           <p className="text-sm text-gray-500">{t("generatedAt")} {bill.generatedAt.toLocaleString("en-IN", { timeZone: "Asia/Kolkata" })}</p>
         </div>
-        <Link href="/admin/bills/history" className="text-sm font-medium text-blue-600 hover:underline">
-          {t("backToHistory")}
-        </Link>
+        <div className="flex items-center gap-4">
+          <a href={`/admin/bills/view/${billId}/print`} target="_blank" className="text-sm font-medium text-blue-600 hover:underline">
+            {t("print")}
+          </a>
+          <Link href="/admin/bills/history" className="text-sm font-medium text-blue-600 hover:underline">
+            {t("backToHistory")}
+          </Link>
+        </div>
       </div>
 
       <div className="grid sm:grid-cols-2 gap-4">

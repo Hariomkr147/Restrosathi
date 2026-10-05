@@ -25,7 +25,7 @@ How to read it: a **Task** row is done when `docs/PROGRESS.md` has an entry head
 | 17 | Task 21 | Billing engine, tax settings | same | `phase-3-billing` | [x] |
 | 18 | Task 22 | Generate bill, discounts, bill screens | same | `phase-3-billing` | [x] |
 | 19 | Task 23 | Invoice numbers, settlement | same | `phase-3-billing` | [x] |
-| 20 | Task 24 | Cancel settled bill (owner) | same | `phase-3-billing` | [ ] |
+| 20 | Task 24 | Cancel settled bill (owner) | same | `phase-3-billing` | [x] |
 | 21 | Task 25 | 80 mm bill print | same | `phase-3-billing` | [ ] |
 | 22 | Task 26 | Day-end report | same | `phase-3-billing` | [ ] |
 | 23 | Task 27 | Customer bill view from snapshot | same | `phase-3-billing` | [ ] |

@@ -1,0 +1,16 @@
+@media print {
+  @page {
+    size: 80mm auto;
+    margin: 3mm;
+  }
+  
+  body {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+  
+  /* Hide Next.js dev overlays or navigation if any */
+  nav, header:not(.bill-print-container header), footer {
+    display: none !important;
+  }
+}
