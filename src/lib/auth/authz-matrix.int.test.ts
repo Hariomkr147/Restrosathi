@@ -14,6 +14,7 @@ import * as board from "../../app/admin/board/actions";
 import * as staffOrders from "../../app/admin/orders/new/actions";
 import * as bills from "../../app/admin/bills/actions";
 import { askMenuAction } from "../ai/actions";
+import { getDayEnd } from "../billing/day-end";
 import { GET as getHealth } from "../../app/api/health/route";
 
 vi.mock("next/cache", () => ({ revalidatePath: vi.fn() }));
@@ -167,6 +168,22 @@ for (const { role, signIn } of roles) {
       expect(await bills.cancelBillAction("__absent", "valid")).toEqual({ ok: false, error: "NOT_FOUND" });
     } else {
       await expect(bills.cancelBillAction("__absent", "valid")).rejects.toBeInstanceOf(AuthError);
+    }
+  });
+
+  it(`${role}: getDayEnd requires OWNER only`, async () => {
+    await signIn();
+    const actor = {
+      id: role === "owner" ? "owner-id" : (role === "staff" ? "staff-id" : "0"),
+      role: role === "owner" ? "OWNER" : (role === "staff" ? "STAFF" : "ANONYMOUS")
+    };
+    if (role === "owner") {
+      // It returns aggregates successfully. Date is fixed.
+      // Assuming DB is empty for this test or has no data, it just returns zeroes
+      const report = await getDayEnd("2026-10-05", actor);
+      expect(report.billCount).toBe(0);
+    } else {
+      await expect(getDayEnd("2026-10-05", actor)).rejects.toThrow("FORBIDDEN");
     }
   });
 }
