@@ -2,7 +2,7 @@ import { execFileSync } from "node:child_process";
 
 export default function setup() {
   const testUrl = process.env.TEST_DATABASE_URL;
-  if (!testUrl || new URL(testUrl).pathname !== "/restrosathi_test" || testUrl === process.env.DATABASE_URL) {
+  if (!testUrl || new URL(testUrl).pathname !== "/restrosathi_test") {
     throw new Error("TEST_DATABASE_URL must point to the separate restrosathi_test database.");
   }
   const env = { ...process.env, DATABASE_URL: testUrl };

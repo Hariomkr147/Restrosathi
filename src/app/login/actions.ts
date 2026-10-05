@@ -11,18 +11,18 @@ async function clientIp(): Promise<string> {
   return value && isIP(value) ? value : "unknown";
 }
 
-export async function loginWithPassword(form: { phone: string; password: string }): Promise<{ error: "invalid" | "locked" } | void> {
+export async function loginWithPassword(form: { phone: string; password: string }): Promise<{ error: "invalid" | "locked" } | { success: true }> {
   const result = await checkPasswordLogin(form, await clientIp());
   if ("error" in result) return result;
   await createSession(result.userId);
-  redirect("/admin");
+  return { success: true };
 }
 
-export async function loginWithPin(form: { userId: string; pin: string }): Promise<{ error: "invalid" | "locked" } | void> {
+export async function loginWithPin(form: { userId: string; pin: string }): Promise<{ error: "invalid" | "locked" } | { success: true }> {
   const result = await checkPinLogin(form, await clientIp());
   if ("error" in result) return result;
   await createSession(result.userId);
-  redirect("/admin");
+  return { success: true };
 }
 
 export async function logout(): Promise<void> {

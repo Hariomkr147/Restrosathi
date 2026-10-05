@@ -20,20 +20,34 @@ export function OrderScreen({ menu, locale, code, initialView }: { menu: PublicM
   const [view, setView] = useState<SessionView | null>(initialView); const [pending, setPending] = useState(false);
   const [servicePending, setServicePending] = useState<string | null>(null); const [error, setError] = useState<string | null>(null);
   const [notice, setNotice] = useState<string | null>(null); const [statusError, setStatusError] = useState<string | null>(null);
+  const [thankYou, setThankYou] = useState(false);
   const controller = useRef<AbortController | null>(null);
   const refresh = useCallback(async () => {
     controller.current?.abort(); const request = new AbortController(); controller.current = request;
     const timeout = setTimeout(() => request.abort(new Error("TIMEOUT")), 10_000);
     try {
       const response = await fetch(`/api/t/${encodeURIComponent(code)}/status`, { signal: request.signal, cache: "no-store" });
-      if (response.status === 404) { setView(null); setStatusError(text.TABLE_NOT_FOUND); return false; }
+      if (response.status === 404) { 
+        setView((prev) => {
+          if (prev && prev.orders.length > 0) { setThankYou(true); dispatch({ type: "clear" }); }
+          return null;
+        });
+        setStatusError(null); return false; 
+      }
       if (!response.ok) throw new Error("STATUS_UNAVAILABLE");
       const next = await response.json() as SessionView;
       if (request.signal.aborted) return false;
+      if (next.session === null) {
+        setView((prev) => {
+          if (prev && prev.orders.length > 0) { setThankYou(true); dispatch({ type: "clear" }); }
+          return next;
+        });
+        setStatusError(null); return true;
+      }
       setView(next); setStatusError(null); return true;
     } catch { if (!request.signal.aborted || (request.signal.reason as Error)?.message === "TIMEOUT") setStatusError(text.statusError); return false; }
     finally { clearTimeout(timeout); }
-  }, [code, text.TABLE_NOT_FOUND, text.statusError]);
+  }, [code, text.statusError]);
   useEffect(() => {
     let timer: ReturnType<typeof setTimeout>; let disposed = false; let generation = 0; let delay = 3000;
     const poll = async () => {
@@ -83,12 +97,20 @@ export function OrderScreen({ menu, locale, code, initialView }: { menu: PublicM
     {notice && <p role="status" className="mt-4">{notice}</p>}
     {error && !cartOpen && !selected && <p role="alert" className="mt-4 break-words text-destructive">{error}</p>}
     {statusError && <p role="status" className="mt-4 break-words text-muted-foreground">{statusError}</p>}
-    <StatusTracker orders={view?.orders ?? []} locale={locale} />
-    <div className="mt-6 flex flex-wrap gap-3">
-      <button type="button" className={text.outlineClass} disabled={!!servicePending || view?.openRequests.includes("CALL_WAITER")} onClick={() => void request("CALL_WAITER")}>{view?.openRequests.includes("CALL_WAITER") ? text.waiterRequested : servicePending === "CALL_WAITER" ? text.requesting : text.callWaiter}</button>
-      <button type="button" className={text.outlineClass} disabled={!!servicePending || view?.openRequests.includes("REQUEST_BILL")} onClick={() => void request("REQUEST_BILL")}>{view?.openRequests.includes("REQUEST_BILL") ? text.billRequested : servicePending === "REQUEST_BILL" ? text.requesting : text.requestBill}</button>
-    </div>
-    <BillView view={view} locale={locale} />
+    {thankYou ? (
+      <div className="mt-8 rounded-xl bg-card p-6 text-center shadow-sm">
+        <h2 className="font-heading text-2xl text-primary">{text.thankYou}</h2>
+      </div>
+    ) : (
+      <>
+        <StatusTracker orders={view?.orders ?? []} locale={locale} />
+        <div className="mt-6 flex flex-wrap gap-3">
+          <button type="button" className={text.outlineClass} disabled={!!servicePending || view?.openRequests.includes("CALL_WAITER")} onClick={() => void request("CALL_WAITER")}>{view?.openRequests.includes("CALL_WAITER") ? text.waiterRequested : servicePending === "CALL_WAITER" ? text.requesting : text.callWaiter}</button>
+          <button type="button" className={text.outlineClass} disabled={!!servicePending || view?.openRequests.includes("REQUEST_BILL")} onClick={() => void request("REQUEST_BILL")}>{view?.openRequests.includes("REQUEST_BILL") ? text.billRequested : servicePending === "REQUEST_BILL" ? text.requesting : text.requestBill}</button>
+        </div>
+        <BillView view={view} locale={locale} />
+      </>
+    )}
     {!!lines.length && <div className="cart-bar fixed inset-x-0 bottom-0 z-20 border-t border-border bg-background px-6 py-3">
       <div className="mx-auto max-w-content"><button type="button" className={`${text.buttonClass} w-full`} onClick={() => setCartOpen(true)}>{text.viewCart} ({cartCount(lines)})</button></div>
     </div>}

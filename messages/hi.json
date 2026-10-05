@@ -58,6 +58,7 @@
     "billEmpty": "अभी बिल में कोई व्यंजन नहीं है।",
     "billSubtotal": "उप-योग",
     "billDiscount": "छूट",
+    "thankYou": "पधारने के लिए धन्यवाद!",
     "billRoundOff": "राउंड-ऑफ़",
     "billTotal": "कुल राशि",
     "callWaiter": "कर्मचारी को बुलाएँ",
@@ -362,5 +363,40 @@
     "submit": "ऑर्डर दें",
     "submitting": "ऑर्डर दिया जा रहा है...",
     "success": "ऑर्डर दिया गया"
+  },
+  "Admin": {
+    "Bills": {
+      "View": {
+        "title": "बिल का विवरण",
+        "generatedAt": "बनाया गया:",
+        "print": "प्रिंट",
+        "backToHistory": "इतिहास पर वापस जाएं",
+        "statusInfo": "जानकारी",
+        "status": "स्थिति",
+        "statusSettled": "सेटल हो गया",
+        "statusCancelled": "रद्द",
+        "type": "प्रकार",
+        "takeaway": "टेकअवे",
+        "customer": "ग्राहक",
+        "phone": "फ़ोन",
+        "cancelInfo": "रद्द करने की जानकारी",
+        "cancelReason": "कारण",
+        "cancelledAt": "रद्द किया गया:",
+        "item": "आइटम",
+        "qty": "मात्रा",
+        "price": "कीमत",
+        "total": "कुल",
+        "subtotal": "उप-कुल",
+        "discount": "छूट",
+        "cgst": "CGST",
+        "sgst": "SGST",
+        "roundOff": "राउंड-ऑफ़",
+        "netTotal": "कुल राशि",
+        "payments": "भुगतान"
+      },
+      "Settle": {
+        "title": "बिल सेटल करें"
+      }
+    }
   }
 }

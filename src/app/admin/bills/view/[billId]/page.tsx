@@ -130,6 +130,14 @@ export default async function ViewBillPage({ params }: { params: Promise<{ billI
           <CancelBillButton billId={bill.id} />
         </div>
       )}
+
+      {bill.status === "OPEN" && (
+        <div className="fixed bottom-0 left-0 right-0 bg-background border-t p-4 flex justify-end items-center md:pl-64">
+          <Link href={`/admin/bills/view/${billId}/settle`} className="bg-primary text-primary-foreground px-8 py-3 rounded-xl font-bold">
+            Settle
+          </Link>
+        </div>
+      )}
     </div>
   );
 }

@@ -3,6 +3,10 @@ import { prisma } from "@/lib/db";
 import { StaffOrderForm } from "./StaffOrderForm";
 import { getPublicMenu } from "@/lib/menu/queries";
 import { getTranslations } from "next-intl/server";
+import { MenuTextProvider } from "@/components/menu/MenuText";
+import { getMenuText } from "@/lib/menu/text";
+import { TableTextProvider } from "@/components/table/TableText";
+import { getTableText } from "@/lib/orders/text";
 
 export const dynamic = "force-dynamic";
 
@@ -25,10 +29,16 @@ export default async function NewOrderPage() {
   }));
 
   const menu = await getPublicMenu();
+  const menuText = await getMenuText();
+  const tableText = await getTableText();
 
   return (
     <main className="mx-auto max-w-content px-6 py-8 pb-28">
-      <StaffOrderForm tables={tablesWithStatus} menu={menu} />
+      <MenuTextProvider value={menuText}>
+        <TableTextProvider value={tableText}>
+          <StaffOrderForm tables={tablesWithStatus} menu={menu} />
+        </TableTextProvider>
+      </MenuTextProvider>
     </main>
   );
 }

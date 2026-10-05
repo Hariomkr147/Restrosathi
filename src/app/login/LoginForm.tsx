@@ -1,37 +1,45 @@
 "use client";
 
-import { useState, useTransition, type FormEvent } from "react";
+import { useState, useTransition, useEffect, type FormEvent } from "react";
 import { useTranslations } from "next-intl";
+import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { loginWithPassword, loginWithPin, logout } from "./actions";
 
 const inputClass = "min-h-touch w-full min-w-0 rounded-sm border border-muted-foreground bg-secondary px-3 py-2 text-base";
 
 export function LoginForm({ staff }: { staff?: { id: string; name: string }[] }) {
+  const router = useRouter();
   const t = useTranslations("login");
   const [pin, setPin] = useState("");
   const [error, setError] = useState<"invalid" | "locked" | "network" | null>(null);
   const [pending, startTransition] = useTransition();
 
-  function submit(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault();
+  async function clientAction(formData: FormData) {
     if (pending) return;
-    const form = new FormData(event.currentTarget);
     setError(null);
     startTransition(async () => {
       try {
         const result = staff
-          ? await loginWithPin({ userId: String(form.get("userId")), pin })
-          : await loginWithPassword({ phone: String(form.get("phone")), password: String(form.get("password")) });
-        if (result) setError(result.error);
-      } catch { setError("network"); }
+          ? await loginWithPin({ userId: String(formData.get("userId")), pin: String(formData.get("pin")) })
+          : await loginWithPassword({ phone: String(formData.get("phone")), password: String(formData.get("password")) });
+        if (result && "error" in result) {
+          setError(result.error);
+        } else if (result && "success" in result) {
+          router.refresh();
+          router.push("/admin");
+        }
+      } catch (error: any) {
+        console.error("Login client error:", error);
+        setError("network");
+      }
     });
   }
 
   if (staff?.length === 0) return <p role="status">{t("noStaff")}</p>;
 
   return (
-    <form onSubmit={submit} className="mt-6 space-y-4">
+    <form action={clientAction} className="mt-6 space-y-4">
       <fieldset disabled={pending} className="min-w-0 space-y-4">
         {staff ? <>
           <div className="space-y-2">

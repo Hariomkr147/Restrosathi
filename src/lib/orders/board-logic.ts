@@ -7,7 +7,7 @@ export function newOrderIds(prev: BoardOrder[], next: BoardOrder[]): string[] {
 
 export function escalationLevel(order: BoardOrder, nowMs: number): 0 | 1 {
   if (order.status !== "NEW") return 0;
-  return nowMs - order.placedAt.getTime() > 120_000 ? 1 : 0;
+  return nowMs - new Date(order.placedAt).getTime() > 120_000 ? 1 : 0;
 }
 
 export function staleness(lastOkMs: number, nowMs: number): "ok" | "stale" {

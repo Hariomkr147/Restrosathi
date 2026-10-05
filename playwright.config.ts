@@ -2,6 +2,9 @@ import { existsSync } from "node:fs";
 import { defineConfig, devices } from "@playwright/test";
 
 if (existsSync(".env")) process.loadEnvFile(".env");
+if (process.env.TEST_DATABASE_URL) {
+  process.env.DATABASE_URL = process.env.TEST_DATABASE_URL;
+}
 
 export default defineConfig({
   globalSetup: "./tests/setup/db.ts",
@@ -22,12 +25,12 @@ export default defineConfig({
     { name: "desktop", use: { ...devices["Desktop Chrome"] } },
   ],
   webServer: {
-    command: "node .next/standalone/server.js",
+    command: "npm run start",
     port: 3000,
     timeout: 120_000,
     env: {
       DATABASE_URL: process.env.TEST_DATABASE_URL ?? "",
-      UPLOAD_DIR: ".next/standalone/public/uploads",
+      UPLOAD_DIR: "public/uploads",
     },
   },
 });

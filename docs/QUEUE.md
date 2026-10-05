@@ -28,8 +28,8 @@ How to read it: a **Task** row is done when `docs/PROGRESS.md` has an entry head
 | 20 | Task 24 | Cancel settled bill (owner) | same | `phase-3-billing` | [x] |
 | 21 | Task 25 | 80 mm bill print | same | `phase-3-billing` | [x] |
 | 22 | Task 26 | Day-end report | same | `phase-3-billing` | [x] |
-| 23 | Task 27 | Customer bill view from snapshot | same | `phase-3-billing` | [ ] |
-| 24 | Gate 3 | Billing exit E2E, money review, summary | same (Phase 3 gate) | `phase-3-billing` | [ ] |
+| 23 | Task 27 | Customer bill view from snapshot | same | `phase-3-billing` | [x] |
+| 24 | Gate 3 | Billing exit E2E, money review, summary | same (Phase 3 gate) | `phase-3-billing` | [x] |
 | 25 | Task 28 | WhatsApp adapter, phone, webhook | `2026-10-02-phase-4-whatsapp-bookings-plan.md` | `phase-4-whatsapp-bookings` | [ ] |
 | 26 | Task 29 | notify outbox, cron, banner | same | `phase-4-whatsapp-bookings` | [ ] |
 | 27 | Task 30 | OTP, verified-device cookie | same | `phase-4-whatsapp-bookings` | [ ] |

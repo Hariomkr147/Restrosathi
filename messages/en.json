@@ -58,6 +58,7 @@
     "billEmpty": "No dishes to bill yet.",
     "billSubtotal": "Subtotal",
     "billDiscount": "Discount",
+    "thankYou": "Thank you for visiting!",
     "billRoundOff": "Round-off",
     "billTotal": "Total",
     "callWaiter": "Call waiter",
@@ -362,5 +363,40 @@
     "limit_month": "The restaurant has reached its AI limit for this month.",
     "too_long": "Please keep your question shorter.",
     "empty": "Please type a question."
+  },
+  "Admin": {
+    "Bills": {
+      "View": {
+        "title": "Invoice",
+        "generatedAt": "Generated at",
+        "print": "Print",
+        "backToHistory": "Back to history",
+        "statusInfo": "Information",
+        "status": "Status",
+        "statusSettled": "Settled",
+        "statusCancelled": "Cancelled",
+        "type": "Type",
+        "takeaway": "Takeaway",
+        "customer": "Customer",
+        "phone": "Phone",
+        "cancelInfo": "Cancellation",
+        "cancelReason": "Reason",
+        "cancelledAt": "Cancelled at",
+        "item": "Item",
+        "qty": "Qty",
+        "price": "Price",
+        "total": "Total",
+        "subtotal": "Subtotal",
+        "discount": "Discount",
+        "cgst": "CGST",
+        "sgst": "SGST",
+        "roundOff": "Round-off",
+        "netTotal": "Total",
+        "payments": "Payments"
+      },
+      "Settle": {
+        "title": "Settle Bill"
+      }
+    }
   }
 }

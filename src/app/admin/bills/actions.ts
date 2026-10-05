@@ -18,6 +18,10 @@ export async function generateBillAction(
     revalidatePath(`/admin/bills/${sessionId}`);
     revalidatePath("/admin/bills");
   }
+  if (res.ok) {
+    const { redirect } = await import("next/navigation");
+    redirect(`/admin/bills/view/${res.billId}`);
+  }
   return res;
 }
 
