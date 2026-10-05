@@ -3,11 +3,13 @@ import { afterAll, beforeAll, beforeEach, expect, it } from "vitest";
 import { prisma } from "../db";
 import { getSessionView } from "./session-view";
 import { GET } from "../../app/api/t/[code]/status/route";
+import { generateBill } from "../billing/generate";
 
 const tableIds = ["view-test-a", "view-test-b"], codes = ["VIEWTEST01", "VIEWTEST02"];
 async function clean() {
   await prisma.orderLine.deleteMany({ where: { order: { session: { tableId: { in: tableIds } } } } });
   await prisma.order.deleteMany({ where: { session: { tableId: { in: tableIds } } } });
+  await prisma.bill.deleteMany({ where: { session: { tableId: { in: tableIds } } } });
   await prisma.diningSession.deleteMany({ where: { tableId: { in: tableIds } } });
 }
 beforeAll(async () => { for (const [index, id] of tableIds.entries()) await prisma.restaurantTable.create({ data: { id, label: `View ${index}`, code: codes[index] } }); });
@@ -41,6 +43,28 @@ it("closed history is hidden and an unused table has no session", async () => {
   const view = await getSessionView(codes[0]);
   expect(view).toMatchObject({ session: null, orders: [], amountPaise: 0 });
   expect(await getSessionView(codes[1])).toMatchObject({ session: null, orders: [] });
+});
+it("exposes snapshot bill if OPEN or SETTLED, hides if CANCELLED", async () => {
+  const owner = await prisma.user.findFirstOrThrow({ where: { role: "OWNER" } });
+  const a = await session(tableIds[0], "Bill dish");
+  
+  // No bill initially
+  let view = await getSessionView(codes[0]);
+  expect(view?.bill).toBeNull();
+  
+  // Generate bill
+  await prisma.order.updateMany({ where: { sessionId: a.id }, data: { status: "PREPARING", acceptedAt: new Date() } });
+  const bRes = await generateBill(a.id, {}, { id: owner.id, role: "OWNER" });
+  if (!bRes.ok) throw new Error(bRes.error);
+  view = await getSessionView(codes[0]);
+  expect(view?.bill).not.toBeNull();
+  expect(view?.bill?.status).toBe("OPEN");
+  expect(view?.bill?.totalPaise).toBe(20000); // 2 qty * 10000
+  
+  // Cancel bill
+  await prisma.bill.updateMany({ where: { sessionId: a.id }, data: { status: "CANCELLED" } });
+  view = await getSessionView(codes[0]);
+  expect(view?.bill).toBeNull(); // CANCELLED is hidden
 });
 it("public status route is no-store; unknown codes return404 without detail", async () => {
   const response = await GET(new Request(`http://localhost:3000/api/t/${codes[0]}/status`), { params: Promise.resolve({ code: codes[0] }) });
