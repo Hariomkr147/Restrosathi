@@ -25,7 +25,7 @@ export type SettingsView = {
 export async function getSettings(): Promise<SettingsView> {
   const settings = await prisma.settings.findUnique({ where: { id: 1 } });
   if (!settings) throw new Error("Restaurant settings are missing. Run the database seed.");
-  return { ...settings, about: l10nSchema.parse(settings.about), hours: hoursSchema.parse(settings.hours) };
+  return { ...settings, gstRatePercent: Number(settings.gstRatePercent), about: l10nSchema.parse(settings.about), hours: hoursSchema.parse(settings.hours) };
 }
 
 export async function updateSettings(input: unknown): Promise<{ ok: true } | { ok: false; fieldErrors: Record<string, string[]> }> {

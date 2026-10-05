@@ -6,7 +6,7 @@ export const db = new PrismaClient({ datasourceUrl: url });
 export const TABLE_CODES = Array.from({ length: 8 }, (_, index) => `TESTCODE0${index + 1}`);
 export async function resetOperationalData() {
   await db.$transaction([
-    db.orderLine.deleteMany(), db.order.deleteMany(), db.serviceRequest.deleteMany(), db.diningSession.deleteMany(), db.rateHit.deleteMany(),
+    db.billLine.deleteMany(), db.bill.deleteMany(), db.orderLine.deleteMany(), db.order.deleteMany(), db.serviceRequest.deleteMany(), db.diningSession.deleteMany(), db.rateHit.deleteMany(), db.loginAttempt.deleteMany(),
   ]);
 }
 export async function markSoldOut(itemId: string) { await db.menuItem.update({ where: { id: itemId }, data: { available: false } }); }

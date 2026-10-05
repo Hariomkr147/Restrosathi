@@ -129,7 +129,8 @@
     "tables": "Tables",
     "printTables": "Print table QR codes",
     "board": "Kitchen board",
-    "newOrder": "New order"
+    "newOrder": "New order",
+    "bills": "Bills"
   },
   "common": {
     "print": "Print",

@@ -12,6 +12,7 @@ import { placeOrderAction, serviceRequestAction } from "../../app/t/[code]/actio
 import * as orders from "../../app/admin/orders/actions";
 import * as board from "../../app/admin/board/actions";
 import * as staffOrders from "../../app/admin/orders/new/actions";
+import * as bills from "../../app/admin/bills/actions";
 import { askMenuAction } from "../ai/actions";
 import { GET as getHealth } from "../../app/api/health/route";
 
@@ -139,6 +140,15 @@ for (const { role, signIn } of roles) {
       await expect(staffOrders.placeStaffOrderAction({})).rejects.toBeInstanceOf(AuthError);
     } else {
       expect(await staffOrders.placeStaffOrderAction({})).toEqual({ ok: false, error: "INVALID_INPUT" });
+    }
+  });
+
+  it(`${role}: generateBillAction requires staff or owner`, async () => {
+    await signIn();
+    if (role === "anonymous") {
+      await expect(bills.generateBillAction("__absent", {})).rejects.toBeInstanceOf(AuthError);
+    } else {
+      expect(await bills.generateBillAction("__absent", {})).toEqual({ ok: false, error: "NOT_FOUND" });
     }
   });
 }

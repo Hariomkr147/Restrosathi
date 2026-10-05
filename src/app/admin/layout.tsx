@@ -21,6 +21,7 @@ export default async function AdminLayout({ children }: { children: ReactNode })
     <nav aria-label={t("navigation")} className="admin-chrome mx-auto flex w-full max-w-content flex-wrap gap-4 px-6">
       <Link href="/admin/board" className="inline-flex min-h-touch min-w-touch items-center text-primary underline">{t("board")}</Link>
       <Link href="/admin/orders/new" className="inline-flex min-h-touch min-w-touch items-center text-primary underline">{t("newOrder")}</Link>
+      <Link href="/admin/bills" className="inline-flex min-h-touch min-w-touch items-center text-primary underline">{t("bills")}</Link>
       <Link href="/admin/menu" className="inline-flex min-h-touch min-w-touch items-center text-primary underline">{t("menu")}</Link>
       {user.role === "OWNER" && <Link href="/admin/settings" className="inline-flex min-h-touch min-w-touch items-center text-primary underline">{t("settings")}</Link>}
       {user.role === "OWNER" && <Link href="/admin/tables" className="inline-flex min-h-touch min-w-touch items-center text-primary underline">{t("tables")}</Link>}

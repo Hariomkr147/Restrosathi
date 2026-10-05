@@ -1,10 +1,13 @@
 import { test, expect } from "@playwright/test";
 
 test("admin requires login, owner logs in and logout removes access", async ({ page, context }) => {
+  page.on('console', msg => console.log('BROWSER CONSOLE:', msg.text()));
+  page.on('pageerror', err => console.log('BROWSER ERROR:', err.message));
   await page.goto("/admin");
   await expect(page).toHaveURL("/login");
   await page.getByLabel("Phone number", { exact: true }).fill("+919999900001");
   await page.getByLabel("Password", { exact: true }).fill(process.env.SEED_OWNER_PASSWORD!);
+  await page.waitForTimeout(500); // Allow hydration
   await page.getByRole("button", { name: "Log in", exact: true }).click();
   await expect(page).toHaveURL("/admin");
   await expect(page.getByText("Owner", { exact: true })).toBeVisible();
@@ -23,6 +26,7 @@ test("staff sees a wrong-PIN message then enters a PIN on the large keypad", asy
   await page.goto("/login/staff");
   await page.getByLabel("Staff member", { exact: true }).selectOption({ label: "Ravi" });
   await page.getByLabel("4–6 digit PIN", { exact: true }).fill(process.env.SEED_STAFF_PIN === "654321" ? "1111" : "654321");
+  await page.waitForTimeout(500); // Allow hydration
   await page.getByRole("button", { name: "Log in", exact: true }).click();
   await expect(page.getByRole("alert").filter({ hasText: "Phone, password or PIN is incorrect." })).toBeVisible();
   await page.getByRole("button", { name: "Clear PIN", exact: true }).click();
