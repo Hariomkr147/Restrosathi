@@ -335,6 +335,7 @@ model Bill {
 
   session           DiningSession  @relation(fields: [sessionId], references: [id], onDelete: Restrict)
   lines             BillLine[]
+  payments          Payment[]
 }
 
 model BillLine {
@@ -350,5 +351,29 @@ model BillLine {
   bill              Bill     @relation(fields: [billId], references: [id], onDelete: Cascade)
 
   @@index([billId])
+}
+
+enum PaymentMethod {
+  CASH
+  UPI
+  CARD
+}
+
+model Payment {
+  id           String        @id @default(cuid())
+  billId       String
+  method       PaymentMethod
+  amountPaise  Int
+  recordedById String
+  at           DateTime      @default(now()) @db.Timestamptz(3)
+
+  bill         Bill          @relation(fields: [billId], references: [id], onDelete: Cascade)
+
+  @@index([billId])
+}
+
+model InvoiceCounter {
+  fy   String @id
+  last Int    @default(0)
 }
 

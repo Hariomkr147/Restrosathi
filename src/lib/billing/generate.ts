@@ -153,5 +153,5 @@ export async function generateBill(
       }
       throw e;
     }
-  });
+  }, { maxWait: 20000, timeout: 30000 });
 }

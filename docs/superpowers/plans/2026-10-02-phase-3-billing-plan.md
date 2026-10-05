@@ -97,13 +97,13 @@ All values are integer paise. `rh(a, b) = floor((2a + b) / (2b))` is round-half-
 - `voidLine` (Task 14) now also refuses (`BILL_LOCKED`) when the session's bill is `SETTLED` or `CANCELLED`; voiding while the bill is `OPEN` is allowed and the bill must be regenerated (its `generatedAt` becomes older than the void).
 - Screens (STAFF/OWNER): `/admin/bills` lists open sessions (table label or "Takeaway", opened time, amount so far, status chip: Open / Bill requested / Bill ready); `/admin/bills/[sessionId]` shows the lines, quantity, amounts, a discount control (type, value, reason; hidden when not permitted), customer name/phone fields (optional), and a **Generate bill** / **Recalculate** button, then the computed breakdown (subtotal, discount, taxable value, CGST, SGST, round-off, total). Settlement arrives in Task 23.
 
-- [ ] **Step 1: Write failing tests** (`generate.int.test.ts`): bill lines and totals match `computeBill` for a mixed session (variant + add-ons, two orders); rejected orders and voided lines are excluded; a `NEW` order blocks generation with `UNACCEPTED_ORDERS`; regenerating after another order/void updates totals and keeps one `Bill` row (unique per session); header snapshot equals the Settings at that time and does **not** change when Settings are edited later; changing tax mode in Settings after generation leaves the existing bill untouched; discount: STAFF without permission → `DISCOUNT_FORBIDDEN`, with `staffCanDiscount` → allowed, owner always allowed, missing reason → `DISCOUNT_INVALID`; empty session → `EMPTY_BILL`; closed session → `SESSION_CLOSED`; anonymous rejected; `voidLine` refused after settlement/cancel (use a directly-inserted settled bill row for this test until Task 23 exists).
+- [x] **Step 1: Write failing tests** (`generate.int.test.ts`): bill lines and totals match `computeBill` for a mixed session (variant + add-ons, two orders); rejected orders and voided lines are excluded; a `NEW` order blocks generation with `UNACCEPTED_ORDERS`; regenerating after another order/void updates totals and keeps one `Bill` row (unique per session); header snapshot equals the Settings at that time and does **not** change when Settings are edited later; changing tax mode in Settings after generation leaves the existing bill untouched; discount: STAFF without permission → `DISCOUNT_FORBIDDEN`, with `staffCanDiscount` → allowed, owner always allowed, missing reason → `DISCOUNT_INVALID`; empty session → `EMPTY_BILL`; closed session → `SESSION_CLOSED`; anonymous rejected; `voidLine` refused after settlement/cancel (use a directly-inserted settled bill row for this test until Task 23 exists).
   - `bill-generate.spec.ts`: staff opens a table with two orders, generates a bill, sees correct totals for tax mode `NONE` and (after setting REGULAR in the DB for that test) for `REGULAR`; applies a 10 % discount as owner; Hindi + 360 px no horizontal scroll; axe clean.
-- [ ] **Step 2: Run.** Expected: FAIL.
-- [ ] **Step 3: Implement.**
-- [ ] **Step 4: Run** unit, integration, e2e, and the authorization matrix. Expected: PASS.
-- [ ] **Step 5: UI pass:** `$impeccable shape` → build → `audit` + `harden` for the screens only (never the math).
-- [ ] **Step 6: Commit** `feat: bill generation with snapshots and discounts`, then PROGRESS.
+- [x] **Step 2: Run.** Expected: FAIL.
+- [x] **Step 3: Implement.**
+- [x] **Step 4: Run** unit, integration, e2e, and the authorization matrix. Expected: PASS.
+- [x] **Step 5: UI pass:** `$impeccable shape` → build → `audit` + `harden` for the screens only (never the math).
+- [x] **Step 6: Commit** `feat: bill generation with snapshots and discounts`, then PROGRESS.
 
 ---
 

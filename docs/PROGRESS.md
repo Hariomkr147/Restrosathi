@@ -267,3 +267,9 @@ px vitest run staff-order and uthz passed. Lint and typecheck passed.
 - Fixed Settings update audit logging bug with Date objects by serializing.
 - All tests pass.
 - Commit: 82567dd
+
+## Task 22: Generate bill (snapshots, discount) and bill screens
+- Implemented bill generation logic in src/lib/billing/generate.ts.
+- Added bill screen UI components (BillPanel).
+- Ensured server action computes and stores bill correctly, and retrieves the saved discount.
+- Resolved strict mode layout and hydration issues in ill-generate.spec.ts.

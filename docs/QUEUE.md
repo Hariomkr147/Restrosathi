@@ -22,8 +22,8 @@ How to read it: a **Task** row is done when `docs/PROGRESS.md` has an entry head
 | 14 | Task 19 | Production packaging (code only) | same | `phase-2-qr-ordering` | [ ] |
 | 15 | Gate 2 | Authz matrix, security review, exit E2E, summary | same (Phase 2 gate) | `phase-2-qr-ordering` | [ ] |
 | 16 | Task 20 | Staff-entered orders, takeaway | `2026-10-02-phase-3-billing-plan.md` | `phase-3-billing` | [x] |
-| 17 | Task 21 | Billing engine, tax settings | same | `phase-3-billing` | [ ] |
-| 18 | Task 22 | Generate bill, discounts, bill screens | same | `phase-3-billing` | [ ] |
+| 17 | Task 21 | Billing engine, tax settings | same | `phase-3-billing` | [x] |
+| 18 | Task 22 | Generate bill, discounts, bill screens | same | `phase-3-billing` | [x] |
 | 19 | Task 23 | Invoice numbers, settlement | same | `phase-3-billing` | [ ] |
 | 20 | Task 24 | Cancel settled bill (owner) | same | `phase-3-billing` | [ ] |
 | 21 | Task 25 | 80 mm bill print | same | `phase-3-billing` | [ ] |
