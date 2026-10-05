@@ -20,3 +20,30 @@ export async function generateBillAction(
   }
   return res;
 }
+
+import { settleBill } from "@/lib/billing/settle";
+
+export async function settleBillAction(
+  billId: string,
+  payments: Array<{ method: "CASH" | "UPI" | "CARD"; amountPaise: number }>,
+  expectedTotalPaise: number
+) {
+  const user = await requireUser();
+  const res = await settleBill(billId, payments, user, { expectedTotalPaise });
+  if (res.ok) {
+    revalidatePath("/admin/bills");
+  }
+  return res;
+}
+
+import { cancelBill } from "@/lib/billing/cancel";
+
+export async function cancelBillAction(billId: string, reason: string) {
+  const user = await requireUser("OWNER");
+  const res = await cancelBill(billId, reason, user);
+  if (res.ok) {
+    revalidatePath("/admin/bills/history");
+    revalidatePath(`/admin/bills/view/${billId}`);
+  }
+  return res;
+}

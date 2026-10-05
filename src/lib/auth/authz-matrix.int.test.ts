@@ -151,6 +151,24 @@ for (const { role, signIn } of roles) {
       expect(await bills.generateBillAction("__absent", {})).toEqual({ ok: false, error: "NOT_FOUND" });
     }
   });
+
+  it(`${role}: settleBillAction requires staff or owner`, async () => {
+    await signIn();
+    if (role === "anonymous") {
+      await expect(bills.settleBillAction("__absent", [], 0)).rejects.toBeInstanceOf(AuthError);
+    } else {
+      expect(await bills.settleBillAction("__absent", [], 0)).toEqual({ ok: false, error: "NOT_FOUND" });
+    }
+  });
+
+  it(`${role}: cancelBillAction requires OWNER only`, async () => {
+    await signIn();
+    if (role === "owner") {
+      expect(await bills.cancelBillAction("__absent", "valid")).toEqual({ ok: false, error: "NOT_FOUND" });
+    } else {
+      await expect(bills.cancelBillAction("__absent", "valid")).rejects.toBeInstanceOf(AuthError);
+    }
+  });
 }
 // Public: password/PIN login establishes authentication (auth.int.test.ts).
 // Public: GET /uploads serves validated menu images to diners (routes.int.test.ts).

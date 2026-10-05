@@ -22,8 +22,15 @@ export default async function BillsPage() {
 
   return (
     <main className="mx-auto w-full max-w-content px-6 py-4">
-      <h1 className="mb-6 text-2xl font-bold">Bills</h1>
-      
+      <div className="flex items-center justify-between mb-6">
+        <h1 className="text-2xl font-bold">Bills</h1>
+        <Link 
+          href="/admin/bills/history"
+          className="text-sm font-medium text-blue-600 hover:underline"
+        >
+          View History
+        </Link>
+      </div>
       {sessions.length === 0 ? (
         <p className="text-muted-foreground">No open sessions.</p>
       ) : (
