@@ -301,3 +301,9 @@ px vitest run staff-order and uthz passed. Lint and typecheck passed.
 Commit: b18b1fd
 Tests run: unit and int tests for wa-akg, phone, and inbound webhooks.
 Result: All passed.
+
+## Task 29: Notify, outbox, and cron
+- Commit: 3d5f682
+- Tests run: unit and int tests for notify, outbox, health, and cron.
+- Result: All passed.
+- Details: Implemented notify function, processOutbox with FOR UPDATE SKIP LOCKED, WhatsApp health check, and cron route.
