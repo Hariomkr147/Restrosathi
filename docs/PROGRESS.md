@@ -296,3 +296,8 @@ px vitest run staff-order and uthz passed. Lint and typecheck passed.
 - Deviations: E2E tests run on localhost standalone. Added an extra fix to Next.js 15+ searchParams type.
 - Security and checks: lint, typecheck, unit, int, e2e passing. See docs/security/phase-3-review.md.
 
+
+## Task 28: WhatsApp adapter, phone normalisation, webhook
+Commit: b18b1fd
+Tests run: unit and int tests for wa-akg, phone, and inbound webhooks.
+Result: All passed.
