@@ -13,3 +13,19 @@ export function canBookingTransition(from: BookingStatus, to: BookingStatus): bo
   
   return false;
 }
+export async function markBookingStatus(bookingId: string, status: BookingStatus, actorId: string): Promise<{ ok: true } | { ok: false; error: "NOT_FOUND" | "INVALID_STATUS" }> {
+  const { PrismaClient } = require("@prisma/client");
+  const prisma = new PrismaClient();
+  const booking = await prisma.booking.findUnique({ where: { id: bookingId } });
+  if (!booking) return { ok: false, error: "NOT_FOUND" };
+  if (!canBookingTransition(booking.status, status)) {
+    return { ok: false, error: "INVALID_STATUS" };
+  }
+  
+  await prisma.booking.update({
+    where: { id: bookingId },
+    data: { status, decidedById: actorId }
+  });
+  
+  return { ok: true };
+}

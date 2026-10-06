@@ -313,3 +313,8 @@ Result: All passed.
 - Created verified-device cookie mechanism for 180 days.
 - Built reusable OtpField component with paste support and resend timer.
 - Tests run: unit, int. All passed.
+
+## Task 31: Booking rules and the request form /book (2026-10-06, branch phase-4-whatsapp-bookings, commit e773be0)
+- Tests: E2E booking tests ran and passed (2 tests passed in ~25.4s).
+- Notes: Fixed the issue where WA template params used `otp` instead of `code`. Also fixed locator ambiguity in E2E tests.
+

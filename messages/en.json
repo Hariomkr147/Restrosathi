@@ -129,10 +129,12 @@
     "OWNER": "Owner",
     "STAFF": "Staff",
     "navigation": "Administration",
+    "bookings": "Bookings",
     "settings": "Settings",
     "menu": "Menu editor",
     "tables": "Tables",
     "printTables": "Print table QR codes",
+    "reports": "Reports",
     "board": "Kitchen board",
     "newOrder": "New order",
     "bills": "Bills"

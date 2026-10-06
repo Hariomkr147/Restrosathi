@@ -78,7 +78,7 @@ export async function confirmBooking(bookingId: string, actorId: string): Promis
       cancelToken: booking.cancelToken
     }, { tx, locale: booking.locale as any });
     
-    await audit(tx, "booking.confirm", actorId, { bookingId });
+    await audit({ action: "booking.confirm", actorId, entity: "booking", entityId: bookingId }, tx);
     
     return { ok: true };
   });
@@ -107,7 +107,7 @@ export async function declineBooking(bookingId: string, reason: string | undefin
       reason: reason || "Fully booked"
     }, { tx, locale: booking.locale as any });
     
-    await audit(tx, "booking.decline", actorId, { bookingId, reason });
+    await audit({ action: "booking.decline", actorId, entity: "booking", entityId: bookingId, data: reason ? { reason } : {} }, tx);
     return { ok: true };
   });
 }

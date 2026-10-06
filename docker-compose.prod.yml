@@ -59,6 +59,21 @@ services:
       postgres:
         condition: service_started
 
+  cron:
+    image: curlimages/curl
+    restart: always
+    env_file:
+      - .env.production
+    entrypoint: >
+      /bin/sh -c "while true; do
+        curl -sf http://app:3000/api/cron/outbox -H \"Authorization: Bearer $${CRON_SECRET}\" || true;
+        curl -sf http://app:3000/api/cron/health -H \"Authorization: Bearer $${CRON_SECRET}\" || true;
+        curl -sf http://app:3000/api/cron/reminders -H \"Authorization: Bearer $${CRON_SECRET}\" || true;
+        sleep 10;
+      done"
+    depends_on:
+      - app
+
   wa-akg-db:
     image: postgres:17
     restart: always

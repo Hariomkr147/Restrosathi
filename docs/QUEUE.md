@@ -30,10 +30,10 @@ How to read it: a **Task** row is done when `docs/PROGRESS.md` has an entry head
 | 22 | Task 26 | Day-end report | same | `phase-3-billing` | [x] |
 | 23 | Task 27 | Customer bill view from snapshot | same | `phase-3-billing` | [x] |
 | 24 | Gate 3 | Billing exit E2E, money review, summary | same (Phase 3 gate) | `phase-3-billing` | [x] |
-| 25 | Task 28 | WhatsApp adapter, phone, webhook | `2026-10-02-phase-4-whatsapp-bookings-plan.md` | `phase-4-whatsapp-bookings` | [ ] |
-| 26 | Task 29 | notify outbox, cron, banner | same | `phase-4-whatsapp-bookings` | [ ] |
-| 27 | Task 30 | OTP, verified-device cookie | same | `phase-4-whatsapp-bookings` | [ ] |
-| 28 | Task 31 | Booking rules, request form | same | `phase-4-whatsapp-bookings` | [ ] |
+| 25 | Task 28 | WhatsApp adapter, phone, webhook | `2026-10-02-phase-4-whatsapp-bookings-plan.md` | `phase-4-whatsapp-bookings` | [x] |
+| 26 | Task 29 | notify outbox, cron, banner | same | `phase-4-whatsapp-bookings` | [x] |
+| 27 | Task 30 | OTP, verified-device cookie | same | `phase-4-whatsapp-bookings` | [x] |
+| 28 | Task 31 | Booking rules, request form | same | `phase-4-whatsapp-bookings` | [x] |
 | 29 | Task 32 | Staff bookings, safe confirm, reminders, cancel | same | `phase-4-whatsapp-bookings` | [ ] |
 | 30 | Task 33 | Event packages and enquiries | same | `phase-4-whatsapp-bookings` | [ ] |
 | 31 | Task 34 | AI auto-reply, inbox | same | `phase-4-whatsapp-bookings` | [ ] |
