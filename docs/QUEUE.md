@@ -35,11 +35,11 @@ How to read it: a **Task** row is done when `docs/PROGRESS.md` has an entry head
 | 27 | Task 30 | OTP, verified-device cookie | same | `phase-4-whatsapp-bookings` | [x] |
 | 28 | Task 31 | Booking rules, request form | same | `phase-4-whatsapp-bookings` | [x] |
 | 29 | Task 32 | Staff bookings, safe confirm, reminders, cancel | same | `phase-4-whatsapp-bookings` | [x] |
-| 30 | Task 33 | Event packages and enquiries | same | `phase-4-whatsapp-bookings` | [ ] |
-| 31 | Task 34 | AI auto-reply, inbox | same | `phase-4-whatsapp-bookings` | [ ] |
-| 32 | Task 35 | Owner escalation | same | `phase-4-whatsapp-bookings` | [ ] |
-| 33 | Task 36 | Privacy page, retention, enable flags | same | `phase-4-whatsapp-bookings` | [ ] |
-| 34 | Gate 4 | Exit E2E, security review, summary | same (Phase 4 gate) | `phase-4-whatsapp-bookings` | [ ] |
+| 30 | Task 33| [x] |
+| 31 | Task 34| [x] |
+| 32 | Task 35| [x] |
+| 33 | Task 36 | Privacy page, retention, enable flags | same | `phase-4-whatsapp-bookings` | [x] |
+| 34 | Gate 4 | Exit E2E, security review, summary | same (Phase 4 gate) | `phase-4-whatsapp-bookings` | [x] |
 | 35 | Task 37 | Customers, consent, erasure | `2026-10-02-phase-5-growth-plan.md` | `phase-5-growth` | [ ] |
 | 36 | Task 38 | Loyalty ledger | same | `phase-5-growth` | [ ] |
 | 37 | Task 39 | Feedback, Google review link | same | `phase-5-growth` | [ ] |

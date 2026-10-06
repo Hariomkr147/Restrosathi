@@ -69,7 +69,7 @@ export async function processInboundWebhook(body: any) {
   }
 
   // Normal IN message
-  await prisma.messageLog.create({
+  const msg = await prisma.messageLog.create({
     data: {
       direction: "IN",
       phone: e164,
@@ -78,4 +78,11 @@ export async function processInboundWebhook(body: any) {
       externalId: messageId
     }
   });
+
+  // Trigger AI auto-reply asynchronously
+  setTimeout(() => {
+    import("../ai/autoreply").then(({ handleIncoming }) => {
+      handleIncoming(msg.externalId!);
+    }).catch(console.error);
+  }, 0);
 }

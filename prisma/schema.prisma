@@ -14,6 +14,7 @@ model Settings {
   address                String
   phone                  String
   whatsappPhone          String
+  ownerAlertPhone        String?
   mapEmbedUrl            String?
   googleReviewUrl        String?
   hours                  Json
@@ -237,6 +238,7 @@ model Order {
   source         OrderSource
   status         OrderStatus   @default(NEW)
   placedAt       DateTime      @default(now()) @db.Timestamptz(3)
+  escalatedAt    DateTime?     @db.Timestamptz(3)
   acceptedAt     DateTime?     @db.Timestamptz(3)
   readyAt        DateTime?     @db.Timestamptz(3)
   servedAt       DateTime?     @db.Timestamptz(3)

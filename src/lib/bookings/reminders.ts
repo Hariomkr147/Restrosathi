@@ -55,7 +55,7 @@ export async function sendDueReminders({ now = new Date(), provider }: { now?: D
       count++;
       if (msg && !("skipped" in msg)) {
         // Best effort
-        sendNow(msg.id, provider).catch(() => {});
+        sendNow(msg.id).catch(() => {});
       }
     });
   }

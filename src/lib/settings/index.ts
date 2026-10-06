@@ -10,6 +10,7 @@ export type SettingsView = {
   address: string;
   phone: string;
   whatsappPhone: string;
+  ownerAlertPhone: string | null;
   mapEmbedUrl: string | null;
   googleReviewUrl: string | null;
   hours: Hours;

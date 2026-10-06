@@ -44,6 +44,7 @@
     "main": "Main navigation",
     "book": "Book a table",
     "events": "Events",
+    "privacy": "Privacy policy",
     "skip": "Skip to content"
   },
   "home": {
@@ -213,6 +214,7 @@
     "contact": "Contact",
     "phone": "Phone number",
     "whatsappPhone": "WhatsApp number",
+    "ownerAlertPhone": "Owner alert number (optional)",
     "phoneHint": "Use +91 followed by 10 digits.",
     "links": "Links",
     "mapEmbedUrl": "Google Maps embed URL (optional)",
@@ -245,6 +247,7 @@
       "about": "Enter the English description.",
       "phone": "Use +91 followed by 10 digits.",
       "whatsappPhone": "Use +91 followed by 10 digits.",
+      "ownerAlertPhone": "Use +91 followed by 10 digits.",
       "mapEmbedUrl": "Enter a valid HTTPS URL, or leave blank.",
       "googleReviewUrl": "Enter a valid HTTPS URL, or leave blank.",
       "hours": "Enter valid opening and closing times in HH:MM format.",
@@ -484,5 +487,18 @@
     "WEEKLY_REPORT": "Weekly report: {orderCount} orders, {sales} sales.",
     "STOP_CONFIRMED": "You have been unsubscribed from our messages.",
     "AUTO_REPLY": "{answer}"
+  },
+  "privacy": {
+    "title": "Privacy Policy",
+    "whatWeCollect": "What we collect",
+    "whatWeCollectText": "We collect your name, phone number, order and booking details, and WhatsApp messages when you interact with us.",
+    "whyWeCollect": "Why we collect it",
+    "whyWeCollectText": "We use this information to take your orders, manage bookings, send confirmations, and reply to your questions.",
+    "thirdParties": "Third parties",
+    "thirdPartiesText": "Your messages are processed through WhatsApp. We use an AI to help answer menu questions and draft replies, using only our restaurant's own menu and opening hours. We do not sell your data.",
+    "retention": "Data retention",
+    "retentionText": "We keep chat messages for up to 24 months, after which they are automatically deleted.",
+    "deletion": "Requesting deletion",
+    "deletionText": "To ask for your data to be deleted, please message {restaurant} on WhatsApp or call {phone}."
   }
 }

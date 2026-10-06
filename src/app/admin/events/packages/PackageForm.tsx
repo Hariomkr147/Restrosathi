@@ -33,13 +33,9 @@ export function PackageForm({ pkg }: { pkg?: any }) {
     };
 
     try {
-      const res = await adminUpsertPackageAction(pkg?.id || null, data);
-      if (!res.ok) {
-        setError(res.error || "Validation Error");
-      } else {
-        if (!pkg) form.reset();
-        router.refresh();
-      }
+      await adminUpsertPackageAction(pkg?.id || null, data);
+      if (!pkg) form.reset();
+      router.refresh();
     } catch (err: any) {
       console.error(err);
       setError(err.message || "Error");

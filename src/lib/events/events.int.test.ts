@@ -49,10 +49,10 @@ describe("events integration", () => {
     if (!res.ok) throw new Error("Failed to submit");
 
     await asOwner();
-    const transition1 = await updateEnquiryStatusAction(res.enquiryId, "QUOTED", "Need 20 plates", 20000);
+    const transition1 = await updateEnquiryStatusAction(res.enquiryId!, "QUOTED", "Need 20 plates", 20000);
     expect(transition1.ok).toBe(true);
 
-    const transition2 = await updateEnquiryStatusAction(res.enquiryId, "CONFIRMED");
+    const transition2 = await updateEnquiryStatusAction(res.enquiryId!, "CONFIRMED");
     expect(transition2.ok).toBe(true);
 
     const enqs = await getEnquiries();

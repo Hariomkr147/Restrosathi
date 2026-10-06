@@ -325,3 +325,8 @@ Result: All passed.
 - Created customer cancel page, admin bookings page, and blocked dates page.
 - Ran booking-confirm.spec.ts E2E tests: passed.
 
+
+## Task 35: Kitchen/staff escalations
+- Added escalatedAt to Order and ownerAlertPhone to Settings.
+- Created escalation cron to notify owner if orders are stale.
+- Updated docker-compose with escalations loop.

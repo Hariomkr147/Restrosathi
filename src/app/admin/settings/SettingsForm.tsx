@@ -23,12 +23,12 @@ export function SettingsForm({ settings }: { settings: SettingsView }) {
   function error(field: string) {
     return fieldErrors[field] ? <p id={`error-${field}`} className="text-destructive" role="alert">{t(`errors.${field}`)}</p> : null;
   }
-  function field(name: "name" | "address" | "phone" | "whatsappPhone" | "mapEmbedUrl" | "googleReviewUrl") {
+  function field(name: "name" | "address" | "phone" | "whatsappPhone" | "ownerAlertPhone" | "mapEmbedUrl" | "googleReviewUrl") {
     return <div className="min-w-0 space-y-2">
       <label htmlFor={name} className="block font-medium">{t(name)}</label>
       <input id={name} name={name} className={inputClass} defaultValue={settings[name] ?? ""}
         type={name.includes("Url") ? "url" : name.toLowerCase().includes("phone") ? "tel" : "text"}
-        required={!name.includes("Url")} maxLength={name === "name" ? 80 : undefined}
+        required={!name.includes("Url") && name !== "ownerAlertPhone"} maxLength={name === "name" ? 80 : undefined}
         autoComplete={name.toLowerCase().includes("phone") ? "tel" : undefined}
         aria-invalid={!!fieldErrors[name]} aria-describedby={fieldErrors[name] ? `error-${name}` : undefined} />
       {name.toLowerCase().includes("phone") && <p className="text-sm text-muted-foreground">{t("phoneHint")}</p>}
@@ -44,7 +44,7 @@ export function SettingsForm({ settings }: { settings: SettingsView }) {
     startTransition(async () => {
       try {
         const result = await updateSettings({
-          name: value("name"), address: value("address"), phone: value("phone"), whatsappPhone: value("whatsappPhone"),
+          name: value("name"), address: value("address"), phone: value("phone"), whatsappPhone: value("whatsappPhone"), ownerAlertPhone: value("ownerAlertPhone") || null,
           about: { en: value("about-en"), hi: value("about-hi") }, mapEmbedUrl: value("mapEmbedUrl"), googleReviewUrl: value("googleReviewUrl"), hours,
           taxMode: value("taxMode"), gstRatePercent: parseInt(value("gstRatePercent") || "5", 10), pricesIncludeTax: form.get("pricesIncludeTax") === "on",
           gstin: value("gstin"), fssai: value("fssai"), staffCanDiscount: form.get("staffCanDiscount") === "on",
@@ -66,7 +66,7 @@ export function SettingsForm({ settings }: { settings: SettingsView }) {
             required={locale === "en"} aria-invalid={!!fieldErrors.about} aria-describedby={fieldErrors.about ? "error-about" : undefined} />
         </div>)}</div>{error("about")}
       </fieldset>
-      <fieldset className="min-w-0 space-y-4"><legend className="mb-4 font-heading text-2xl">{t("contact")}</legend>{field("phone")}{field("whatsappPhone")}</fieldset>
+      <fieldset className="min-w-0 space-y-4"><legend className="mb-4 font-heading text-2xl">{t("contact")}</legend>{field("phone")}{field("whatsappPhone")}{field("ownerAlertPhone")}</fieldset>
       <fieldset className="min-w-0 space-y-4"><legend className="mb-4 font-heading text-2xl">{t("links")}</legend><p className="text-sm text-muted-foreground">{t("linkHint")}</p>{field("mapEmbedUrl")}{field("googleReviewUrl")}</fieldset>
       <fieldset className="min-w-0 space-y-6"><legend className="mb-4 font-heading text-2xl">{t("hours")}</legend>
         <p className="text-sm text-muted-foreground">{t("hoursHint")}</p>

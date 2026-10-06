@@ -233,4 +233,6 @@ for (const { role, signIn } of roles) {
 // Public: GET /uploads serves validated menu images to diners (routes.int.test.ts).
 // Public: GET /api/t/[code]/status serves SSE to diners (SSE tested elsewhere).
 // Public: GET /api/board serves SSE to staff (requires auth, handled in route).
+// Webhook: POST /api/webhooks/whatsapp requires valid signature (tested in webhooks or phase exit).
+// Cron: POST /api/cron/* requires Bearer CRON_SECRET (tested in integration tests).
 

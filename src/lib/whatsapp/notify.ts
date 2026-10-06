@@ -5,7 +5,7 @@ import crypto from "node:crypto";
 import enMsgs from "../../../messages/en.json";
 import hiMsgs from "../../../messages/hi.json";
 
-export type MessageKind = "OTP" | "BOOKING_RECEIVED" | "BOOKING_CONFIRMED" | "BOOKING_DECLINED" | "BOOKING_REMINDER" | "EVENT_ENQUIRY_RECEIVED" | "ORDER_ESCALATION" | "THANK_YOU_FEEDBACK" | "WEEKLY_REPORT" | "STOP_CONFIRMED" | "AUTO_REPLY";
+export type MessageKind = "OTP" | "BOOKING_RECEIVED" | "BOOKING_CONFIRMED" | "BOOKING_DECLINED" | "BOOKING_CANCELLED" | "BOOKING_REMINDER" | "EVENT_ENQUIRY_RECEIVED" | "ORDER_ESCALATION" | "THANK_YOU_FEEDBACK" | "WEEKLY_REPORT" | "STOP_CONFIRMED" | "AUTO_REPLY";
 
 export async function notify(
   kind: MessageKind, 

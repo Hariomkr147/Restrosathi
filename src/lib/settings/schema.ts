@@ -26,6 +26,7 @@ export const settingsInputSchema = z.object({
   address: z.string().trim().min(1),
   phone: z.string().regex(/^\+91\d{10}$/),
   whatsappPhone: z.string().regex(/^\+91\d{10}$/),
+  ownerAlertPhone: z.string().regex(/^\+91\d{10}$/).nullable().optional(),
   mapEmbedUrl: optionalHttps,
   googleReviewUrl: optionalHttps,
   hours: hoursSchema,

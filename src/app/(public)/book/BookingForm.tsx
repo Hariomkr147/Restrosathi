@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { submitBooking, getBookingSlots, requestOtpAction, verifyOtpAction } from "./actions";
+import Link from "next/link";
 
 type Slot = { time: string; isFull: boolean };
 
@@ -272,6 +273,10 @@ export function BookingForm({ maxPartySize }: { maxPartySize: number }) {
           className="w-full p-2 border rounded h-20"
         />
       </div>
+
+      <p className="text-xs text-muted-foreground text-center">
+        By requesting, you agree to our <Link href="/privacy" className="underline hover:text-primary">Privacy Policy</Link>.
+      </p>
 
       <button 
         type="submit" 

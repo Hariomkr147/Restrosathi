@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { submitEnquiryAction } from "./actions";
 import { useTranslations } from "next-intl";
+import Link from "next/link";
 
 export function EnquiryForm({ packages }: { packages: { id: string, name: string }[] }) {
   const t = useTranslations("events");
@@ -116,6 +117,10 @@ export function EnquiryForm({ packages }: { packages: { id: string, name: string
       <div className="text-sm text-[var(--color-text-muted)] bg-[var(--color-surface)] p-[calc(var(--spacing)*4)] rounded border border-[var(--color-border)]">
         {t("depositNotice")}
       </div>
+
+      <p className="text-xs text-muted-foreground text-center">
+        By submitting, you agree to our <Link href="/privacy" className="underline hover:text-primary">Privacy Policy</Link>.
+      </p>
 
       <button disabled={loading} type="submit" className="w-full h-[var(--size-touch)] bg-[var(--color-primary)] text-[var(--color-primary-contrast)] rounded-[var(--radius-sm)] font-bold disabled:opacity-50">
         {loading ? t("submitting") : t("submit")}

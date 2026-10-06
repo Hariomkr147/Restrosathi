@@ -22,8 +22,8 @@ export default async function EventsPage() {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-[calc(var(--spacing)*4)]">
             {activePackages.map(pkg => (
               <div key={pkg.id} className="border border-[var(--color-border)] rounded-[var(--radius-md)] p-[calc(var(--spacing)*4)] bg-[var(--color-surface-raised)] flex flex-col h-full">
-                <h3 className="font-bold text-lg">{pkg.name.en}</h3>
-                <p className="text-[var(--color-text-muted)] mt-[calc(var(--spacing)*2)] flex-grow whitespace-pre-wrap">{pkg.description.en}</p>
+                <h3 className="font-bold text-lg">{(pkg.name as any).en}</h3>
+                <p className="text-[var(--color-text-muted)] mt-[calc(var(--spacing)*2)] flex-grow whitespace-pre-wrap">{(pkg.description as any).en}</p>
                 
                 <div className="mt-[calc(var(--spacing)*4)] pt-[calc(var(--spacing)*4)] border-t border-[var(--color-border)] text-sm flex justify-between">
                   <div>
@@ -45,7 +45,7 @@ export default async function EventsPage() {
         <h2 className="text-2xl font-display mb-[calc(var(--spacing)*2)]">{t("enquiryFormTitle")}</h2>
         <p className="text-[var(--color-text-muted)] mb-[calc(var(--spacing)*6)]">{t("enquiryFormSubtitle")}</p>
         <NextIntlClientProvider messages={{events: (messages as any).events}}>
-          <EnquiryForm packages={activePackages.map(p => ({ id: p.id, name: p.name.en }))} />
+          <EnquiryForm packages={activePackages.map(p => ({ id: p.id, name: (p.name as any)?.en || "Unnamed Package" }))} />
         </NextIntlClientProvider>
       </section>
     </main>
