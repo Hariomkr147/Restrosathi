@@ -432,5 +432,6 @@
   "wa.THANK_YOU_FEEDBACK": "Thank you! Leave a review: {link}",
   "wa.WEEKLY_REPORT": "Weekly report: {orderCount} orders, {sales} sales.",
   "wa.STOP_CONFIRMED": "You have been unsubscribed from our messages.",
-  "wa.AUTO_REPLY": "{answer}"
+  "wa.AUTO_REPLY": "{answer}",
+  "wa.OTP": "{code} is your code for RestroSathi. Valid for {minutes} minutes."
 }

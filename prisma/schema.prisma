@@ -419,3 +419,16 @@ model OptOut {
   phone String   @id
   at    DateTime @default(now()) @db.Timestamptz(3)
 }
+
+model OtpCode {
+  id         String    @id @default(uuid())
+  phone      String
+  codeHash   String
+  expiresAt  DateTime  @db.Timestamptz(3)
+  attempts   Int       @default(0)
+  consumedAt DateTime? @db.Timestamptz(3)
+  createdAt  DateTime  @default(now()) @db.Timestamptz(3)
+
+  @@index([phone, createdAt])
+}
+

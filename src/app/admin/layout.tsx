@@ -5,11 +5,13 @@ import { LogoutButton } from "../login/LoginForm";
 import { LanguageToggle } from "@/components/LanguageToggle";
 import Link from "next/link";
 import { NextIntlClientProvider } from "next-intl";
+import { WhatsAppBanner } from "@/components/admin/WhatsAppBanner";
 
 export default async function AdminLayout({ children }: { children: ReactNode }) {
   const user = await requirePageUser();
   const t = await getTranslations("admin");
   return <NextIntlClientProvider>
+    <WhatsAppBanner />
     <div className="admin-chrome mx-auto w-full max-w-content px-6 py-4"><LanguageToggle /></div>
     <header className="admin-chrome mx-auto flex w-full max-w-content flex-wrap items-center justify-between gap-4 px-6 py-4">
       <div className="min-w-0 break-words">

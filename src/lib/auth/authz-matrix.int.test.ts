@@ -16,6 +16,7 @@ import * as bills from "../../app/admin/bills/actions";
 import { askMenuAction } from "../ai/actions";
 import { getDayEnd } from "../billing/day-end";
 import { GET as getHealth } from "../../app/api/health/route";
+import { requestOtpAction, verifyOtpAction } from "../../app/(public)/book/otp-actions";
 
 vi.mock("next/cache", () => ({ revalidatePath: vi.fn() }));
 const roles = [
@@ -111,6 +112,12 @@ for (const { role, signIn } of roles) {
     await signIn();
     const response = await getHealth(new Request("http://localhost/api/health"));
     expect(response.status).toBeGreaterThanOrEqual(200);
+  });
+
+  it(`${role}: OTP actions are explicitly public and validate input`, async () => {
+    await signIn();
+    expect(await requestOtpAction("123")).toEqual({ ok: false, error: "INVALID_PHONE" });
+    expect(await verifyOtpAction("123", "000000")).toEqual({ ok: false, error: "INVALID_PHONE" });
   });
 
   for (const action of [

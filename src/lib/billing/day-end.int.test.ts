@@ -39,7 +39,7 @@ describe("getDayEnd", () => {
       const bRes = await generateBill(s.id, {}, { id: ownerId, role: "OWNER" });
       if (!bRes.ok) throw new Error();
       const bill = await prisma.bill.findUniqueOrThrow({ where: { id: bRes.billId } });
-      const settleRes = await settleBill(bRes.billId, [{ method: paymentMethod, amountPaise: bill.totalPaise }], { id: ownerId, role: "OWNER" }, { expectedTotalPaise: bill.totalPaise, now: time });
+      const settleRes = await settleBill(bRes.billId, [{ method: paymentMethod, amountPaise: bill.totalPaise }], { id: ownerId }, { expectedTotalPaise: bill.totalPaise, now: time });
       if (!settleRes.ok) throw new Error("Settle failed: " + settleRes.error);
       return bill;
     }
@@ -56,7 +56,7 @@ describe("getDayEnd", () => {
     const bSplit = await generateBill(sSplit.id, {}, { id: ownerId, role: "OWNER" });
     if (!bSplit.ok) throw new Error();
     const billSplit = await prisma.bill.findUniqueOrThrow({ where: { id: bSplit.billId } });
-    const settleSplitRes = await settleBill(bSplit.billId, [{ method: "UPI", amountPaise: 100 }, { method: "CASH", amountPaise: billSplit.totalPaise - 100 }], { id: ownerId, role: "OWNER" }, { expectedTotalPaise: billSplit.totalPaise, now: midDayIst });
+    const settleSplitRes = await settleBill(bSplit.billId, [{ method: "UPI", amountPaise: 100 }, { method: "CASH", amountPaise: billSplit.totalPaise - 100 }], { id: ownerId }, { expectedTotalPaise: billSplit.totalPaise, now: midDayIst });
     if (!settleSplitRes.ok) throw new Error("Settle split failed: " + settleSplitRes.error);
 
     // Cancelled bill in window

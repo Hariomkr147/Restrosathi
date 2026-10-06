@@ -307,3 +307,9 @@ Result: All passed.
 - Tests run: unit and int tests for notify, outbox, health, and cron.
 - Result: All passed.
 - Details: Implemented notify function, processOutbox with FOR UPDATE SKIP LOCKED, WhatsApp health check, and cron route.
+
+## Task 30: OTP generation and verification flow
+- Implemented OTP request, rate limiting (3/hr/phone), verification (5 attempts max), and 10 min expiry.
+- Created verified-device cookie mechanism for 180 days.
+- Built reusable OtpField component with paste support and resend timer.
+- Tests run: unit, int. All passed.
