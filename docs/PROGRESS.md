@@ -318,3 +318,10 @@ Result: All passed.
 - Tests: E2E booking tests ran and passed (2 tests passed in ~25.4s).
 - Notes: Fixed the issue where WA template params used `otp` instead of `code`. Also fixed locator ambiguity in E2E tests.
 
+
+## Task 32: Staff bookings management, cancellation, blocked dates and reminders
+- Commit: bcddecb03c8c897d5b05e486cce9e706fc14c840
+- Added cron entry for reminders.
+- Created customer cancel page, admin bookings page, and blocked dates page.
+- Ran booking-confirm.spec.ts E2E tests: passed.
+

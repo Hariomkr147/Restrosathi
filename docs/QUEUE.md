@@ -34,7 +34,7 @@ How to read it: a **Task** row is done when `docs/PROGRESS.md` has an entry head
 | 26 | Task 29 | notify outbox, cron, banner | same | `phase-4-whatsapp-bookings` | [x] |
 | 27 | Task 30 | OTP, verified-device cookie | same | `phase-4-whatsapp-bookings` | [x] |
 | 28 | Task 31 | Booking rules, request form | same | `phase-4-whatsapp-bookings` | [x] |
-| 29 | Task 32 | Staff bookings, safe confirm, reminders, cancel | same | `phase-4-whatsapp-bookings` | [ ] |
+| 29 | Task 32 | Staff bookings, safe confirm, reminders, cancel | same | `phase-4-whatsapp-bookings` | [x] |
 | 30 | Task 33 | Event packages and enquiries | same | `phase-4-whatsapp-bookings` | [ ] |
 | 31 | Task 34 | AI auto-reply, inbox | same | `phase-4-whatsapp-bookings` | [ ] |
 | 32 | Task 35 | Owner escalation | same | `phase-4-whatsapp-bookings` | [ ] |
