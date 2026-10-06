@@ -421,5 +421,16 @@
         "voidedLines": "रद्द किए गए आइटम ({count})"
       }
     }
-  }
+  },
+  "wa.OTP": "सैफ्रन तड़का के लिए आपका कोड {code} है। {minutes} मिनट के लिए वैध है।",
+  "wa.BOOKING_RECEIVED": "धन्यवाद! {date} को {time} बजे {pax} लोगों के लिए आपका अनुरोध प्राप्त हुआ।",
+  "wa.BOOKING_CONFIRMED": "पुष्टि हो गई: {date} को {time} बजे {pax} लोगों के लिए आपकी टेबल बुक हो गई है।",
+  "wa.BOOKING_DECLINED": "क्षमा करें, हमारी सभी टेबल बुक हैं।",
+  "wa.BOOKING_REMINDER": "याद दिलाना: आपकी टेबल {time} के लिए बुक है।",
+  "wa.EVENT_ENQUIRY_RECEIVED": "हमें आपकी पूछताछ प्राप्त हुई है और हम जल्द ही आपसे संपर्क करेंगे।",
+  "wa.ORDER_ESCALATION": "{label} पर ध्यान देने की आवश्यकता है।",
+  "wa.THANK_YOU_FEEDBACK": "धन्यवाद! यहाँ रिव्यू छोड़ें: {link}",
+  "wa.WEEKLY_REPORT": "साप्ताहिक रिपोर्ट: {orderCount} ऑर्डर, {sales} बिक्री।",
+  "wa.STOP_CONFIRMED": "आपको हमारे संदेशों से अनसब्सक्राइब कर दिया गया है।",
+  "wa.AUTO_REPLY": "{answer}"
 }

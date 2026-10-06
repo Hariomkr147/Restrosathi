@@ -421,5 +421,16 @@
         "voidedLines": "Voided Items ({count})"
       }
     }
-  }
+  },
+  "wa.OTP": "Your Saffron Tadka code is {code}. Valid for {minutes} minutes.",
+  "wa.BOOKING_RECEIVED": "Thanks! Your request for {date} at {time} for {pax} people is received.",
+  "wa.BOOKING_CONFIRMED": "Confirmed: Your table for {date} at {time} for {pax} people is booked.",
+  "wa.BOOKING_DECLINED": "Sorry, we are fully booked.",
+  "wa.BOOKING_REMINDER": "Reminder: Your table is booked for {time}.",
+  "wa.EVENT_ENQUIRY_RECEIVED": "We received your event enquiry and will contact you soon.",
+  "wa.ORDER_ESCALATION": "Staff attention required at {label}.",
+  "wa.THANK_YOU_FEEDBACK": "Thank you! Leave a review: {link}",
+  "wa.WEEKLY_REPORT": "Weekly report: {orderCount} orders, {sales} sales.",
+  "wa.STOP_CONFIRMED": "You have been unsubscribed from our messages.",
+  "wa.AUTO_REPLY": "{answer}"
 }
