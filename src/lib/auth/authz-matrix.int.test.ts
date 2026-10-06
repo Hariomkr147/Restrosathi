@@ -17,6 +17,9 @@ import { askMenuAction } from "../ai/actions";
 import { getDayEnd } from "../billing/day-end";
 import { GET as getHealth } from "../../app/api/health/route";
 import { requestOtpAction, verifyOtpAction } from "../../app/(public)/book/otp-actions";
+import { submitEnquiryAction } from "../../app/(public)/events/actions";
+import { adminUpsertPackageAction, adminUpdateEnquiryStatusAction } from "../../app/admin/events/actions";
+import { getEnquiries } from "../../lib/events/enquiries";
 
 vi.mock("next/cache", () => ({ revalidatePath: vi.fn() }));
 const roles = [
@@ -191,6 +194,38 @@ for (const { role, signIn } of roles) {
       expect(report.billCount).toBeGreaterThanOrEqual(0);
     } else {
       await expect(getDayEnd("2026-10-05", actor)).rejects.toThrow("FORBIDDEN");
+    }
+  });
+
+  it(`${role}: submitEnquiryAction is explicitly public`, async () => {
+    await signIn();
+    await expect(submitEnquiryAction({})).rejects.toThrow();
+  });
+
+  it(`${role}: adminUpsertPackageAction requires OWNER`, async () => {
+    await signIn();
+    if (role === "owner") {
+      await expect(adminUpsertPackageAction(null, {} as any)).rejects.toThrow();
+    } else {
+      await expect(adminUpsertPackageAction(null, {} as any)).rejects.toBeInstanceOf(AuthError);
+    }
+  });
+
+  it(`${role}: adminUpdateEnquiryStatusAction requires staff or owner`, async () => {
+    await signIn();
+    if (role === "anonymous") {
+      await expect(adminUpdateEnquiryStatusAction("invalid", "QUOTED")).rejects.toBeInstanceOf(AuthError);
+    } else {
+      expect(await adminUpdateEnquiryStatusAction("invalid", "QUOTED")).toMatchObject({ ok: false, error: "NOT_FOUND" });
+    }
+  });
+
+  it(`${role}: getEnquiries requires staff or owner`, async () => {
+    await signIn();
+    if (role === "anonymous") {
+      await expect(getEnquiries()).rejects.toBeInstanceOf(AuthError);
+    } else {
+      expect(Array.isArray(await getEnquiries())).toBe(true);
     }
   });
 }

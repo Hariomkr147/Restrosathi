@@ -112,6 +112,41 @@ try {
       },
     });
   }
+
+  const packages = [
+    {
+      id: "silver-package",
+      name: { en: "Silver Package", hi: "सिल्वर पैकेज" },
+      description: { en: "Standard buffet with 2 starters, 2 mains, 1 dessert.", hi: "स्टैंडर्ड बुफे, 2 स्टार्टर, 2 मुख्य कोर्स, 1 मिठाई।" },
+      pricePerPlatePaise: 50000,
+      minGuests: 20,
+      sortOrder: 0
+    },
+    {
+      id: "gold-package",
+      name: { en: "Gold Package", hi: "गोल्ड पैकेज" },
+      description: { en: "Premium buffet with 4 starters, 3 mains, 2 desserts.", hi: "प्रीमियम बुफे, 4 स्टार्टर, 3 मुख्य कोर्स, 2 मिठाइयाँ।" },
+      pricePerPlatePaise: 80000,
+      minGuests: 15,
+      sortOrder: 1
+    },
+    {
+      id: "platinum-package",
+      name: { en: "Platinum Package", hi: "प्लैटिनम पैकेज" },
+      description: { en: "Luxurious buffet with live counters and unlimited mocktails.", hi: "लग्जरी बुफे, लाइव काउंटर और अनलिमिटेड मॉकटेल।" },
+      pricePerPlatePaise: 120000,
+      minGuests: 10,
+      sortOrder: 2
+    }
+  ];
+
+  for (const pkg of packages) {
+    await prisma.eventPackage.upsert({
+      where: { id: pkg.id },
+      update: {},
+      create: pkg
+    });
+  }
 } finally {
   await prisma.$disconnect();
 }

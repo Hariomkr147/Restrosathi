@@ -51,6 +51,7 @@ model User {
   sessions     AuthSession[]
   auditLogs    AuditLog[]
   bookings     Booking[]
+  eventEnquiries EventEnquiry[]
 }
 
 model AuthSession {
@@ -467,4 +468,48 @@ model Booking {
 model BlockedDate {
   date   String  @id // YYYY-MM-DD, IST
   reason String?
+}
+enum EventType {
+  BIRTHDAY
+  CORPORATE
+  OTHER
+}
+
+enum EnquiryStatus {
+  NEW
+  QUOTED
+  CONFIRMED
+  LOST
+}
+
+model EventPackage {
+  id                 String  @id @default(uuid())
+  name               Json
+  description        Json
+  pricePerPlatePaise Int
+  minGuests          Int
+  active             Boolean @default(true)
+  sortOrder          Int     @default(0)
+  
+  enquiries          EventEnquiry[]
+}
+
+model EventEnquiry {
+  id           String        @id @default(uuid())
+  packageId    String?
+  eventType    EventType
+  name         String
+  phone        String
+  guests       Int
+  eventDate    DateTime      @db.Date
+  message      String?
+  status       EnquiryStatus @default(NEW)
+  quotedPaise  Int?
+  notes        String?
+  locale       String        @default("en")
+  createdAt    DateTime      @default(now()) @db.Timestamptz(3)
+  handledById  String?
+  
+  package      EventPackage? @relation(fields: [packageId], references: [id], onDelete: SetNull)
+  handledBy    User?         @relation(fields: [handledById], references: [id], onDelete: SetNull)
 }

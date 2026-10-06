@@ -160,12 +160,12 @@
 - Admin: `/admin/events` lists enquiries with filters; staff/owner can change status along `NEW→QUOTED→CONFIRMED|LOST` (also `NEW→LOST`; no going back), set `quotedPaise`, add `notes`; **packages CRUD is OWNER only** (prices > 0, minGuests ≥ 1, localized names and descriptions).
 - `/events` (public; link only when `FEATURES.events`): packages with price per plate (`formatINR`) and minimum guests, enquiry form, success message.
 
-- [ ] **Step 1: Write failing tests.** `schemas.test.ts` bounds; `events.int.test.ts`: valid enquiry stored + message queued; past date, 501 guests, inactive package, bad phone rejected; honeypot silently dropped; rate limit; status transitions table-driven (invalid ones refused); packages CRUD owner-only (STAFF/anonymous rejected); prices must be > 0. `events.spec.ts`: customer sends an enquiry for a corporate event; staff quotes it; owner adds a package and it appears on `/events`; Hindi 360 px; axe clean.
-- [ ] **Step 2: Run.** Expected: FAIL.
-- [ ] **Step 3: Implement.**
-- [ ] **Step 4: Run** unit, integration, e2e. Expected: PASS.
-- [ ] **Step 5: UI pass:** `$impeccable shape` → build → `audit` + `harden` (admin); add `critique` + `polish` for `/events`.
-- [ ] **Step 6: Commit** `feat: event packages and enquiries`, then PROGRESS.
+- [x] **Step 1: Write failing tests.** `schemas.test.ts` bounds; `events.int.test.ts`: valid enquiry stored + message queued; past date, 501 guests, inactive package, bad phone rejected; honeypot silently dropped; rate limit; status transitions table-driven (invalid ones refused); packages CRUD owner-only (STAFF/anonymous rejected); prices must be > 0. `events.spec.ts`: customer sends an enquiry for a corporate event; staff quotes it; owner adds a package and it appears on `/events`; Hindi 360 px; axe clean.
+- [x] **Step 2: Run.** Expected: FAIL.
+- [x] **Step 3: Implement.**
+- [x] **Step 4: Run** unit, integration, e2e. Expected: PASS.
+- [x] **Step 5: UI pass:** `$impeccable shape` → build → `audit` + `harden` (admin); add `critique` + `polish` for `/events`.
+- [x] **Step 6: Commit** `feat: event packages and enquiries`, then PROGRESS.
 
 ---
 
