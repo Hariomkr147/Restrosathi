@@ -274,24 +274,25 @@ px vitest run staff-order and uthz passed. Lint and typecheck passed.
 - Ensured server action computes and stores bill correctly, and retrieves the saved discount.
 - Resolved strict mode layout and hydration issues in ill-generate.spec.ts.
 
- # #   T a s k   2 3 :   I n v o i c e   n u m b e r s   a n d   s e t t l e m e n t 
- -   I m p l e m e n t e d   b i l l   s e t t l e m e n t   w i t h   i n v o i c e   n u m b e r i n g . 
- 
- # #   T a s k   2 4 :   C a n c e l   s e t t l e d   b i l l   ( o w n e r ) 
- -   I m p l e m e n t e d   o w n e r - o n l y   b i l l   c a n c e l l a t i o n . 
- 
- # #   T a s k   2 5 :   8 0   m m   b i l l   p r i n t 
- -   I m p l e m e n t e d   8 0 m m   b i l l   p r i n t   v i e w   b a s e d   o n   s n a p s h o t . 
- 
- # #   T a s k   2 6 :   D a y - e n d   r e p o r t 
- -   I m p l e m e n t e d   o w n e r   d a y - e n d   r e p o r t . 
- 
- # #   T a s k   2 7 :   C u s t o m e r   b i l l   v i e w   r e a d s   t h e   b i l l   s n a p s h o t 
- -   I m p l e m e n t e d   c u s t o m e r   v i e w   o f   t h e   s n a p s h o t   b i l l .  
- 
- # #   P h a s e   3   s u m m a r y 
- -   F e a t u r e s :   S t a f f   o r d e r s ,   b i l l i n g   e n g i n e   w i t h   t a x / d i s c o u n t s ,   i n v o i c e   n u m b e r s ,   b i l l   s e t t l e m e n t ,   o w n e r - o n l y   c a n c e l l a t i o n ,   8 0 m m   p r i n t ,   d a y - e n d   r e p o r t ,   a n d   c u s t o m e r   b i l l   s n a p s h o t   v i e w . 
- -   T e s t   c o u n t s :   B i l l i n g   E 2 E   c o v e r s   t h e   f u l l   d i n e - i n   a n d   t a k e a w a y   e x i t   s c e n a r i o s . 
- -   D e v i a t i o n s :   E 2 E   t e s t s   r u n   o n   l o c a l h o s t   s t a n d a l o n e . 
- -   H U M A N   i t e m s :   A c c o u n t a n t   c o n f i r m a t i o n   f o r   t a x / G S T   s e t t i n g s ,   a n d   r u n n i n g   S t r i x   o n   s t a g i n g .  
- 
+
+## Task 23: Invoice numbers and settlement
+- Implemented bill settlement with invoice numbering.
+
+## Task 24: Cancel settled bill (owner)
+- Implemented owner-only bill cancellation.
+
+## Task 25: 80 mm bill print
+- Implemented 80mm bill print view based on snapshot.
+
+## Task 26: Day-end report
+- Implemented owner day-end report.
+
+## Task 27: Customer bill view reads the bill snapshot
+- Implemented customer view of the snapshot bill.
+
+## Phase 3 summary
+- Features: Staff orders, billing engine with tax/discounts, invoice numbers, bill settlement, owner-only cancellation, 80mm print, day-end report, and customer bill snapshot view.
+- Test counts: Billing E2E covers the full dine-in and takeaway exit scenarios.
+- Deviations: E2E tests run on localhost standalone. Added an extra fix to Next.js 15+ searchParams type.
+- Security and checks: lint, typecheck, unit, int, e2e passing. See docs/security/phase-3-review.md.
+

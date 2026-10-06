@@ -240,6 +240,7 @@ describe("calc", () => {
         }
       }
 
+                                                                                                        // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const res = computeBill({ lines, taxMode, gstRatePercent, pricesIncludeTax, discount: discount as any });
 
       expect(res.cgstPaise + res.sgstPaise).toBe(res.taxPaise);

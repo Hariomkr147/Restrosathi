@@ -26,19 +26,21 @@ describe("getDayEnd", () => {
     const lateNightIst = new Date(window.from.getTime() + 23 * 60 * 60_000 + 59 * 60_000); // 23:59 IST
     const nextDayIst = window.to; // 00:00 next day IST
     
-    const t = await prisma.restaurantTable.findFirstOrThrow();
+    await prisma.restaurantTable.deleteMany({ where: { code: "T1_DAYEND" } });
+    const t = await prisma.restaurantTable.create({ data: { code: "T1_DAYEND", label: "T1_DAYEND" } });
     const m = await prisma.menuItem.findFirstOrThrow();
     
     // Create 3 bills in the window
     async function makeSettledBill(time: Date, paymentMethod: "CASH" | "UPI" | "CARD") {
       vi.setSystemTime(time);
       const s = await prisma.diningSession.create({ data: { kind: "DINE_IN", tableId: t.id } });
-      const o = await prisma.order.create({ data: { sessionId: s.id, idempotencyKey: randomUUID(), source: "QR", status: "PREPARING", acceptedAt: time } });
+      const o = await prisma.order.create({ data: { sessionId: s.id, idempotencyKey: randomUUID(), source: "QR", status: "PREPARING", acceptedAt: time, placedAt: time } });
       await prisma.orderLine.create({ data: { orderId: o.id, nameSnapshot: {}, modifiersSnapshot: {}, qty: 1, unitPricePaise: 100 } });
       const bRes = await generateBill(s.id, {}, { id: ownerId, role: "OWNER" });
       if (!bRes.ok) throw new Error();
       const bill = await prisma.bill.findUniqueOrThrow({ where: { id: bRes.billId } });
-      await settleBill(bRes.billId, [{ method: paymentMethod, amountPaise: bill.totalPaise }], { id: ownerId }, { expectedTotalPaise: bill.totalPaise, now: time });
+      const settleRes = await settleBill(bRes.billId, [{ method: paymentMethod, amountPaise: bill.totalPaise }], { id: ownerId, role: "OWNER" }, { expectedTotalPaise: bill.totalPaise, now: time });
+      if (!settleRes.ok) throw new Error("Settle failed: " + settleRes.error);
       return bill;
     }
 
@@ -49,12 +51,13 @@ describe("getDayEnd", () => {
     // One split payment in window
     vi.setSystemTime(midDayIst);
     const sSplit = await prisma.diningSession.create({ data: { kind: "TAKEAWAY" } });
-    const oSplit = await prisma.order.create({ data: { sessionId: sSplit.id, idempotencyKey: randomUUID(), source: "QR", status: "PREPARING", acceptedAt: midDayIst } });
+    const oSplit = await prisma.order.create({ data: { sessionId: sSplit.id, idempotencyKey: randomUUID(), source: "QR", status: "PREPARING", acceptedAt: midDayIst, placedAt: midDayIst } });
     await prisma.orderLine.create({ data: { orderId: oSplit.id, nameSnapshot: {}, modifiersSnapshot: {}, qty: 2, unitPricePaise: 100 } });
     const bSplit = await generateBill(sSplit.id, {}, { id: ownerId, role: "OWNER" });
     if (!bSplit.ok) throw new Error();
     const billSplit = await prisma.bill.findUniqueOrThrow({ where: { id: bSplit.billId } });
-    await settleBill(bSplit.billId, [{ method: "UPI", amountPaise: 100 }, { method: "CASH", amountPaise: billSplit.totalPaise - 100 }], { id: ownerId }, { expectedTotalPaise: billSplit.totalPaise, now: midDayIst });
+    const settleSplitRes = await settleBill(bSplit.billId, [{ method: "UPI", amountPaise: 100 }, { method: "CASH", amountPaise: billSplit.totalPaise - 100 }], { id: ownerId, role: "OWNER" }, { expectedTotalPaise: billSplit.totalPaise, now: midDayIst });
+    if (!settleSplitRes.ok) throw new Error("Settle split failed: " + settleSplitRes.error);
 
     // Cancelled bill in window
     vi.setSystemTime(midDayIst);

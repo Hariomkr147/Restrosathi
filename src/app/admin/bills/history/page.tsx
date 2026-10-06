@@ -4,13 +4,13 @@ import { getTranslations } from "next-intl/server";
 import Link from "next/link";
 import { formatINR } from "@/lib/money/format";
 
-export default async function HistoryPage({ searchParams }: { searchParams: Promise<any> }) {
+export default async function HistoryPage({ searchParams }: { searchParams: Promise<{ [key: string]: string | string[] | undefined }> }) {
   const user = await requireUser();
   const t = await getTranslations("Admin.Bills.History");
   
   const params = await searchParams;
-  const date = params.date || undefined;
-  const query = params.query || undefined;
+  const date = typeof params.date === "string" ? params.date : undefined;
+  const query = typeof params.query === "string" ? params.query : undefined;
   
   const res = await listBills({ date, query }, user);
   if (!res.ok) {

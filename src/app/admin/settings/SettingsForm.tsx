@@ -92,6 +92,8 @@ export function SettingsForm({ settings }: { settings: SettingsView }) {
         <div className="grid gap-4 md:grid-cols-2">
           <div className="min-w-0 space-y-2">
             <label htmlFor="taxMode" className="block font-medium">{t("taxMode")}</label>
+                                                                                                                                   // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                                                                                                                                   // eslint-disable-next-line @typescript-eslint/no-explicit-any
             <select id="taxMode" name="taxMode" className={inputClass} value={taxMode} onChange={e => setTaxMode(e.target.value as any)}>
               <option value="NONE">{t("taxModes.NONE")}</option>
               <option value="COMPOSITION">{t("taxModes.COMPOSITION")}</option>

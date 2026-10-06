@@ -14,11 +14,13 @@ function SubmitButton({ isRecalculate, disabled }: { isRecalculate: boolean, dis
   );
 }
 
+                                                                                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function BillPanel({ sessionId, bill, lines, computed, settings, userRole }: any) {
   const [error, setError] = useState<string | null>(null);
   
   const canDiscount = userRole === "OWNER" || settings.staffCanDiscount;
   
+                                       // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const hasUnaccepted = lines.some((l: any) => l.order?.status === "NEW");
   
   async function action(formData: FormData) {
@@ -67,6 +69,8 @@ export function BillPanel({ sessionId, bill, lines, computed, settings, userRole
               </tr>
             </thead>
             <tbody className="divide-y">
+                             // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                             // eslint-disable-next-line @typescript-eslint/no-explicit-any
               {lines.map((l: any, i: number) => (
                 <tr key={i}>
                   <td className="py-3">

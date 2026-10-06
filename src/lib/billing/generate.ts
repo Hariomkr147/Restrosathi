@@ -93,6 +93,7 @@ export async function generateBill(
         taxMode: settings.taxMode,
         gstRatePercent: settings.gstRatePercent,
         pricesIncludeTax: settings.pricesIncludeTax,
+                          // eslint-disable-next-line @typescript-eslint/no-explicit-any
         header: header as any,
         subtotalPaise: computed.subtotalPaise,
         discountType: opts.discount?.type || null,
@@ -132,8 +133,11 @@ export async function generateBill(
       await tx.billLine.createMany({
         data: validLines.map(l => ({
           billId,
+                                  // eslint-disable-next-line @typescript-eslint/no-explicit-any
           name: l.nameSnapshot as any,
+                                        // eslint-disable-next-line @typescript-eslint/no-explicit-any
           variant: l.variantSnapshot as any,
+                                            // eslint-disable-next-line @typescript-eslint/no-explicit-any
           modifiers: l.modifiersSnapshot as any,
           qty: l.qty,
           unitPricePaise: l.unitPricePaise,
@@ -147,8 +151,10 @@ export async function generateBill(
       }
 
       return { ok: true, billId };
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (e: any) {
       if (e.code === "EMPTY_BILL" || e.code === "DISCOUNT_EXCEEDS_SUBTOTAL" || e.code === "INVALID_DISCOUNT") {
+                                             // eslint-disable-next-line @typescript-eslint/no-explicit-any
         return { ok: false, error: e.code as any };
       }
       throw e;

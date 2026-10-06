@@ -33,7 +33,7 @@ describe("getBillPrint", () => {
     
     // Change settings - should NOT affect already generated bill snapshot
     await prisma.settings.update({ where: { id: 1 }, data: { taxMode: "REGULAR", name: "Changed Name" } });
-    let printAfterChange = await getBillPrint(b1.billId, { id: ownerId, role: "OWNER" });
+    const printAfterChange = await getBillPrint(b1.billId, { id: ownerId, role: "OWNER" });
     expect(printAfterChange?.header.name).not.toBe("Changed Name"); // should be original snapshot
     
     // Test REGULAR taxMode
@@ -43,6 +43,9 @@ describe("getBillPrint", () => {
     expect(print?.title).toBe("Tax Invoice");
     expect(print?.header.gstin).toBe("22AAAAA0000A1Z5");
     expect(print?.taxLines.some(l => l.label.includes("CGST 2.5%"))).toBe(true);
+
+    // Restore settings
+    await prisma.settings.update({ where: { id: 1 }, data: { taxMode: "NONE", name: "Saffron Tadka" } });
     
     // Cancelled bill
     const bill2 = await prisma.bill.findUniqueOrThrow({ where: { id: b2.billId } });

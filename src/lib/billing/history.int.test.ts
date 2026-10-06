@@ -21,8 +21,10 @@ describe("history", () => {
     await prisma.orderLine.deleteMany();
     await prisma.order.deleteMany();
     await prisma.diningSession.deleteMany();
-    await prisma.restaurantTable.deleteMany();
-    await prisma.menuItem.deleteMany();
+
+    await prisma.menuItem.deleteMany({ where: { id: "test-item-hist" } });
+    await prisma.category.deleteMany({ where: { id: "test-cat-hist" } });
+    await prisma.restaurantTable.deleteMany({ where: { code: "T1_HIST" } });
 
     const owner = await prisma.user.findFirstOrThrow({ where: { role: "OWNER" } });
     ownerId = owner.id;
@@ -30,16 +32,17 @@ describe("history", () => {
     const staff = await prisma.user.findFirstOrThrow({ where: { role: "STAFF" } });
     staffId = staff.id;
 
-    const t = await prisma.restaurantTable.create({ data: { code: "T1", label: "T1" } });
+    const t = await prisma.restaurantTable.create({ data: { code: "T1_HIST", label: "T1_HIST" } });
     tableId = t.id;
 
     const m = await prisma.menuItem.create({
       data: {
+        id: "test-item-hist",
         name: { en: "Test Item" },
         basePricePaise: 10000,
         available: true,
         isVeg: true,
-        category: { create: { name: { en: "Cat" }, sortOrder: 0 } },
+        category: { create: { id: "test-cat-hist", name: { en: "Cat" }, sortOrder: 0 } },
         sortOrder: 0
       }
     });

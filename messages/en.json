@@ -397,6 +397,29 @@
       "Settle": {
         "title": "Settle Bill"
       }
+    },
+    "Reports": {
+      "DayEnd": {
+        "title": "Day-End Report",
+        "subtitle": "For date:",
+        "view": "View",
+        "print": "Print",
+        "reconciliationError": "Error: Payments do not match total sales.",
+        "salesSummary": "Sales Summary",
+        "billCount": "Total Bills",
+        "subtotal": "Subtotal",
+        "discount": "Discount",
+        "tax": "Tax",
+        "roundOff": "Round Off",
+        "total": "Net Total",
+        "paymentMethods": "Payment Methods",
+        "cash": "CASH",
+        "upi": "UPI",
+        "card": "CARD",
+        "exceptions": "Exceptions",
+        "cancelledBills": "Cancelled Bills ({count})",
+        "voidedLines": "Voided Items ({count})"
+      }
     }
   }
 }

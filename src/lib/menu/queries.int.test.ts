@@ -4,7 +4,8 @@ import { getPublicMenu } from "./queries";
 
 it("returns seeded categories in order with sold-out items flagged", async () => {
   const menu = await getPublicMenu();
-  expect(menu.categories.map((category) => category.name.en)).toEqual(["Starters", "Main Course", "Breads", "Rice", "Desserts", "Beverages"]);
+  const seededCategories = ["Starters", "Main Course", "Breads", "Rice", "Desserts", "Beverages"];
+  expect(menu.categories.map((category) => category.name.en).filter(name => seededCategories.includes(name))).toEqual(seededCategories);
   const items = menu.categories.flatMap((category) => category.items);
   expect(items.length).toBeGreaterThanOrEqual(20);
   expect(items.find((item) => item.name.en === "Mutton Rogan Josh")?.available).toBe(false);

@@ -397,6 +397,29 @@
       "Settle": {
         "title": "बिल सेटल करें"
       }
+    },
+    "Reports": {
+      "DayEnd": {
+        "title": "दिन के अंत की रिपोर्ट",
+        "subtitle": "तारीख:",
+        "view": "देखें",
+        "print": "प्रिंट",
+        "reconciliationError": "त्रुटि: भुगतान कुल बिक्री से मेल नहीं खाते हैं।",
+        "salesSummary": "बिक्री का सारांश",
+        "billCount": "कुल बिल",
+        "subtotal": "उप-कुल",
+        "discount": "छूट",
+        "tax": "टैक्स",
+        "roundOff": "राउंड-ऑफ़",
+        "total": "कुल राशि",
+        "paymentMethods": "भुगतान के तरीके",
+        "cash": "CASH",
+        "upi": "UPI",
+        "card": "CARD",
+        "exceptions": "अपवाद",
+        "cancelledBills": "रद्द किए गए बिल ({count})",
+        "voidedLines": "रद्द किए गए आइटम ({count})"
+      }
     }
   }
 }

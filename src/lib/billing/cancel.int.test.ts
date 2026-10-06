@@ -24,8 +24,10 @@ describe("cancelBill", () => {
     await prisma.orderLine.deleteMany();
     await prisma.order.deleteMany();
     await prisma.diningSession.deleteMany();
-    await prisma.restaurantTable.deleteMany();
-    await prisma.menuItem.deleteMany();
+
+    await prisma.menuItem.deleteMany({ where: { id: "test-item-cancel" } });
+    await prisma.category.deleteMany({ where: { id: "test-cat-cancel" } });
+    await prisma.restaurantTable.deleteMany({ where: { code: "T1_CANCEL" } });
 
     const owner = await prisma.user.findFirstOrThrow({ where: { role: "OWNER" } });
     ownerId = owner.id;
@@ -33,16 +35,17 @@ describe("cancelBill", () => {
     const staff = await prisma.user.findFirstOrThrow({ where: { role: "STAFF" } });
     staffId = staff.id;
 
-    const t = await prisma.restaurantTable.create({ data: { code: "T1", label: "T1" } });
+    const t = await prisma.restaurantTable.create({ data: { code: "T1_CANCEL", label: "T1_CANCEL" } });
     tableId = t.id;
 
     const m = await prisma.menuItem.create({
       data: {
+        id: "test-item-cancel",
         name: { en: "Test Item" },
         basePricePaise: 10000,
         available: true,
         isVeg: true,
-        category: { create: { name: { en: "Cat" }, sortOrder: 0 } },
+        category: { create: { id: "test-cat-cancel", name: { en: "Cat" }, sortOrder: 0 } },
         sortOrder: 0
       }
     });

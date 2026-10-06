@@ -23,10 +23,12 @@ describe("settleBill", () => {
     await prisma.orderLine.deleteMany();
     await prisma.order.deleteMany();
     await prisma.diningSession.deleteMany();
-    await prisma.restaurantTable.deleteMany();
-    await prisma.menuItem.deleteMany();
 
-    const t = await prisma.restaurantTable.create({ data: { code: "T1", label: "T1" } });
+    await prisma.menuItem.deleteMany({ where: { id: "test-item-settle" } });
+    await prisma.category.deleteMany({ where: { id: "test-cat-settle" } });
+    await prisma.restaurantTable.deleteMany({ where: { code: "T1_SETTLE" } });
+
+    const t = await prisma.restaurantTable.create({ data: { code: "T1_SETTLE", label: "T1_SETTLE" } });
     tableId = t.id;
 
     const owner = await prisma.user.findFirstOrThrow({ where: { role: "OWNER" } });
@@ -37,11 +39,12 @@ describe("settleBill", () => {
 
     const m = await prisma.menuItem.create({
       data: {
+        id: "test-item-settle",
         name: { en: "Test Item" },
         basePricePaise: 10000,
         available: true,
         isVeg: true,
-        category: { create: { name: { en: "Cat" }, sortOrder: 0 } },
+        category: { create: { id: "test-cat-settle", name: { en: "Cat" }, sortOrder: 0 } },
         sortOrder: 0
       }
     });
@@ -113,6 +116,7 @@ describe("settleBill", () => {
     const bill2 = await prisma.bill.findUniqueOrThrow({ where: { id: b2.billId } });
     const short = await settleBill(b2.billId, [{ method: "CARD", amountPaise: bill2.totalPaise - 1 }], { id: ownerId }, { expectedTotalPaise: bill2.totalPaise });
     expect(short.ok).toBe(false);
+                     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     expect((short as any).error).toBe("PAYMENT_MISMATCH");
 
     // The next successful settlement gets 0002, not 0003!
@@ -132,23 +136,27 @@ describe("settleBill", () => {
     await settleBill(billId, [{ method: "CASH", amountPaise: totalPaise }], { id: ownerId }, { expectedTotalPaise: totalPaise });
     const r2 = await settleBill(billId, [{ method: "CASH", amountPaise: totalPaise }], { id: ownerId }, { expectedTotalPaise: totalPaise });
     expect(r2.ok).toBe(false);
+                  // eslint-disable-next-line @typescript-eslint/no-explicit-any
     expect((r2 as any).error).toBe("ALREADY_SETTLED");
 
     await prisma.bill.update({ where: { id: billId }, data: { status: "CANCELLED" } });
     const r3 = await settleBill(billId, [{ method: "CASH", amountPaise: totalPaise }], { id: ownerId }, { expectedTotalPaise: totalPaise });
     expect(r3.ok).toBe(false);
+                  // eslint-disable-next-line @typescript-eslint/no-explicit-any
     expect((r3 as any).error).toBe("BILL_CANCELLED");
   });
 
   it("stale checks", async () => {
     const st1 = await settleBill(billId, [{ method: "CASH", amountPaise: totalPaise }], { id: ownerId }, { expectedTotalPaise: totalPaise - 100 });
     expect(st1.ok).toBe(false);
+                   // eslint-disable-next-line @typescript-eslint/no-explicit-any
     expect((st1 as any).error).toBe("STALE_BILL");
 
     // Add new order
     await createStaffOrder({ target: { type: "TABLE", tableId }, idempotencyKey: randomUUID(), items: [{ itemId: mItemId, qty: 1, optionIds: [] }] }, staffId);
     const st2 = await settleBill(billId, [{ method: "CASH", amountPaise: totalPaise }], { id: ownerId }, { expectedTotalPaise: totalPaise });
     expect(st2.ok).toBe(false);
+                   // eslint-disable-next-line @typescript-eslint/no-explicit-any
     expect((st2 as any).error).toBe("STALE_BILL");
 
     // Recalculate bill
@@ -169,6 +177,7 @@ describe("settleBill", () => {
     
     expect(oks).toHaveLength(1);
     expect(errs).toHaveLength(1);
+                       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     expect((errs[0] as any).error).toBe("ALREADY_SETTLED");
     
     const count = await prisma.invoiceCounter.findFirst();
@@ -203,6 +212,7 @@ describe("settleBill", () => {
       const results = await Promise.all(promises);
       expect(results.every(r => r.ok)).toBe(true);
 
+                                             // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const numbers = results.map(r => (r as any).number.split("/")[1]).sort();
       for (let i = 0; i < 10; i++) {
         expect(numbers[i]).toBe((i + 1).toString().padStart(4, "0"));
@@ -218,6 +228,7 @@ describe("settleBill", () => {
     // 2026-04-01 is 2026-27
     const r1 = await settleBill(billId, [{ method: "CASH", amountPaise: totalPaise }], { id: ownerId }, { expectedTotalPaise: totalPaise, now: new Date("2026-04-01T10:00:00Z") });
     expect(r1.ok).toBe(true);
+                  // eslint-disable-next-line @typescript-eslint/no-explicit-any
     expect((r1 as any).number).toBe("2026-27/0001");
 
     const s2 = await prisma.diningSession.create({ data: { kind: "TAKEAWAY" } });
@@ -229,6 +240,7 @@ describe("settleBill", () => {
 
     const r2 = await settleBill(b2.billId, [{ method: "CASH", amountPaise: bill2.totalPaise }], { id: ownerId }, { expectedTotalPaise: bill2.totalPaise, now: new Date("2027-03-31T18:29:59Z") });
     expect(r2.ok).toBe(true);
+                  // eslint-disable-next-line @typescript-eslint/no-explicit-any
     expect((r2 as any).number).toBe("2026-27/0002");
 
     const s3 = await prisma.diningSession.create({ data: { kind: "TAKEAWAY" } });
@@ -240,6 +252,7 @@ describe("settleBill", () => {
 
     const r3 = await settleBill(b3.billId, [{ method: "CASH", amountPaise: bill3.totalPaise }], { id: ownerId }, { expectedTotalPaise: bill3.totalPaise, now: new Date("2027-03-31T18:30:00Z") });
     expect(r3.ok).toBe(true);
+                  // eslint-disable-next-line @typescript-eslint/no-explicit-any
     expect((r3 as any).number).toBe("2027-28/0001");
   });
 });

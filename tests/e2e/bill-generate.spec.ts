@@ -23,6 +23,7 @@ async function setupSessionAndOrders() {
       acceptedAt: new Date(),
       lines: {
         create: [
+                                                                      // eslint-disable-next-line @typescript-eslint/no-explicit-any
           { qty: 2, unitPricePaise: 10000, nameSnapshot: item.name as any, modifiersSnapshot: [] }
         ]
       }

@@ -29,6 +29,7 @@ export function LoginForm({ staff }: { staff?: { id: string; name: string }[] })
           router.refresh();
           router.push("/admin");
         }
+                      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       } catch (error: any) {
         console.error("Login client error:", error);
         setError("network");

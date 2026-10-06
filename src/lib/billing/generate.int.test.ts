@@ -4,8 +4,8 @@ import { generateBill } from "./generate";
 import { placeOrder } from "../orders/place";
 import { acceptOrder, markReady, markServed, voidLine, rejectOrder } from "../orders/transitions";
 
-const owner = { id: "test-owner", role: "OWNER" };
-const staff = { id: "test-staff", role: "STAFF" };
+const owner = { id: "owner-demo", role: "OWNER" };
+const staff = { id: "staff-ravi", role: "STAFF" };
 
 describe("Generate Bill", () => {
   beforeEach(async () => {
@@ -13,26 +13,24 @@ describe("Generate Bill", () => {
     await prisma.orderLine.deleteMany();
     await prisma.order.deleteMany();
     await prisma.diningSession.deleteMany();
-    await prisma.restaurantTable.deleteMany();
   });
 
+                                          // eslint-disable-next-line @typescript-eslint/no-explicit-any
   async function updateTestSettings(data: any) {
     await prisma.settings.update({ where: { id: 1 }, data });
   }
 
   async function setup() {
-    await prisma.user.deleteMany();
-    await prisma.user.create({ data: { id: "test-owner", name: "Owner", phone: "+911111111111", role: "OWNER" } });
-    await prisma.user.create({ data: { id: "test-staff", name: "Staff", phone: "+912222222222", role: "STAFF" } });
-    await prisma.menuItem.deleteMany();
-    await prisma.category.deleteMany();
-    const cat = await prisma.category.create({ data: { name: { en: "C" }, sortOrder: 1 } });
-    await prisma.menuItem.create({ data: { id: "order-test-item", categoryId: cat.id, name: { en: "Item 1" }, basePricePaise: 12345, isVeg: true, sortOrder: 1 } });
-    await prisma.menuItem.create({ data: { id: "order-test-other", categoryId: cat.id, name: { en: "Item 2" }, basePricePaise: 5000, isVeg: true, sortOrder: 2 } });
+    await prisma.restaurantTable.deleteMany({ where: { code: "1234567890" } });
+    await prisma.menuItem.deleteMany({ where: { id: { in: ["generate-test-item", "generate-test-other"] } } });
+    await prisma.category.deleteMany({ where: { id: "generate-test-cat" } });
+    const cat = await prisma.category.create({ data: { id: "generate-test-cat", name: { en: "C" }, sortOrder: 1 } });
+    await prisma.menuItem.create({ data: { id: "generate-test-item", categoryId: cat.id, name: { en: "Item 1" }, basePricePaise: 12345, isVeg: true, sortOrder: 1 } });
+    await prisma.menuItem.create({ data: { id: "generate-test-other", categoryId: cat.id, name: { en: "Item 2" }, basePricePaise: 5000, isVeg: true, sortOrder: 2 } });
     await updateTestSettings({ taxMode: "NONE", gstRatePercent: 5, pricesIncludeTax: true, staffCanDiscount: true });
     const table = await prisma.restaurantTable.create({ data: { code: "1234567890", label: "Table B1", sortOrder: 1 } });
-    const order1 = await placeOrder({ tableCode: "1234567890", idempotencyKey: "123e4567-e89b-12d3-a456-426614174001", items: [{ itemId: "order-test-item", qty: 2, optionIds: [] }, { itemId: "order-test-other", qty: 1, optionIds: [] }] }, { ip: "127.0.0.1", deviceId: "dev1" });
-    const order2 = await placeOrder({ tableCode: "1234567890", idempotencyKey: "123e4567-e89b-12d3-a456-426614174002", items: [{ itemId: "order-test-item", qty: 1, optionIds: [] }] }, { ip: "127.0.0.1", deviceId: "dev1" });
+    const order1 = await placeOrder({ tableCode: "1234567890", idempotencyKey: "123e4567-e89b-12d3-a456-426614174001", items: [{ itemId: "generate-test-item", qty: 2, optionIds: [] }, { itemId: "generate-test-other", qty: 1, optionIds: [] }] }, { ip: "127.0.0.1", deviceId: "dev1" });
+    const order2 = await placeOrder({ tableCode: "1234567890", idempotencyKey: "123e4567-e89b-12d3-a456-426614174002", items: [{ itemId: "generate-test-item", qty: 1, optionIds: [] }] }, { ip: "127.0.0.1", deviceId: "dev1" });
     if (!order1.ok || !order2.ok) throw new Error(`Place order failed: ${JSON.stringify(order1)} ${JSON.stringify(order2)}`);
     const session = await prisma.diningSession.findFirstOrThrow({ where: { tableId: table.id } });
     return { session, order1: order1 as { ok: true, orderId: string }, order2: order2 as { ok: true, orderId: string } };
@@ -97,12 +95,14 @@ describe("Generate Bill", () => {
     await generateBill(session.id, {}, owner);
     const bill1 = await prisma.bill.findUniqueOrThrow({ where: { sessionId: session.id } });
     expect(bill1.taxMode).toBe("NONE");
+                            // eslint-disable-next-line @typescript-eslint/no-explicit-any
     expect((bill1.header as any).name).toBe("Test Restro");
 
     await updateTestSettings({ taxMode: "REGULAR", name: "New Name" });
 
     const bill2 = await prisma.bill.findUniqueOrThrow({ where: { sessionId: session.id } });
     expect(bill2.taxMode).toBe("NONE");
+                            // eslint-disable-next-line @typescript-eslint/no-explicit-any
     expect((bill2.header as any).name).toBe("Test Restro");
   });
 

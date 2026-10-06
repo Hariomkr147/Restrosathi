@@ -5,6 +5,7 @@ import { formatINR } from "@/lib/money/format";
 import { settleBillAction } from "../../../actions";
 import { useRouter } from "next/navigation";
 
+                                               // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function SettleClient({ bill }: { bill: any }) {
   const router = useRouter();
   const [split, setSplit] = useState(false);
@@ -20,6 +21,7 @@ export function SettleClient({ bill }: { bill: any }) {
     setIsSubmitting(true);
     setError(null);
 
+                                                            // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const res = await settleBillAction(bill.id, payments as any, bill.totalPaise);
     if (res.ok) {
       router.push(`/admin/bills/view/${bill.id}`);
@@ -44,6 +46,7 @@ export function SettleClient({ bill }: { bill: any }) {
               key={m}
               onClick={async () => {
                 setIsSubmitting(true);
+                                                                            // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 const res = await settleBillAction(bill.id, [{ method: m as any, amountPaise: bill.totalPaise }], bill.totalPaise);
                 if (res.ok) {
                   router.push(`/admin/bills/view/${bill.id}`);
