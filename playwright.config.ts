@@ -31,6 +31,16 @@ export default defineConfig({
     env: {
       DATABASE_URL: process.env.TEST_DATABASE_URL ?? "",
       UPLOAD_DIR: "public/uploads",
+      WHATSAPP_PROVIDER: "fake",
+      ALLOW_FAKE_WA: "1",
+      FAKE_WA_OUTBOX: "test-results/fake-wa-outbox.jsonl",
+      FAKE_WA_CONTROL: "test-results/fake-wa-control.txt",
+      AI_PROVIDER: "fake",
+      CRON_SECRET: "test-cron-secret",
+      OTP_SECRET: "test-otp-secret",
+      COOKIE_SECRET: "test-cookie-secret",
+      WA_WEBHOOK_SECRET: "test-webhook-secret",
+      RATE_LIMIT_IP_ORDERS_PER_HOUR: "100000",
     },
   },
 });

@@ -59,11 +59,35 @@ services:
       postgres:
         condition: service_started
 
+  wa-akg-db:
+    image: postgres:17
+    restart: always
+    profiles: ["whatsapp"]
+    environment:
+      POSTGRES_USER: waakg
+      POSTGRES_PASSWORD: waakg_password
+      POSTGRES_DB: waakg
+    volumes:
+      - wa-akg-pgdata:/var/lib/postgresql/data
+
+  wa-akg:
+    build:
+      context: https://github.com/mrifqidaffaaditya/WA-AKG.git#f4b0ad01b0b9777265a39cbfa0e8e93be78f35f2
+    restart: always
+    profiles: ["whatsapp"]
+    environment:
+      DATABASE_URL: "postgresql://waakg:waakg_password@wa-akg-db:5432/waakg"
+      AUTH_SECRET: ${WA_WEBHOOK_SECRET:-default_auth_secret_override_me}
+    depends_on:
+      wa-akg-db:
+        condition: service_started
+
 volumes:
   uploads:
   pgdata:
   caddy_data:
   caddy_config:
   backups:
+  wa-akg-pgdata:
 
 

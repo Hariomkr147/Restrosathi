@@ -377,3 +377,45 @@ model InvoiceCounter {
   last Int    @default(0)
 }
 
+enum MessageDirection {
+  IN
+  OUT
+}
+
+enum MessageStatus {
+  PENDING
+  SENT
+  FAILED
+  RECEIVED
+}
+
+model MessageLog {
+  id           String           @id @default(cuid())
+  direction    MessageDirection
+  phone        String
+  kind         String?
+  locale       String           @default("en")
+  params       Json             @default("{}")
+  body         String?
+  status       MessageStatus
+  attempts     Int              @default(0)
+  providerId   String?
+  externalId   String?          @unique
+  lastError    String?
+  aiHandled    Boolean          @default(false)
+  needsHuman   Boolean          @default(false)
+  nextAttemptAt DateTime?       @db.Timestamptz(3)
+  createdAt    DateTime         @default(now()) @db.Timestamptz(3)
+
+  @@index([status, nextAttemptAt])
+}
+
+model ThreadState {
+  phone         String    @id
+  aiPausedUntil DateTime? @db.Timestamptz(3)
+}
+
+model OptOut {
+  phone String   @id
+  at    DateTime @default(now()) @db.Timestamptz(3)
+}
