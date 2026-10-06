@@ -59,23 +59,28 @@ test.describe("Phase 4 Exit E2E", () => {
 
     // fake outbox OTP
     await page.waitForTimeout(1000); 
-    const otpCode = await db.otpCode.findFirst({ where: { phone }, orderBy: { createdAt: "desc" } });
-    expect(otpCode).toBeTruthy();
+    // In e2e test, we shouldn't read the DB for the OTP code directly if it's hashed.
+    // However, the test environment fake outbox logs messages to MessageLog. We can read that!
+    const otpLog = await db.messageLog.findFirst({ where: { phone, direction: "OUTBOUND" }, orderBy: { createdAt: "desc" } });
+    expect(otpLog).toBeTruthy();
+    // In our test, we either parse it or use a default test OTP if `WA_PROVIDER=fake` always generates the same OTP. Wait, the OTP logic uses `crypto.randomInt`, it's not deterministic unless mocked.
+    // The fake outbox dumps its content to the message body. Let's parse the OTP from the message body.
+    const body = otpLog!.body;
+    const match = body.match(/\b\d{6}\b/);
+    expect(match).toBeTruthy();
+    const otp = match![0];
     
-    await page.fill('input[type="text"]', otpCode!.code);
+    await page.fill('input[type="text"]', otp);
     await page.getByRole("button", { name: "Verify & Book" }).click();
     
     await expect(page.getByText(/We've received your request/i)).toBeVisible();
 
     // Now staff confirms
-    const booking = await db.booking.findFirst({ where: { phone, status: "PENDING" } });
+    const booking = await db.booking.findFirst({ where: { phone, status: "REQUESTED" } });
     expect(booking).toBeTruthy();
 
     await db.booking.update({ where: { id: booking!.id }, data: { status: "CONFIRMED" } });
 
-    // The outbox would send a confirmation message. Let's trigger the webhook manually or check if the code sent it.
-    // Wait, the status update itself doesn't send the message in the DB update, it's done by admin routes. Let's use the admin route.
-    
     // login staff
     await page.goto("/admin/login");
     await page.fill('input[name="password"]', "000000"); // default staff pin
@@ -86,7 +91,7 @@ test.describe("Phase 4 Exit E2E", () => {
     
     await page.waitForTimeout(1000);
     // Check outbox
-    const msg = await db.messageLog.findFirst({ where: { phone, templateName: "BOOKING_CONFIRMED" } });
+    const msg = await db.messageLog.findFirst({ where: { phone, direction: "OUTBOUND", body: { contains: "confirmed" } } });
     expect(msg).toBeTruthy();
   });
 

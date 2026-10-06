@@ -16,6 +16,9 @@ export default async function BillDetailPage({ params }: { params: Promise<{ ses
   console.log("BILL PAGE RENDERED, COMPUTED:", computed);
   const label = session.kind === "DINE_IN" ? `Table ${session.table?.label}` : "Takeaway";
   
+  const tConsent = await getTranslations("consent.marketing");
+  const marketingText = tConsent("text", { restaurant: settings.name });
+  
   return (
     <main className="mx-auto w-full max-w-content px-6 py-4">
       <div className="mb-6 flex items-center gap-4">
@@ -30,6 +33,7 @@ export default async function BillDetailPage({ params }: { params: Promise<{ ses
         computed={computed} 
         settings={settings}
         userRole={user.role}
+        marketingText={marketingText}
       />
     </main>
   );

@@ -17,12 +17,13 @@ const discountSchema = z.object({
 const generateOptsSchema = z.object({
   discount: discountSchema.optional(),
   customerName: z.string().trim().max(100).optional(),
-  customerPhone: z.string().trim().max(20).optional()
+  customerPhone: z.string().trim().max(20).optional(),
+  marketingConsent: z.boolean().optional()
 });
 
 export async function generateBill(
   sessionId: string,
-  optsInput: { discount?: { type: "FLAT" | "PERCENT"; value: number; reason: string }; customerName?: string; customerPhone?: string },
+  optsInput: { discount?: { type: "FLAT" | "PERCENT"; value: number; reason: string }; customerName?: string; customerPhone?: string; marketingConsent?: boolean },
   actor: { id: string; role: string }
 ): Promise<GenerateResult> {
   const parsed = generateOptsSchema.safeParse(optsInput);
@@ -107,6 +108,7 @@ export async function generateBill(
         totalPaise: computed.totalPaise,
         customerName: opts.customerName || null,
         customerPhone: opts.customerPhone || null,
+        marketingConsent: opts.marketingConsent || false,
         generatedAt: new Date(),
         generatedById: actor.id
       };

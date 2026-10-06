@@ -54,6 +54,11 @@ export async function processInboundWebhook(body: any) {
       update: {}
     });
 
+    const { upsertCustomer } = await import("../customers");
+    const { recordConsent } = await import("../customers/consent");
+    const customer = await upsertCustomer(e164, {});
+    await recordConsent(customer.id, false, "WHATSAPP_STOP");
+
     // Queue STOP_CONFIRMED message log directly
     await prisma.messageLog.create({
       data: {

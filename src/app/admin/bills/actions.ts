@@ -10,6 +10,7 @@ export async function generateBillAction(
     discount?: { type: "FLAT" | "PERCENT"; value: number; reason: string };
     customerName?: string;
     customerPhone?: string;
+    marketingConsent?: boolean;
   }
 ) {
   const user = await requireUser();
@@ -50,4 +51,30 @@ export async function cancelBillAction(billId: string, reason: string) {
     revalidatePath(`/admin/bills/view/${billId}`);
   }
   return res;
+}
+
+import { verifyOtp } from "@/lib/otp";
+import { prisma } from "@/lib/db";
+import { upsertCustomer } from "@/lib/customers";
+
+export async function verifyBillPhoneAction(billId: string, phone: string, code: string) {
+  const user = await requireUser();
+  const res = await verifyOtp(phone, code);
+  if (!res.ok) return res;
+  
+  await prisma.$transaction(async (tx) => {
+    const bill = await tx.bill.findUnique({ where: { id: billId } });
+    if (!bill || bill.status !== "OPEN") return;
+    if (bill.customerPhone !== phone) return;
+    
+    await upsertCustomer(phone, { verified: true }, tx);
+    await tx.bill.update({
+      where: { id: billId },
+      data: { phoneVerifiedAt: new Date() }
+    });
+  });
+  
+  revalidatePath(`/admin/bills/view/${billId}`);
+  // Also revalidate the sessionId page
+  return { ok: true };
 }

@@ -488,6 +488,11 @@
     "STOP_CONFIRMED": "You have been unsubscribed from our messages.",
     "AUTO_REPLY": "{answer}"
   },
+  "consent": {
+    "marketing": {
+      "text": "I agree to receive offers and marketing updates from {restaurant}."
+    }
+  },
   "privacy": {
     "title": "Privacy Policy",
     "whatWeCollect": "What we collect",

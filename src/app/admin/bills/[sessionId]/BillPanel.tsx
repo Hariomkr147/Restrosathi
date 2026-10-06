@@ -1,8 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useTransition } from "react";
 import { formatINR } from "@/lib/money/format";
-import { generateBillAction } from "../actions";
+import { generateBillAction, verifyBillPhoneAction } from "../actions";
+import { requestOtpAction } from "@/app/(public)/book/actions";
 import { useFormStatus } from "react-dom";
 
 function SubmitButton({ isRecalculate, disabled }: { isRecalculate: boolean, disabled: boolean }) {
@@ -15,8 +16,16 @@ function SubmitButton({ isRecalculate, disabled }: { isRecalculate: boolean, dis
 }
 
                                                                                     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export function BillPanel({ sessionId, bill, lines, computed, settings, userRole }: any) {
+export function BillPanel({ sessionId, bill, lines, computed, settings, userRole, marketingText }: any) {
   const [error, setError] = useState<string | null>(null);
+  const [customerPhone, setCustomerPhone] = useState(bill?.customerPhone || "");
+  const [customerName, setCustomerName] = useState(bill?.customerName || "");
+  const [marketingConsent, setMarketingConsent] = useState(bill?.marketingConsent || false);
+  
+  const [otpSent, setOtpSent] = useState(false);
+  const [otpCode, setOtpCode] = useState("");
+  const [otpError, setOtpError] = useState<string | null>(null);
+  const [isPendingOtp, startOtpTransition] = useTransition();
   
   const canDiscount = userRole === "OWNER" || settings.staffCanDiscount;
   
@@ -39,8 +48,9 @@ export function BillPanel({ sessionId, bill, lines, computed, settings, userRole
     }
     
     const res = await generateBillAction(sessionId, {
-      customerName: formData.get("customerName") as string || undefined,
-      customerPhone: formData.get("customerPhone") as string || undefined,
+      customerName: customerName || undefined,
+      customerPhone: customerPhone || undefined,
+      marketingConsent,
       discount
     });
     
@@ -48,6 +58,30 @@ export function BillPanel({ sessionId, bill, lines, computed, settings, userRole
       setError(res.error);
     }
   }
+
+  const handleSendOtp = () => {
+    if (!customerPhone) return;
+    setOtpError(null);
+    startOtpTransition(async () => {
+      const res = await requestOtpAction(customerPhone);
+      if (res.ok) setOtpSent(true);
+      else setOtpError("Failed to send OTP");
+    });
+  };
+
+  const handleVerifyOtp = () => {
+    if (!bill?.id || !customerPhone || !otpCode) return;
+    setOtpError(null);
+    startOtpTransition(async () => {
+      const res = await verifyBillPhoneAction(bill.id, customerPhone, otpCode);
+      if (res.ok) {
+        setOtpSent(false);
+        setOtpCode("");
+      } else {
+        setOtpError("Invalid or expired OTP");
+      }
+    });
+  };
 
   return (
     <div className="grid gap-8 lg:grid-cols-3">
@@ -92,12 +126,40 @@ export function BillPanel({ sessionId, bill, lines, computed, settings, userRole
           <div className="grid gap-4 md:grid-cols-2">
             <div className="space-y-2">
               <label className="text-sm font-medium">Customer Name</label>
-              <input name="customerName" type="text" className="w-full rounded-md border bg-background px-3 py-2 text-sm" placeholder="Optional" />
+              <input name="customerName" type="text" className="w-full rounded-md border bg-background px-3 py-2 text-sm" placeholder="Optional" value={customerName} onChange={e => setCustomerName(e.target.value)} />
             </div>
             <div className="space-y-2">
               <label className="text-sm font-medium">Customer Phone</label>
-              <input name="customerPhone" type="tel" className="w-full rounded-md border bg-background px-3 py-2 text-sm" placeholder="Optional" />
+              <div className="flex gap-2">
+                <input name="customerPhone" type="tel" className="w-full rounded-md border bg-background px-3 py-2 text-sm" placeholder="Optional" value={customerPhone} onChange={e => setCustomerPhone(e.target.value)} />
+                {bill?.id && customerPhone && customerPhone === bill.customerPhone && !bill.phoneVerifiedAt && (
+                  <button type="button" onClick={handleSendOtp} disabled={isPendingOtp} className="px-3 py-2 bg-secondary text-secondary-foreground rounded-md text-sm whitespace-nowrap">
+                    {isPendingOtp ? "Wait..." : "Send OTP"}
+                  </button>
+                )}
+                {bill?.phoneVerifiedAt && customerPhone === bill.customerPhone && (
+                  <div className="px-3 py-2 text-green-600 text-sm font-medium flex items-center whitespace-nowrap">
+                    Verified
+                  </div>
+                )}
+              </div>
+              {otpSent && (
+                <div className="flex gap-2 mt-2">
+                  <input type="text" placeholder="000000" maxLength={6} value={otpCode} onChange={e => setOtpCode(e.target.value)} className="w-full rounded-md border px-3 py-2 text-sm text-center tracking-widest" />
+                  <button type="button" onClick={handleVerifyOtp} disabled={isPendingOtp || otpCode.length !== 6} className="px-3 py-2 bg-primary text-primary-foreground rounded-md text-sm font-medium">
+                    Verify
+                  </button>
+                </div>
+              )}
+              {otpError && <div className="text-xs text-destructive">{otpError}</div>}
             </div>
+          </div>
+          
+          <div className="flex items-start gap-2">
+            <input type="checkbox" id="marketingConsent" name="marketingConsent" className="mt-1" checked={marketingConsent} onChange={e => setMarketingConsent(e.target.checked)} />
+            <label htmlFor="marketingConsent" className="text-sm">
+              {marketingText}
+            </label>
           </div>
           
           {canDiscount && (

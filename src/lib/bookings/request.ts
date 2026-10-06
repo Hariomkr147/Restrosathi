@@ -13,6 +13,7 @@ export type BookingRequestInput = {
   partySize: number;
   slotStart: string;
   note?: string;
+  marketingConsent?: boolean;
 };
 
 export type BookingRequestContext = {
@@ -110,6 +111,13 @@ export async function requestBooking(input: BookingRequestInput, ctx: BookingReq
       { tx }
     );
     
+    if (input.marketingConsent) {
+      const { upsertCustomer } = await import("../customers");
+      const { recordConsent } = await import("../customers/consent");
+      const customer = await upsertCustomer(phone, { name }, tx);
+      await recordConsent(customer.id, true, "BOOKING");
+    }
+
     return b.id;
   });
 

@@ -112,6 +112,9 @@ export async function verifyOtp(rawPhone: string, code: string, ctx: { now?: Dat
     data: { consumedAt: now }
   });
 
+  const { upsertCustomer } = await import("../customers");
+  await upsertCustomer(phone, { verified: true });
+
   await setPhoneVerifiedCookie(phone, now.getTime());
   return { ok: true };
 }

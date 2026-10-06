@@ -8,7 +8,7 @@ export async function settleBill(
   billId: string,
   payments: Array<{ method: PaymentMethod; amountPaise: number }>,
   actor: { id: string },
-  opts: { expectedTotalPaise: number; now?: Date }
+  opts: { expectedTotalPaise: number; now?: Date; marketingConsent?: boolean }
 ) {
   return await prisma.$transaction(async (tx) => {
     // We must lock the session first to prevent concurrent orders/voids.
@@ -24,8 +24,8 @@ export async function settleBill(
     await lockSession(tx, { id: billMeta.sessionId, kind: billMeta.session.kind, tableId: billMeta.session.tableId });
 
     // Now lock the bill itself
-    const res = await tx.$queryRaw<{ id: string; status: string; totalPaise: number; generatedAt: Date }[]>`
-      SELECT id, status, "totalPaise", "generatedAt" FROM "Bill" WHERE id = ${billId} FOR UPDATE
+    const res = await tx.$queryRaw<{ id: string; status: string; totalPaise: number; generatedAt: Date; customerPhone: string | null; customerName: string | null }[]>`
+      SELECT id, status, "totalPaise", "generatedAt", "customerPhone", "customerName" FROM "Bill" WHERE id = ${billId} FOR UPDATE
     `;
 
     if (res.length === 0) {
@@ -83,6 +83,17 @@ export async function settleBill(
       return { ok: false, error: "PAYMENT_MISMATCH" } as const;
     }
 
+    // Upsert customer and record consent BEFORE generating invoice number to respect lock order
+    // "session advisory lock -> bill row -> customer row -> invoice counter"
+    if (bill.customerPhone) {
+      const { upsertCustomer } = await import("../customers");
+      const { recordConsent } = await import("../customers/consent");
+      const c = await upsertCustomer(bill.customerPhone, { name: bill.customerName }, tx);
+      if (opts.marketingConsent) {
+        await recordConsent(c.id, true, "BILLING", actor.id);
+      }
+    }
+
     const now = opts.now || new Date();
     const fy = financialYear(now);
 
@@ -111,7 +122,8 @@ export async function settleBill(
         status: "SETTLED",
         number,
         settledAt: now,
-        settledById: actor.id
+        settledById: actor.id,
+        marketingConsent: opts.marketingConsent
       }
     });
 

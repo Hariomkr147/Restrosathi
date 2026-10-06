@@ -6,7 +6,7 @@ import Link from "next/link";
 
 type Slot = { time: string; isFull: boolean };
 
-export function BookingForm({ maxPartySize }: { maxPartySize: number }) {
+export function BookingForm({ maxPartySize, marketingText }: { maxPartySize: number; marketingText: string }) {
   const [dateStr, setDateStr] = useState<string>(() => {
     const d = new Date();
     d.setMinutes(d.getMinutes() + d.getTimezoneOffset() + 330); // IST approx
@@ -22,6 +22,7 @@ export function BookingForm({ maxPartySize }: { maxPartySize: number }) {
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
   const [note, setNote] = useState("");
+  const [marketingConsent, setMarketingConsent] = useState(false);
   
   const [step, setStep] = useState<"FORM" | "OTP" | "SUCCESS">("FORM");
   const [otpCode, setOtpCode] = useState("");
@@ -52,7 +53,8 @@ export function BookingForm({ maxPartySize }: { maxPartySize: number }) {
       phone,
       partySize,
       slotStart: selectedSlot,
-      note: note || undefined
+      note: note || undefined,
+      marketingConsent
     });
     setSubmitting(false);
 
@@ -102,7 +104,8 @@ export function BookingForm({ maxPartySize }: { maxPartySize: number }) {
       phone,
       partySize,
       slotStart: selectedSlot!,
-      note: note || undefined
+      note: note || undefined,
+      marketingConsent
     });
     setSubmitting(false);
     
@@ -272,6 +275,20 @@ export function BookingForm({ maxPartySize }: { maxPartySize: number }) {
           onChange={e => setNote(e.target.value)}
           className="w-full p-2 border rounded h-20"
         />
+      </div>
+
+      <div className="flex items-start gap-2 pt-2">
+        <input 
+          type="checkbox"
+          id="marketingConsent"
+          name="marketingConsent"
+          className="mt-1"
+          checked={marketingConsent}
+          onChange={e => setMarketingConsent(e.target.checked)}
+        />
+        <label htmlFor="marketingConsent" className="text-sm">
+          {marketingText}
+        </label>
       </div>
 
       <p className="text-xs text-muted-foreground text-center">

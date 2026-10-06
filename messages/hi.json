@@ -488,6 +488,11 @@
     "STOP_CONFIRMED": "आपको हमारे संदेशों से अनसब्सक्राइब कर दिया गया है।",
     "AUTO_REPLY": "{answer}"
   },
+  "consent": {
+    "marketing": {
+      "text": "मैं {restaurant} से ऑफ़र और मार्केटिंग अपडेट प्राप्त करने के लिए सहमत हूँ।"
+    }
+  },
   "privacy": {
     "title": "गोपनीयता नीति (Privacy Policy)",
     "whatWeCollect": "हम क्या जानकारी लेते हैं",
