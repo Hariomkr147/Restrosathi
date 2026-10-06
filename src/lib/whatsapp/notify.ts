@@ -36,12 +36,11 @@ export async function notify(
 
 export function renderMessage(kind: MessageKind, params: any, locale: "en" | "hi" = "en"): string {
   const msgs = locale === "hi" ? hiMsgs : enMsgs;
-  const key = `wa.${kind}` as keyof typeof msgs;
   
-  let template = msgs[key] as string;
+  let template = (msgs.wa as any)[kind] as string;
   if (!template) {
     // fallback to en if missing in hi (but spec says every key exists in both)
-    template = enMsgs[key] as string;
+    template = (enMsgs.wa as any)[kind] as string;
   }
   
   if (!template) throw new Error(`Missing template for ${kind}`);

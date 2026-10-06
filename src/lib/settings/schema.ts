@@ -35,6 +35,9 @@ export const settingsInputSchema = z.object({
   gstin: z.string().trim().regex(/^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z][1-9A-Z]Z[0-9A-Z]$/, "Invalid GSTIN format").or(z.literal("")).nullable().optional(),
   fssai: z.string().trim().regex(/^\d{14}$/, "FSSAI must be 14 digits").or(z.literal("")).nullable().optional(),
   staffCanDiscount: z.coerce.boolean().default(false),
+  bookingCapacityPerSlot: z.coerce.number().int().min(1).default(30),
+  maxPartySize: z.coerce.number().int().min(1).default(12),
+  bookingCutoffMinutes: z.coerce.number().int().min(0).default(60),
 }).superRefine((data, ctx) => {
   if (data.taxMode === "REGULAR" && (!data.gstin || data.gstin.trim() === "")) {
     ctx.addIssue({

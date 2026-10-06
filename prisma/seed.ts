@@ -27,6 +27,9 @@ try {
       hours: Object.fromEntries(
         ["mon", "tue", "wed", "thu", "fri", "sat", "sun"].map((day) => [day, [{ open: "11:00", close: "23:00" }]]),
       ),
+      bookingCapacityPerSlot: 30,
+      maxPartySize: 12,
+      bookingCutoffMinutes: 60,
     },
   });
   await prisma.user.upsert({

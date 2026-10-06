@@ -109,15 +109,15 @@
 - `requestBooking(input, ctx): Promise<{ ok: true; bookingId; cancelToken } | { ok: false; error: "OTP_REQUIRED" | "INVALID_INPUT" | "SLOT_UNAVAILABLE" | "PARTY_TOO_LARGE" | "DUPLICATE_REQUEST" | "RATE_LIMITED" }>`. Public action. Needs `isPhoneVerified(phone)` (else `OTP_REQUIRED`, and the form runs the OTP flow first). Validates name (1–60), partySize (1–`maxPartySize`), the slot is in `bookableSlots`, note ≤ 300. **One active request per phone per slot**: a `REQUESTED` or `CONFIRMED` booking with the same phone and `slotStart` → `DUPLICATE_REQUEST`. Requests **do not hold capacity**. On success it creates the row (`cancelToken` = 32 random bytes base64url) and `notify("BOOKING_RECEIVED", …)` in the same transaction, then `sendNow`. Rate limit: 5 requests per phone per day, 10 per device per day.
 - `/book` page (public; link only when `FEATURES.bookings`): date picker (next 60 days, blocked dates disabled), slot buttons, party size stepper, name, phone, note → OTP step when needed → success screen "Request received. We will confirm on WhatsApp." with the cancel link shown. A requested slot that is already full still shows (requests are allowed; staff decide) with a neutral hint "Popular time, we'll confirm on WhatsApp".
 
-- [ ] **Step 1: Write failing tests.**
+- [x] **Step 1: Write failing tests.**
   - `slots.test.ts`: hours 12:00–23:00 → first start 12:00, last start 21:30; overnight 18:00–01:00 → last start 23:30 (01:00 − 90 min) and no slots on the next date from that shift; two shifts per day both used; blocked date → none; cutoff: with `now` = 18:30 and cutoff 60 the first slot is 19:30; slots beyond 60 days excluded; `occupiedSlots("19:00")` = 19:00, 19:30, 20:00; alignment helper.
   - `request.int.test.ts`: unverified phone → `OTP_REQUIRED`; verified (`asVerifiedPhone` from `tests/helpers/otp.ts`) → creates REQUESTED + a `BOOKING_RECEIVED` outbox row; party 13 → `PARTY_TOO_LARGE`; unaligned or out-of-hours or blocked or inside-cutoff slot → `SLOT_UNAVAILABLE`; same phone same slot twice → `DUPLICATE_REQUEST` but a different slot is fine; a full slot still accepts the request; rate limit trips on the 6th request/day; note and name length bounds; the cancel token is unique and 43 characters.
   - `book-request.spec.ts` (mobile + desktop): fill the form, receive the OTP from the fake outbox file, enter it, submit, see the success message; second submission of the same slot shows a friendly duplicate message; Hindi toggle works; 360 px no horizontal scroll; axe clean; keyboard-only completion.
-- [ ] **Step 2: Run.** Expected: FAIL.
-- [ ] **Step 3: Implement** (settings fields editable by the owner with validation: capacity ≥ 1, party size 1–50, cutoff 0–1440).
-- [ ] **Step 4: Run** unit, integration, e2e. Expected: PASS.
-- [ ] **Step 5: UI pass:** `$impeccable shape` → build → `audit` + `harden` + `critique` + `polish` (customer-facing).
-- [ ] **Step 6: Commit** `feat: booking rules and customer booking request with OTP`, then PROGRESS.
+- [x] **Step 2: Run.** Expected: FAIL.
+- [x] **Step 3: Implement** (settings fields editable by the owner with validation: capacity ≥ 1, party size 1–50, cutoff 0–1440).
+- [x] **Step 4: Run** unit, integration, e2e. Expected: PASS.
+- [x] **Step 5: UI pass:** `$impeccable shape` → build → `audit` + `harden` + `critique` + `polish` (customer-facing).
+- [x] **Step 6: Commit** `feat: booking rules and customer booking request with OTP`, then PROGRESS.
 
 ---
 

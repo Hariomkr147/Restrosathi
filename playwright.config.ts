@@ -25,9 +25,10 @@ export default defineConfig({
     { name: "desktop", use: { ...devices["Desktop Chrome"] } },
   ],
   webServer: {
-    command: "npm run start",
+    command: "npm run dev",
     port: 3000,
     timeout: 120_000,
+    reuseExistingServer: true,
     env: {
       DATABASE_URL: process.env.TEST_DATABASE_URL ?? "",
       UPLOAD_DIR: "public/uploads",

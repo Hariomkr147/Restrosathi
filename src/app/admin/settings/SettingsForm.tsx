@@ -47,7 +47,10 @@ export function SettingsForm({ settings }: { settings: SettingsView }) {
           name: value("name"), address: value("address"), phone: value("phone"), whatsappPhone: value("whatsappPhone"),
           about: { en: value("about-en"), hi: value("about-hi") }, mapEmbedUrl: value("mapEmbedUrl"), googleReviewUrl: value("googleReviewUrl"), hours,
           taxMode: value("taxMode"), gstRatePercent: parseInt(value("gstRatePercent") || "5", 10), pricesIncludeTax: form.get("pricesIncludeTax") === "on",
-          gstin: value("gstin"), fssai: value("fssai"), staffCanDiscount: form.get("staffCanDiscount") === "on"
+          gstin: value("gstin"), fssai: value("fssai"), staffCanDiscount: form.get("staffCanDiscount") === "on",
+          bookingCapacityPerSlot: parseInt(value("bookingCapacityPerSlot") || "30", 10),
+          maxPartySize: parseInt(value("maxPartySize") || "12", 10),
+          bookingCutoffMinutes: parseInt(value("bookingCutoffMinutes") || "60", 10)
         });
         if (result.ok) setStatus("saved"); else setFieldErrors(result.fieldErrors);
       } catch { setStatus("network"); }
@@ -92,9 +95,7 @@ export function SettingsForm({ settings }: { settings: SettingsView }) {
         <div className="grid gap-4 md:grid-cols-2">
           <div className="min-w-0 space-y-2">
             <label htmlFor="taxMode" className="block font-medium">{t("taxMode")}</label>
-                                                                                                                                   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                                                                                                                                   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            <select id="taxMode" name="taxMode" className={inputClass} value={taxMode} onChange={e => setTaxMode(e.target.value as any)}>
+            <select id="taxMode" name="taxMode" className={inputClass} value={taxMode} onChange={e => setTaxMode(e.target.value as "NONE" | "COMPOSITION" | "REGULAR")}>
               <option value="NONE">{t("taxModes.NONE")}</option>
               <option value="COMPOSITION">{t("taxModes.COMPOSITION")}</option>
               <option value="REGULAR">{t("taxModes.REGULAR")}</option>
@@ -120,6 +121,27 @@ export function SettingsForm({ settings }: { settings: SettingsView }) {
           </div>
         </div>
         <label className="flex items-center gap-3 py-2"><input type="checkbox" name="staffCanDiscount" defaultChecked={settings.staffCanDiscount} />{t("staffCanDiscount")}</label>
+      </fieldset>
+      <fieldset className="min-w-0 space-y-4">
+        <legend className="mb-4 font-heading text-2xl">{t("booking")}</legend>
+        <p className="text-sm text-muted-foreground">{t("bookingHint")}</p>
+        <div className="grid gap-4 md:grid-cols-3">
+          <div className="min-w-0 space-y-2">
+            <label htmlFor="bookingCapacityPerSlot" className="block font-medium">{t("bookingCapacityPerSlot")}</label>
+            <input id="bookingCapacityPerSlot" name="bookingCapacityPerSlot" type="number" min="1" className={inputClass} defaultValue={settings.bookingCapacityPerSlot} required aria-invalid={!!fieldErrors.bookingCapacityPerSlot} />
+            {error("bookingCapacityPerSlot")}
+          </div>
+          <div className="min-w-0 space-y-2">
+            <label htmlFor="maxPartySize" className="block font-medium">{t("maxPartySize")}</label>
+            <input id="maxPartySize" name="maxPartySize" type="number" min="1" className={inputClass} defaultValue={settings.maxPartySize} required aria-invalid={!!fieldErrors.maxPartySize} />
+            {error("maxPartySize")}
+          </div>
+          <div className="min-w-0 space-y-2">
+            <label htmlFor="bookingCutoffMinutes" className="block font-medium">{t("bookingCutoffMinutes")}</label>
+            <input id="bookingCutoffMinutes" name="bookingCutoffMinutes" type="number" min="0" className={inputClass} defaultValue={settings.bookingCutoffMinutes} required aria-invalid={!!fieldErrors.bookingCutoffMinutes} />
+            {error("bookingCutoffMinutes")}
+          </div>
+        </div>
       </fieldset>
       <Button type="submit" disabled={pending} aria-busy={pending}>{t(pending ? "saving" : "save")}</Button>
     </fieldset>

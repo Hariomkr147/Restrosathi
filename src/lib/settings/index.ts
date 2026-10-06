@@ -20,6 +20,9 @@ export type SettingsView = {
   fssai: string | null;
   staffCanDiscount: boolean;
   taxModeConfirmedAt: Date | null;
+  bookingCapacityPerSlot: number;
+  maxPartySize: number;
+  bookingCutoffMinutes: number;
 };
 
 export async function getSettings(): Promise<SettingsView> {

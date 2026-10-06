@@ -1,1 +1,1 @@
-export const FEATURES = { bookings: false, events: false, qrOrdering: true } as const;
+export const FEATURES = { bookings: true, events: false, qrOrdering: true } as const;

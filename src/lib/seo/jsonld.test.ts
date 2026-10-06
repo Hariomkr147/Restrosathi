@@ -10,6 +10,7 @@ const settings: SettingsView = {
   phone: "+919999900000", whatsappPhone: "+919999900000", mapEmbedUrl: null, googleReviewUrl: null,
   hours: allDays([{ open: "11:00", close: "23:00" }]),
   taxMode: "NONE", gstRatePercent: 5, pricesIncludeTax: true, gstin: null, fssai: null, staffCanDiscount: false, taxModeConfirmedAt: null,
+  bookingCapacityPerSlot: 30, maxPartySize: 12, bookingCutoffMinutes: 60,
 };
 const url = "https://saffrontadka.example";
 

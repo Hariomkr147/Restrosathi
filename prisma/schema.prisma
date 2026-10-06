@@ -8,22 +8,25 @@ datasource db {
 }
 
 model Settings {
-  id                 Int       @id @default(1)
-  name               String
-  about              Json
-  address            String
-  phone              String
-  whatsappPhone      String
-  mapEmbedUrl        String?
-  googleReviewUrl    String?
-  hours              Json
-  taxMode            TaxMode   @default(NONE)
-  gstRatePercent     Int       @default(5)
-  pricesIncludeTax   Boolean   @default(true)
-  gstin              String?
-  fssai              String?
-  staffCanDiscount   Boolean   @default(false)
-  taxModeConfirmedAt DateTime? @db.Timestamptz(3)
+  id                     Int       @id @default(1)
+  name                   String
+  about                  Json
+  address                String
+  phone                  String
+  whatsappPhone          String
+  mapEmbedUrl            String?
+  googleReviewUrl        String?
+  hours                  Json
+  taxMode                TaxMode   @default(NONE)
+  gstRatePercent         Int       @default(5)
+  pricesIncludeTax       Boolean   @default(true)
+  gstin                  String?
+  fssai                  String?
+  staffCanDiscount       Boolean   @default(false)
+  taxModeConfirmedAt     DateTime? @db.Timestamptz(3)
+  bookingCapacityPerSlot Int       @default(30)
+  maxPartySize           Int       @default(12)
+  bookingCutoffMinutes   Int       @default(60)
 }
 
 enum TaxMode {
@@ -47,6 +50,7 @@ model User {
   active       Boolean       @default(true)
   sessions     AuthSession[]
   auditLogs    AuditLog[]
+  bookings     Booking[]
 }
 
 model AuthSession {
@@ -285,7 +289,6 @@ model AiDeviceUsage {
   @@id([deviceId, day])
 }
 
-
 enum DocType {
   BILL
   BILL_OF_SUPPLY
@@ -304,11 +307,11 @@ enum DiscountType {
 }
 
 model Bill {
-  id                String         @id @default(cuid())
-  sessionId         String         @unique
+  id                String        @id @default(cuid())
+  sessionId         String        @unique
   docType           DocType
-  status            BillStatus     @default(OPEN)
-  number            String?        @unique
+  status            BillStatus    @default(OPEN)
+  number            String?       @unique
   taxMode           TaxMode
   gstRatePercent    Int
   pricesIncludeTax  Boolean
@@ -325,30 +328,30 @@ model Bill {
   totalPaise        Int
   customerName      String?
   customerPhone     String?
-  generatedAt       DateTime       @default(now()) @db.Timestamptz(3)
+  generatedAt       DateTime      @default(now()) @db.Timestamptz(3)
   generatedById     String
-  settledAt         DateTime?      @db.Timestamptz(3)
+  settledAt         DateTime?     @db.Timestamptz(3)
   settledById       String?
-  cancelledAt       DateTime?      @db.Timestamptz(3)
+  cancelledAt       DateTime?     @db.Timestamptz(3)
   cancelledById     String?
   cancelReason      String?
 
-  session           DiningSession  @relation(fields: [sessionId], references: [id], onDelete: Restrict)
-  lines             BillLine[]
-  payments          Payment[]
+  session  DiningSession @relation(fields: [sessionId], references: [id], onDelete: Restrict)
+  lines    BillLine[]
+  payments Payment[]
 }
 
 model BillLine {
-  id                String   @id @default(cuid())
-  billId            String
-  name              Json
-  variant           Json?
-  modifiers         Json
-  qty               Int
-  unitPricePaise    Int
-  linePaise         Int
+  id             String @id @default(cuid())
+  billId         String
+  name           Json
+  variant        Json?
+  modifiers      Json
+  qty            Int
+  unitPricePaise Int
+  linePaise      Int
 
-  bill              Bill     @relation(fields: [billId], references: [id], onDelete: Cascade)
+  bill Bill @relation(fields: [billId], references: [id], onDelete: Cascade)
 
   @@index([billId])
 }
@@ -367,7 +370,7 @@ model Payment {
   recordedById String
   at           DateTime      @default(now()) @db.Timestamptz(3)
 
-  bill         Bill          @relation(fields: [billId], references: [id], onDelete: Cascade)
+  bill Bill @relation(fields: [billId], references: [id], onDelete: Cascade)
 
   @@index([billId])
 }
@@ -390,22 +393,22 @@ enum MessageStatus {
 }
 
 model MessageLog {
-  id           String           @id @default(cuid())
-  direction    MessageDirection
-  phone        String
-  kind         String?
-  locale       String           @default("en")
-  params       Json             @default("{}")
-  body         String?
-  status       MessageStatus
-  attempts     Int              @default(0)
-  providerId   String?
-  externalId   String?          @unique
-  lastError    String?
-  aiHandled    Boolean          @default(false)
-  needsHuman   Boolean          @default(false)
-  nextAttemptAt DateTime?       @db.Timestamptz(3)
-  createdAt    DateTime         @default(now()) @db.Timestamptz(3)
+  id            String           @id @default(cuid())
+  direction     MessageDirection
+  phone         String
+  kind          String?
+  locale        String           @default("en")
+  params        Json             @default("{}")
+  body          String?
+  status        MessageStatus
+  attempts      Int              @default(0)
+  providerId    String?
+  externalId    String?          @unique
+  lastError     String?
+  aiHandled     Boolean          @default(false)
+  needsHuman    Boolean          @default(false)
+  nextAttemptAt DateTime?        @db.Timestamptz(3)
+  createdAt     DateTime         @default(now()) @db.Timestamptz(3)
 
   @@index([status, nextAttemptAt])
 }
@@ -432,3 +435,36 @@ model OtpCode {
   @@index([phone, createdAt])
 }
 
+enum BookingStatus {
+  REQUESTED
+  CONFIRMED
+  DECLINED
+  ARRIVED
+  NO_SHOW
+  CANCELLED
+}
+
+model Booking {
+  id             String        @id @default(uuid())
+  name           String
+  phone          String
+  partySize      Int
+  slotStart      DateTime      @db.Timestamptz(3)
+  status         BookingStatus @default(REQUESTED)
+  note           String?
+  locale         String        @default("en")
+  cancelToken    String        @unique
+  createdAt      DateTime      @default(now()) @db.Timestamptz(3)
+  confirmedAt    DateTime?     @db.Timestamptz(3)
+  decidedById    String?
+  decidedBy      User?         @relation(fields: [decidedById], references: [id], onDelete: SetNull)
+  declineReason  String?
+  reminderSentAt DateTime?     @db.Timestamptz(3)
+
+  @@index([slotStart, status])
+}
+
+model BlockedDate {
+  date   String  @id // YYYY-MM-DD, IST
+  reason String?
+}
