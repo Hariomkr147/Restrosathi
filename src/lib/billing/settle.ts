@@ -105,7 +105,7 @@ export async function settleBill(
 
         if (lockedCustomer) {
           const { getBalance, calculateEarnedPoints } = await import("../loyalty");
-          const balance = await getBalance(c.id);
+          const balance = await getBalance(c.id, tx);
 
           if (bill.loyaltyPointsRedeemed > balance) {
             return { ok: false, error: "LOYALTY_BALANCE_CHANGED" } as const;

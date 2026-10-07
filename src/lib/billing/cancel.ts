@@ -16,13 +16,29 @@ export async function cancelBill(
   }
 
   return prisma.$transaction(async (tx) => {
-    const bill = await tx.bill.findUnique({
-      where: { id: billId }
+    const billMeta = await tx.bill.findUnique({
+      where: { id: billId },
+      select: { sessionId: true, session: { select: { kind: true, tableId: true } }, customerPhone: true }
     });
+    if (!billMeta) return { ok: false, error: "NOT_FOUND" };
 
-    if (!bill) return { ok: false, error: "NOT_FOUND" };
+    const { lockSession } = await import("../sessions");
+    await lockSession(tx, { id: billMeta.sessionId, kind: billMeta.session.kind, tableId: billMeta.session.tableId });
+
+    const lockedBillRes = await tx.$queryRaw<{ id: string; status: string; number: string; totalPaise: number }[]>`
+      SELECT id, status, number, "totalPaise" FROM "Bill" WHERE id = ${billId} FOR UPDATE
+    `;
+    if (lockedBillRes.length === 0) return { ok: false, error: "NOT_FOUND" };
+    const bill = lockedBillRes[0];
+
     if (bill.status === "CANCELLED") return { ok: false, error: "ALREADY_CANCELLED" };
     if (bill.status === "OPEN") return { ok: false, error: "NOT_SETTLED" };
+
+    if (billMeta.customerPhone) {
+      const lockedCustomerRes = await tx.$queryRaw<{ id: string }[]>`
+        SELECT id FROM "Customer" WHERE phone = ${billMeta.customerPhone} FOR UPDATE
+      `;
+    }
 
     const now = new Date();
 

@@ -142,11 +142,11 @@ Original Tasks 12–14, 22–24, 38. Audit: F02. Depends: R04.
 
 **Files:** sessions/order mutations, `src/lib/billing/{generate,settle,cancel}.ts`, loyalty draft mutations and integration tests.
 
-- [ ] Add controlled concurrency regressions: generate vs place/void, regenerate vs settle, apply/remove redemption vs settle, two generators and two settlers. Coordinate overlap using barriers/locks, not arbitrary sleeps.
-- [ ] Acquire the documented table/session advisory lock, then bill row, then customer row, then invoice counter as applicable. Re-read mutable state after locks.
-- [ ] Make helpers use the caller's transaction client; do not open global-client reads/writes within the locked operation when they belong to that transaction.
-- [ ] Prohibit changing settled/cancelled snapshots/lines/totals; ensure stale accepted/rejected/order-line changes cannot be hidden by a late generatedAt timestamp.
-- [ ] Keep invoice allocation/payment/close-session/audit atomic. Re-check lock order in cancellation, loyalty adjustment and related code for inversion.
+- [x] Add controlled concurrency regressions: generate vs place/void, regenerate vs settle, apply/remove redemption vs settle, two generators and two settlers. Coordinate overlap using barriers/locks, not arbitrary sleeps.
+- [x] Acquire the documented table/session advisory lock, then bill row, then customer row, then invoice counter as applicable. Re-read mutable state after locks.
+- [x] Make helpers use the caller's transaction client; do not open global-client reads/writes within the locked operation when they belong to that transaction.
+- [x] Prohibit changing settled/cancelled snapshots/lines/totals; ensure stale accepted/rejected/order-line changes cannot be hidden by a late generatedAt timestamp.
+- [x] Keep invoice allocation/payment/close-session/audit atomic. Re-check lock order in cancellation, loyalty adjustment and related code for inversion.
 
 **Commands:** focused billing/orders/loyalty integration files, authz matrix. Repeat the prescribed races three times.  
 **Acceptance:** no missing/duplicate billed lines, no post-settlement amount change, no deadlock/pool timeout and one immutable invoice per settlement.

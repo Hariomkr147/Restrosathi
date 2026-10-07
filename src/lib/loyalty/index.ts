@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { prisma } from "../db";
 import { audit } from "../audit";
-import { LoyaltyKind } from "@prisma/client";
+import { LoyaltyKind, Prisma } from "@prisma/client";
 
 export function calculateEarnedPoints(totalPaise: number, earnPer100Rupees: number): number {
   return Math.floor(totalPaise / 10000) * earnPer100Rupees;
@@ -14,8 +14,9 @@ export function calculateRedemptionValue(points: number, unitPoints: number, uni
   return (points / unitPoints) * unitValuePaise;
 }
 
-export async function getBalance(customerId: string): Promise<number> {
-  const result = await prisma.loyaltyTxn.aggregate({
+export async function getBalance(customerId: string, tx?: Prisma.TransactionClient): Promise<number> {
+  const client = tx || prisma;
+  const result = await client.loyaltyTxn.aggregate({
     where: { customerId },
     _sum: { points: true }
   });
@@ -60,25 +61,43 @@ export async function adjustPoints(
 }
 
 export async function applyRedemption(billId: string, points: number, actorId: string) {
-  const bill = await prisma.bill.findUnique({ where: { id: billId } });
-  if (!bill) throw new Error("NOT_FOUND");
-  if (bill.status !== "OPEN") throw new Error("BILL_NOT_OPEN");
-  if (!bill.customerPhone || !bill.phoneVerifiedAt) throw new Error("PHONE_NOT_VERIFIED");
+  return prisma.$transaction(async (tx) => {
+    const billMeta = await tx.bill.findUnique({
+      where: { id: billId },
+      select: { sessionId: true, session: { select: { kind: true, tableId: true } } }
+    });
+    if (!billMeta) throw new Error("NOT_FOUND");
 
-  const settings = await prisma.settings.findUnique({ where: { id: 1 } });
-  if (!settings || !settings.loyaltyEnabled) throw new Error("LOYALTY_DISABLED");
+    const { lockSession } = await import("../sessions");
+    await lockSession(tx, { id: billMeta.sessionId, kind: billMeta.session.kind, tableId: billMeta.session.tableId });
 
-  const customer = await prisma.customer.findUnique({ where: { phone: bill.customerPhone } });
-  if (!customer) throw new Error("CUSTOMER_NOT_FOUND");
+    await tx.$queryRaw`SELECT id FROM "Bill" WHERE id = ${billId} FOR UPDATE`;
+    const bill = await tx.bill.findUnique({ where: { id: billId } });
+    
+    if (!bill) throw new Error("NOT_FOUND");
+    if (bill.status !== "OPEN") throw new Error("BILL_NOT_OPEN");
+    if (!bill.customerPhone || !bill.phoneVerifiedAt) throw new Error("PHONE_NOT_VERIFIED");
 
-  const balance = await getBalance(customer.id);
-  if (points > balance) throw new Error("INSUFFICIENT_BALANCE");
+    const settings = await tx.settings.findUnique({ where: { id: 1 } });
+    if (!settings || !settings.loyaltyEnabled) throw new Error("LOYALTY_DISABLED");
 
-  const discountPaise = calculateRedemptionValue(points, settings.loyaltyRedeemUnitPoints, settings.loyaltyRedeemUnitValuePaise);
-  
-  // Recompute bill
-  const lines = await prisma.billLine.findMany({ where: { billId } });
-  
+    await tx.$queryRaw`SELECT id FROM "Customer" WHERE phone = ${bill.customerPhone} FOR UPDATE`;
+    const customer = await tx.customer.findUnique({ where: { phone: bill.customerPhone } });
+    if (!customer) throw new Error("CUSTOMER_NOT_FOUND");
+
+    const balance = await getBalance(customer.id, tx);
+    if (points > balance) throw new Error("INSUFFICIENT_BALANCE");
+
+    const discountPaise = calculateRedemptionValue(points, settings.loyaltyRedeemUnitPoints, settings.loyaltyRedeemUnitValuePaise);
+    
+    await recomputeAndSaveBill(tx, bill, points, discountPaise);
+
+    return true;
+  });
+}
+
+async function recomputeAndSaveBill(tx: Prisma.TransactionClient, bill: any, points: number, discountPaise: number) {
+  const lines = await tx.billLine.findMany({ where: { billId: bill.id } });
   const { computeBill } = await import("../billing/calc");
   let draftDiscount = null;
   if (bill.discountType) {
@@ -91,7 +110,6 @@ export async function applyRedemption(billId: string, points: number, actorId: s
 
   const computed = computeBill({
     lines: lines.map(l => ({ unitPricePaise: l.unitPricePaise, qty: l.qty })),
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     discount: draftDiscount as any,
     taxMode: bill.taxMode,
     gstRatePercent: bill.gstRatePercent,
@@ -99,8 +117,8 @@ export async function applyRedemption(billId: string, points: number, actorId: s
     extraDiscountPaise: discountPaise
   });
 
-  await prisma.bill.update({
-    where: { id: billId },
+  await tx.bill.update({
+    where: { id: bill.id },
     data: {
       loyaltyPointsRedeemed: points,
       loyaltyDiscountPaise: discountPaise,
@@ -113,50 +131,30 @@ export async function applyRedemption(billId: string, points: number, actorId: s
       totalPaise: computed.totalPaise
     }
   });
-
-  return true;
 }
 
 export async function removeRedemption(billId: string) {
-  const bill = await prisma.bill.findUnique({ where: { id: billId } });
-  if (!bill || bill.status !== "OPEN") return false;
+  return prisma.$transaction(async (tx) => {
+    const billMeta = await tx.bill.findUnique({
+      where: { id: billId },
+      select: { sessionId: true, session: { select: { kind: true, tableId: true } } }
+    });
+    if (!billMeta) return false;
 
-  const lines = await prisma.billLine.findMany({ where: { billId } });
-  
-  const { computeBill } = await import("../billing/calc");
-  let draftDiscount = null;
-  if (bill.discountType) {
-    draftDiscount = {
-      type: bill.discountType,
-      valuePaise: bill.discountType === "FLAT" ? (bill.discountValue || 0) : 0,
-      percent: bill.discountType === "PERCENT" ? (bill.discountValue || 0) : 0,
-    };
-  }
+    const { lockSession } = await import("../sessions");
+    await lockSession(tx, { id: billMeta.sessionId, kind: billMeta.session.kind, tableId: billMeta.session.tableId });
 
-  const computed = computeBill({
-    lines: lines.map(l => ({ unitPricePaise: l.unitPricePaise, qty: l.qty })),
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    discount: draftDiscount as any,
-    taxMode: bill.taxMode,
-    gstRatePercent: bill.gstRatePercent,
-    pricesIncludeTax: bill.pricesIncludeTax,
-    extraDiscountPaise: 0
-  });
+    await tx.$queryRaw`SELECT id FROM "Bill" WHERE id = ${billId} FOR UPDATE`;
+    const bill = await tx.bill.findUnique({ where: { id: billId } });
+    
+    if (!bill || bill.status !== "OPEN") return false;
 
-  await prisma.bill.update({
-    where: { id: billId },
-    data: {
-      loyaltyPointsRedeemed: 0,
-      loyaltyDiscountPaise: 0,
-      subtotalPaise: computed.subtotalPaise,
-      discountPaise: computed.discountPaise,
-      taxableValuePaise: computed.taxableValuePaise,
-      cgstPaise: computed.cgstPaise,
-      sgstPaise: computed.sgstPaise,
-      roundOffPaise: computed.roundOffPaise,
-      totalPaise: computed.totalPaise
+    if (bill.customerPhone) {
+      await tx.$queryRaw`SELECT id FROM "Customer" WHERE phone = ${bill.customerPhone} FOR UPDATE`;
     }
-  });
 
-  return true;
+    await recomputeAndSaveBill(tx, bill, 0, 0);
+
+    return true;
+  });
 }

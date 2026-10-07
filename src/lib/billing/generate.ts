@@ -32,6 +32,15 @@ export async function generateBill(
   const opts = parsed.data;
 
   return prisma.$transaction(async (tx) => {
+    const sessionMeta = await tx.diningSession.findUnique({
+      where: { id: sessionId },
+      select: { id: true, kind: true, tableId: true }
+    });
+    if (!sessionMeta) return { ok: false, error: "NOT_FOUND" };
+
+    const { lockSession } = await import("../sessions");
+    await lockSession(tx, sessionMeta);
+
     const session = await tx.diningSession.findUnique({
       where: { id: sessionId },
       include: {
@@ -39,6 +48,13 @@ export async function generateBill(
         orders: { include: { lines: true } }
       }
     });
+
+    if (!session) return { ok: false, error: "NOT_FOUND" };
+
+    if (session.bill) {
+      // lock bill
+      await tx.$queryRaw`SELECT id FROM "Bill" WHERE id = ${session.bill.id} FOR UPDATE`;
+    }
 
     if (!session) return { ok: false, error: "NOT_FOUND" };
     if (session.status === "CLOSED") return { ok: false, error: "SESSION_CLOSED" };

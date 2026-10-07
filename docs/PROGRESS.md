@@ -513,3 +513,15 @@ Status: Complete.
 - Verified AI behavior via `npm run eval:ai`
 - Verified with integration tests
 
+# #   T a s k   R 0 6 :   S e r i a l i z e   a l l   b i l l   m u t a t i o n s   -   r e p a i r   R 0 6  
+ -   A d d e d   s t r i c t   P o s t g r e S Q L   a d v i s o r y   l o c k s   m a t c h i n g   o r d e r :   t a b l e / s e s s i o n ,   b i l l ,   c u s t o m e r .  
+ -   A p p l i e d   t o   \ g e n e r a t e B i l l \ ,   \ s e t t l e B i l l \ ,   \ c a n c e l B i l l \ ,   \  p p l y R e d e m p t i o n \ ,   \  e m o v e R e d e m p t i o n \ .  
+ -   W r o t e   D B   i n t e g r a t i o n   t e s t s   v e r i f y i n g   c o n c u r r e n c y   b l o c k s   d e a d l o c k s .  
+ -   R e f a c t o r e d   l o y a l t y   c o d e   d u p l i c a t i o n   f o r   c o m p u t e B i l l   a s   r e q u e s t e d .  
+  
+ 
+## Task R06: Serialize all bill mutations - repair R06
+- Added strict PostgreSQL advisory locks matching order: table/session, bill, customer.
+- Applied to generateBill, settleBill, cancelBill, applyRedemption, removeRedemption.
+- Wrote DB integration tests verifying concurrency blocks deadlocks.
+- Refactored loyalty code duplication for computeBill as requested.
