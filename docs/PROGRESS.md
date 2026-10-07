@@ -491,4 +491,9 @@ pm run build\ successfully.
  -   I n j e c t e d   c l o c k   t o   f i x   r e t e n t i o n   t e s t s .  
  -   F i x e d   b a c k u p   i n t e g r a t i o n   t e s t s   b y   m a k i n g   m i s s i n g   p g _ d u m p / d o c k e r   e x p l i c i t   t h r o w i n g   p r e r e q u i s i t e s   i n s t e a d   o f   s i l e n t   s k i p s .  
  -   I d e n t i f i e d   e m p t y / s k i p p e d   t e s t s :   b i l l i n g - c y c l e . s p e c . t s   s k i p s   m o b i l e .   N o   s w a l l o w e d   a s s e r t i o n s   f o u n d .  
+ # #   T a s k   3 :   R e s o l v e   d e p e n d e n c y   s e c u r i t y   f i n d i n g s      r e p a i r   R 0 3  
+ -   R a n   n p m   a u d i t   - - o m i t = d e v .  
+ -   n e x t - i n t l   < =   4 . 9 . 1   h a d   m o d e r a t e   v u l n e r a b i l i t i e s   ( o p e n   r e d i r e c t ,   p r o t o t y p e   p o l l u t i o n ) .   U p g r a d e d   t o   4 . 1 4 . 9   s a f e l y .  
+ -   d e e p m e r g e - t s   < 8 . 0 . 0   ( H i g h   s e v e r i t y )   i s   r e a c h e d   o n l y   v i a   p r i s m a   - >   @ p r i s m a / c o n f i g   - >   d e e p m e r g e - t s .   T h i s   i s   a   d e v - t i m e   t o o l   s t a c k   e x h a u s t i o n   r i s k   w h e n   m e r g i n g   r e c u r s i v e   c o n f i g   o b j e c t s ,   n o t   r e a c h a b l e   b y   p r o d u c t i o n   r u n t i m e   c o d e .   L e f t   a s - i s   t o   a v o i d   a   f o r c e d   m a j o r   v e r s i o n   u p g r a d e   t o   P r i s m a   7 / 8 .  
+ -   R e - r a n   n p m   r u n   t e s t : u n i t ,   n p m   r u n   b u i l d .  
  
