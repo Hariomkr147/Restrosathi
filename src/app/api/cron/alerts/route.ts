@@ -1,3 +1,4 @@
+import { verifyCronSecret } from "@/lib/cron";
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
@@ -5,7 +6,8 @@ import { runChecks } from "@/lib/monitoring/checks";
 import { internalSendSystemAlert } from "@/lib/whatsapp/notify";
 import { reportError } from "@/lib/errors";
 
-export async function GET(request: Request) {
+export async function POST(req: Request) {
+  if (!verifyCronSecret(req.headers.get("authorization"))) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   try {
     const settings = await prisma.settings.findUnique({ where: { id: 1 } });
     const now = new Date();

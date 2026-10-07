@@ -30,6 +30,9 @@ import { POST as getOrders } from "../../app/api/t/[code]/orders/route";
 import { createStaff, resetStaffPin, setStaffActive, changeOwnerPassword } from "./accounts";
 
 vi.mock("next/cache", () => ({ revalidatePath: vi.fn() }));
+vi.mock("next-intl/server", () => ({
+  getLocale: vi.fn().mockResolvedValue("en")
+}));
 const roles = [
   { role: "anonymous", signIn: asAnonymous },
   { role: "staff", signIn: asStaff },
@@ -144,10 +147,12 @@ for (const { role, signIn } of roles) {
       if (role === "anonymous") {
         await expect(action.run()).rejects.toBeInstanceOf(AuthError);
       } else {
-        try {
-          await action.run();
-        } catch (error) {
-          expect(error).not.toBeInstanceOf(AuthError);
+        if (action.name === "resolveRequest") {
+          // resolveRequest returns undefined if not found
+          await expect(action.run()).resolves.toBeUndefined();
+        } else {
+          // board actions throw Prisma errors on missing records
+          await expect(action.run()).rejects.toThrow(/Record to update not found|An operation failed because it depends on one or more records that were required but not found/);
         }
       }
     });
@@ -268,7 +273,7 @@ for (const { role, signIn } of roles) {
   it(`${role}: account actions require OWNER`, async () => {
     await signIn();
     if (role === "owner") {
-      await expect(createStaff({ name: "x", pin: "0000" })).rejects.toThrow();
+      await expect(createStaff({ name: "x", pin: "0000" })).resolves.toMatchObject({ name: "x" });
       await expect(resetStaffPin("x", "0000")).rejects.toThrow();
       await expect(setStaffActive("x", false)).rejects.toThrow();
       await expect(changeOwnerPassword("x", "0000000000")).rejects.toThrow();
@@ -283,13 +288,14 @@ for (const { role, signIn } of roles) {
   // Loadtest wrappers
   it(`${role}: POST /api/t/[code]/orders is explicitly public`, async () => {
     await signIn();
-    const req = new Request("http://localhost:3000/api/t/fake/orders", { 
+    const { NextRequest } = await import("next/server");
+    const req = new NextRequest("http://localhost:3000/api/t/fake/orders", { 
       method: "POST", 
-      body: "{}",
-      headers: { "origin": "http://localhost:3000" }
+      body: "{",
+      headers: { "origin": "http://localhost:3000", "host": "localhost:3000" }
     });
     const res = await getOrders(req as any);
-    expect(res.status).toBe(400); // Invalid JSON or signature fails, but not 401
+    expect(res.status).toBe(400); // Invalid JSON or signature fails, but not 401 or 403
   });
 
   it(`${role}: GET /api/board requires STAFF or OWNER`, async () => {

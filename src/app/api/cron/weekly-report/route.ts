@@ -1,12 +1,11 @@
+import { verifyCronSecret } from "@/lib/cron";
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { notify } from "@/lib/whatsapp/notify";
 
 export async function POST(req: Request) {
-  const auth = req.headers.get("authorization");
-  if (auth !== `Bearer ${process.env.CRON_SECRET}`) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
+  if (!verifyCronSecret(req.headers.get("authorization"))) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  
 
   const settings = await prisma.settings.findUnique({ where: { id: 1 } });
   if (!settings?.ownerAlertPhone) {

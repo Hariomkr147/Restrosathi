@@ -1,8 +1,10 @@
+import { verifyCronSecret } from "@/lib/cron";
 import { NextResponse } from "next/server";
 import { runRetention } from "@/lib/retention";
 import crypto from "crypto";
 
 export async function POST(req: Request) {
+  if (!verifyCronSecret(req.headers.get("authorization"))) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   const authHeader = req.headers.get("Authorization");
   const expectedToken = process.env.CRON_SECRET || "";
   if (!authHeader || !authHeader.startsWith("Bearer ") || !expectedToken) {

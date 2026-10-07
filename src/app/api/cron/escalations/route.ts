@@ -1,8 +1,10 @@
+import { verifyCronSecret } from "@/lib/cron";
 import { escalateStaleOrders } from "@/lib/orders/escalation";
 import { NextResponse } from "next/server";
 import crypto from "node:crypto";
 
 export async function POST(req: Request) {
+  if (!verifyCronSecret(req.headers.get("authorization"))) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   const authHeader = req.headers.get("authorization");
   if (!authHeader) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });

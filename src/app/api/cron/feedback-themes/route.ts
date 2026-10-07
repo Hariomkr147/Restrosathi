@@ -1,13 +1,12 @@
+import { verifyCronSecret } from "@/lib/cron";
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { generateText } from "ai";
 import { google } from "@ai-sdk/google";
 
 export async function POST(req: Request) {
-  const auth = req.headers.get("authorization");
-  if (auth !== `Bearer ${process.env.CRON_SECRET}`) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
+  if (!verifyCronSecret(req.headers.get("authorization"))) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  
 
   const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
   const feedback = await prisma.feedback.findMany({

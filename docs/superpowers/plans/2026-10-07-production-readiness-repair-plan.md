@@ -102,10 +102,10 @@ Original Phase 6 security gate. Audit: F25. Depends: R01–R02.
 
 **Files:** `package.json`, lockfile, related config/tests, phase security review.
 
-- [ ] Re-run `npm audit --omit=dev --json`; distinguish advisory roots from repeated transitive affected-package counts.
-- [ ] Review official fixed-version information and actual runtime/build reachability for deepmerge-ts/Prisma and next-intl findings. Prefer the smallest compatible update; keep Prisma client/CLI aligned.
-- [ ] Do not run a blind forced major upgrade. Record each resolution or justified non-applicability with evidence and a review owner/date.
-- [ ] Regenerate client and run impacted auth/i18n/DB tests, lint/typecheck/build. Repeat the audit after R17/R19 remove unused SDK paths.
+- [x] Re-run `npm audit --omit=dev --json`; distinguish advisory roots from repeated transitive affected-package counts.
+- [x] Review official fixed-version information and actual runtime/build reachability for deepmerge-ts/Prisma and next-intl findings. Prefer the smallest compatible update; keep Prisma client/CLI aligned.
+- [x] Do not run a blind forced major upgrade. Record each resolution or justified non-applicability with evidence and a review owner/date.
+- [x] Regenerate client and run impacted auth/i18n/DB tests, lint/typecheck/build. Repeat the audit after R17/R19 remove unused SDK paths.
 
 **Acceptance:** no unreviewed high/critical findings; every remaining advisory has concrete triage. No dependency added merely to avoid a small repair.
 

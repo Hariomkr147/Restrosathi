@@ -1,8 +1,10 @@
+import { verifyCronSecret } from "@/lib/cron";
 import { NextResponse } from "next/server";
 import crypto from "crypto";
 import { sendDueReminders } from "@/lib/bookings/reminders";
 
-export async function GET(req: Request) {
+export async function POST(req: Request) {
+  if (!verifyCronSecret(req.headers.get("authorization"))) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   const authHeader = req.headers.get("Authorization");
   if (!authHeader) {
     return NextResponse.json({ error: "Missing Authorization header" }, { status: 401 });
