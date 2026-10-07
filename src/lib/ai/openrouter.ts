@@ -5,27 +5,36 @@ export class OpenRouterProvider implements AiProvider {
     const key = process.env.OPENROUTER_API_KEY;
     if (!key) throw new Error("OPENROUTER_API_KEY not set");
 
-    const res = await fetch("https://openrouter.ai/api/v1/chat/completions", {
-      method: "POST",
-      headers: {
-        "Authorization": `Bearer ${key}`,
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({
-        model: "anthropic/claude-3-haiku", // default fast model on OpenRouter
-        response_format: { type: "json_object" }, // OpenRouter / OpenAI supports JSON object enforcement
-        messages: [
-          { role: "system", content: prompt.system },
-          { role: "user", content: prompt.user }
-        ]
-      })
-    });
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 15000);
+    try {
+      const res = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+        method: "POST",
+        headers: {
+          "Authorization": `Bearer ${key}`,
+          "Content-Type": "application/json"
+        },
+        signal: controller.signal,
+        body: JSON.stringify({
+          model: "anthropic/claude-3-haiku", // default fast model on OpenRouter
+          response_format: { type: "json_object" }, // OpenRouter / OpenAI supports JSON object enforcement
+          max_tokens: 150,
+          temperature: 0.1,
+          messages: [
+            { role: "system", content: prompt.system },
+            { role: "user", content: prompt.user }
+          ]
+        })
+      });
 
-    if (!res.ok) {
-      throw new Error(`OpenRouter API error: ${res.status}`);
+      if (!res.ok) {
+        throw new Error(`OpenRouter API error: ${res.status}`);
+      }
+
+      const data = await res.json();
+      return { text: data.choices[0].message.content };
+    } finally {
+      clearTimeout(timeoutId);
     }
-
-    const data = await res.json();
-    return { text: data.choices[0].message.content };
   }
 }

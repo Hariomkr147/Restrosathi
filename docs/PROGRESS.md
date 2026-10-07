@@ -6,7 +6,7 @@ Entry format:
 
 ```text
 ## Task N: <title>  (<date>, branch <branch>, commit <hash>)
-- Tests: <commands run> → <pass/fail counts>
+- Tests: <commands run> â†’ <pass/fail counts>
 - Notes: <anything unexpected, or "none">
 ```
 
@@ -73,7 +73,7 @@ Entry format:
 ### Deviations
 - Added the shared LoginForm and auth/login module so both real login paths share UI feedback and persistence stays in src/lib/auth; added login/admin message keys, CI seed env and Vitest alias inheritance needed by those paths.
 - E2E now resets and uses only TEST_DATABASE_URL via the existing guarded setup; repeated authentication tests do not alter development data or accumulate lockouts there.
-- Replaced localhost in DB URLs with the Compose binding's explicit IPv4 address. A mobile login trace showed a 5.6-second pending action; measured concurrent credential checks were 2.1–4.2 seconds with localhost and 139–203 ms with 127.0.0.1. The original tests and timeouts are unchanged; temporary timing logs were removed.
+- Replaced localhost in DB URLs with the Compose binding's explicit IPv4 address. A mobile login trace showed a 5.6-second pending action; measured concurrent credential checks were 2.1â€“4.2 seconds with localhost and 139â€“203 ms with 127.0.0.1. The original tests and timeouts are unchanged; temporary timing logs were removed.
 - Set the spec's 100 KB server-action body limit and corrected the locale error's class to the existing mapped destructive token.
 - Seed credentials are clearly fictional, declared in .env.example and read from server env. Proxy IP keys use the validated last forwarded address, with an unknown fallback; account keys always apply independently.
 
@@ -154,7 +154,7 @@ Entry format:
 - Created Linux goldens with the official matching Playwright Docker image. An initial comparison lost its temporary server between projects; reran both against a dedicated production server, passed, and stopped it. The standalone review harness stays ignored.
 
 ## Phase 1 summary
-- Branch phase-1-menu-site; Gate commit 89e5cc3. Tasks 5–10 are committed and their steps are ticked. Owners edit settings, categories, dishes, portions, modifiers and safe local photos; staff availability updates appear immediately on the dynamic public menu. Public home/menu are bilingual and use the existing brand tokens.
+- Branch phase-1-menu-site; Gate commit 89e5cc3. Tasks 5â€“10 are committed and their steps are ticked. Owners edit settings, categories, dishes, portions, modifiers and safe local photos; staff availability updates appear immediately on the dynamic public menu. Public home/menu are bilingual and use the existing brand tokens.
 - Full gate in the pinned Playwright Linux image with verified Node 22.23.3: lint/typecheck exit 0; unit 9 files / 54 tests passed; integration 9 files / 77 tests passed; production E2E 76 passed (2.8m), no retries/skips. All 36 axe route/language/project checks pass; both Hindi screenshot comparisons pass without changing baselines. Menu JavaScript is 141898 / 153600 bytes, with and without an uploaded, decoded photo. English/Hindi, long text, 360px overflow, keyboard, touch targets, reduced motion and network retry checks pass.
 - CI green on exact commit 89e5cc36f64f0f0c95cde7bb43f8504ac9dd0086: https://github.com/Hariomkr147/Restrosathi/actions/runs/36995762249. All install/database/lint/typecheck/unit/integration/E2E steps succeeded.
 - Code-level security review: docs/security/phase-1-review.md. Added the required 33-case authorization matrix covering every current protected mutation and explicit public exceptions. Fixed a reproduced modifier maximum outside the PostgreSQL Int range; red schema test failed first, then focused 19 passed. Client static output contains none of the checked server-secret variable names. No external scan was run.
@@ -174,7 +174,7 @@ Entry format:
 - Settings-derived, bilingual A4 QR sheet uses two columns, server-generated SVG with theme colors, table label/instruction/short URL and hidden admin chrome. Native confirmation warns old printed codes stop working. Network retry preserves the draft; errors receive focus; keyboard focus, cancel/focus return, 44px controls, reduced motion, long Hindi at360px, EN/HI axe and print alignment checks pass.
 - Impeccable shape/audit/harden18/20 observed scope; detector[] exit0; desktop/Hindi360/dialog/A4 captures inspected. Fresh finish reviewer initially found dialog placement and uneven final print-card tops; verdict scored both resolved, disposition ship at that fix scope. Read-only documenter passed ordinary extension, preserved existing DESIGN/sidecar/config and reported pre-existing drift. Ponytail full review: Lean already. Ship. Task11 steps and queue row ticked.
 ### Deviations
-- Added TablesManager/PrintButton, localized coded feedback, APP_URL placeholder, QR/dialog/print sizing tokens, print stylesheet and matrix coverage as required support. Added reviewed additive table migration and seeded development without resetting it. Nonproduction seeds use fixed TESTCODE01–08 per conventions; production uses random codes.
+- Added TablesManager/PrintButton, localized coded feedback, APP_URL placeholder, QR/dialog/print sizing tokens, print stylesheet and matrix coverage as required support. Added reviewed additive table migration and seeded development without resetting it. Nonproduction seeds use fixed TESTCODE01â€“08 per conventions; production uses random codes.
 - Pinned the plan-allowed qrcode1.5.4 and @types/qrcode1.5.6. npm install exited0 with a stale optional-resolver EPERM cleanup warning and the existing4 dependency advisories; no force upgrade or dependency outside the plan.
 - Dialog centering test reproduced errors19px mobile/384px desktop. Restored margin:auto after Tailwind reset, then all4 browser tests passed. Added EN/HI paired print-card-top assertions; no grid code change was needed because the earlier offset was not reproduced in measured geometry or the final capture.
 - The image reader reopened an old frame at an overwritten path. Compared SHA-256 hashes and supplied a byte-identical copy of the current print capture to the reviewer; the final capture matched current QR codes and aligned card tops. No image pixels or tests were edited to hide a defect.
@@ -205,7 +205,7 @@ Entry format:
 ## Task 14: Order state machine and line voids
 - Commit f7f17ba on phase-2-qr-ordering. Red unit/integration suites first: missing state/transition/action modules. Focused canonical-state25 passed; focused transition34 passed; final unit12 files /86 passed; integration15 files /179 passed. Lint/typecheck/whitespace exit0 with the existing native-image advisory. No UI or dependency added.
 - Exactly four canonical state transitions; conditional updates give concurrent accepts one winner and one audit across three loops. Accepted/ready/served/rejected timestamps and bounded rejection reasons are atomic with the audit. Invalid transitions leave rows and audits unchanged.
-- Line voids require a3–200-character reason, a preparing/ready/served parent and an unvoided line; simultaneous voids audit once. A failed audit rolls both transitions and voids back. Staff/owner actions requireUser and derive actorId from the session; anonymous calls reject before mutation. Authorization matrix now covers63 cases, including all five actions for every role.
+- Line voids require a3â€“200-character reason, a preparing/ready/served parent and an unvoided line; simultaneous voids audit once. A failed audit rolls both transitions and voids back. Staff/owner actions requireUser and derive actorId from the session; anonymous calls reject before mutation. Authorization matrix now covers63 cases, including all five actions for every role.
 - Ponytail full review: Lean already. Ship. All Task14 steps and queue row ticked. Task12 CI at237edef succeeded: https://github.com/Hariomkr147/Restrosathi/actions/runs/36998594109.
 ### Deviations
 - Extended the existing authz matrix and added audit-rollback/concurrent-void checks as required protection. Unit tests cover all25 state pairs; integration tests exercise all16 invalid calls available through the four transition functions (there is no operation that targets NEW), plus valid transitions and terminal-state void refusals.
@@ -455,7 +455,7 @@ pm run preflight\ on the real server and fix every FAIL.
 - Online payments integration (Razorpay/Stripe).
 - Official WhatsApp API integration instead of AKG.
 
-## Task N: NUL-corrupted progress reconstruction � repair R00
+## Task N: NUL-corrupted progress reconstruction — repair R00
 
 **Correction:**
 - The execution of the original plan has been suspended due to audit failures (see docs/audits/2026-10-07-plan-audit.md).
@@ -474,7 +474,7 @@ pm run preflight\ on the real server and fix every FAIL.
 - [HUMAN] Docker Desktop failed to start/connect (postgres unavailable) during Task 38. Please run E2E/Int tests manually, or restart Docker Desktop and continue the queue. (Spaces/NUL bytes corrupted it).
 
  
-## Tasks 1 37-40 44 46 47: Repair TypeScript/API/schema mismatches and lint failures � repair R01
+## Tasks 1 37-40 44 46 47: Repair TypeScript/API/schema mismatches and lint failures — repair R01
 - Fixed API mismatches and missing fields in scripts.
 - Removed non-existent Prisma relations from code.
 - Added explicit typings for OTP and Bookings.
@@ -504,4 +504,12 @@ Status: Complete.
 - Origin exactly matching against protocol and host.
 - Applied JSON payload cap (100KB) across required routes.
 - Authorization matrix int tests now accurately test real exceptions.
+
+## Task R05: Repair grounded menu AI and explicit provider behavior
+- Fixed price derivation (basePricePaise fallback) in `src/lib/ai/assistant.ts`
+- Enforced strict provider selection in `src/lib/ai/index.ts` (throws on unknown config)
+- Added timeout (15s) and max_tokens (150) bounded configuration to OpenRouter provider
+- Updated `FakeAiProvider` to parse system context and derive realistic itemIds rather than returning static fixtures, enabling better test robustness
+- Verified AI behavior via `npm run eval:ai`
+- Verified with integration tests
 

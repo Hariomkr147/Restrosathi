@@ -1,7 +1,6 @@
-import type { NextConfig } from "next";
 import createNextIntlPlugin from "next-intl/plugin";
 
-const nextConfig: NextConfig = {
+const nextConfig = {
   output: process.env.PLAYWRIGHT_TEST ? undefined : "standalone",
   agentRules: false,
   experimental: { cpus: 2, serverActions: { bodySizeLimit: "100kb" } },

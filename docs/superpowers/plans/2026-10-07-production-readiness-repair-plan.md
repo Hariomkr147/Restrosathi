@@ -128,11 +128,11 @@ Original Task 18. Audit: F21 and provider-selection part of F12. Depends: R02–
 
 **Files:** `src/lib/ai/{index,provider,fake,openrouter,assistant,usage,allergy}.ts`, eval cases/script, AskMenu, messages.
 
-- [ ] Derive base/variant prices from the established menu rules, sort variants consistently, and omit sold-out entries. Never treat a base-priced item as free.
-- [ ] Make the fake derive valid item IDs from supplied context, including vegetarian requests, rather than returning a fixed E2E fixture ID.
-- [ ] Enforce explicit supported provider selection, bounded response/token/time behavior and safe fallback on missing keys/provider failure; use the existing adapter interface.
-- [ ] Re-run allergy no-call, 20/device/day, monthly cap race (10 calls with cap 5), once-only 80% audit, unknown/sold-out ID and prompt-injection cases.
-- [ ] Run fake English/Hindi/Hinglish eval and AskMenu E2E; keep real-provider evaluation as H04.
+- [x] Derive base/variant prices from the established menu rules, sort variants consistently, and omit sold-out entries. Never treat a base-priced item as free.
+- [x] Make the fake derive valid item IDs from supplied context, including vegetarian requests, rather than returning a fixed E2E fixture ID.
+- [x] Enforce explicit supported provider selection, bounded response/token/time behavior and safe fallback on missing keys/provider failure; use the existing adapter interface.
+- [x] Re-run allergy no-call, 20/device/day, monthly cap race (10 calls with cap 5), once-only 80% audit, unknown/sold-out ID and prompt-injection cases.
+- [x] Run fake English/Hindi/Hinglish eval and AskMenu E2E; keep real-provider evaluation as H04.
 
 **Commands:** focused `src/lib/ai` unit/integration tests; `npm run eval:ai` with explicit fake; `npm run test:e2e -- ask-menu.spec.ts`.  
 **Acceptance:** all returned prices equal DB prices; no AI failure breaks ordering; no provider call for allergy/cap refusal.

@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, vi } from "vitest";
-import { GET } from "./route";
+import { POST } from "./route";
 import { prisma } from "@/lib/db";
 import { internalSendSystemAlert } from "@/lib/whatsapp/notify";
 
@@ -26,8 +26,13 @@ describe("Alerts cron", () => {
     // Cause a failure (no backup)
     await prisma.backupRun.deleteMany({});
     
-    const req = new Request("http://localhost/api/cron/alerts");
-    const res = await GET(req);
+    const req = new Request("http://localhost/api/cron/alerts", {
+      method: "POST",
+      headers: {
+        "Authorization": "Bearer CRON_SECRET_TEST_KEY"
+      }
+    });
+    const res = await POST(req);
     expect(res.status).toBe(200);
     
     const data = await res.json();
