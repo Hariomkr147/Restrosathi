@@ -330,3 +330,14 @@ Result: All passed.
 - Added escalatedAt to Order and ownerAlertPhone to Settings.
 - Created escalation cron to notify owner if orders are stale.
 - Updated docker-compose with escalations loop.
+# #   T a s k   3 7 :   C u s t o m e r   I n d e x   &   C o n s e n t  
+ -   A d d e d   C u s t o m e r ,   C o n s e n t R e c o r d ,   O p t O u t   m o d e l s  
+ -   I n t e g r a t e d   w i t h   b i l l i n g   a n d   O T P   v e r i f i c a t i o n  
+ -   A d d e d   a d m i n   U I   f o r   c u s t o m e r s   a n d   G D P R   e r a s u r e  
+ -   A l l   i n t e g r a t i o n   t e s t s   p a s s  
+ 
+## Task 37: Customer Index & Consent
+- Added Customer, ConsentRecord, OptOut models
+- Integrated with billing and OTP verification
+- Added admin UI for customers and GDPR erasure
+- All integration tests pass

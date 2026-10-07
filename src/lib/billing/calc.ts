@@ -14,6 +14,7 @@ export interface ComputeBillInput {
   taxMode: TaxMode;
   gstRatePercent: number;
   pricesIncludeTax: boolean;
+  extraDiscountPaise?: number;
 }
 
 export function computeBill(input: ComputeBillInput) {
@@ -33,8 +34,8 @@ export function computeBill(input: ComputeBillInput) {
   if (input.discount) {
     if (input.discount.type === "FLAT") {
       discount = input.discount.valuePaise;
-      if (discount <= 0 || discount > subtotal) {
-        throw new BillCalcError("DISCOUNT_EXCEEDS_SUBTOTAL");
+      if (discount < 0) {
+        throw new BillCalcError("INVALID_DISCOUNT");
       }
     } else if (input.discount.type === "PERCENT") {
       if (input.discount.percent <= 0 || input.discount.percent > 100) {
@@ -43,6 +44,14 @@ export function computeBill(input: ComputeBillInput) {
       const bps = input.discount.percent * 100;
       discount = rh(subtotal * bps, 10000);
     }
+  }
+
+  if (input.extraDiscountPaise && input.extraDiscountPaise > 0) {
+    discount += input.extraDiscountPaise;
+  }
+
+  if (discount > subtotal) {
+    throw new BillCalcError("DISCOUNT_EXCEEDS_SUBTOTAL");
   }
 
   const net = subtotal - discount;

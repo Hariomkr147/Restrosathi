@@ -8,26 +8,30 @@ datasource db {
 }
 
 model Settings {
-  id                     Int       @id @default(1)
-  name                   String
-  about                  Json
-  address                String
-  phone                  String
-  whatsappPhone          String
-  ownerAlertPhone        String?
-  mapEmbedUrl            String?
-  googleReviewUrl        String?
-  hours                  Json
-  taxMode                TaxMode   @default(NONE)
-  gstRatePercent         Int       @default(5)
-  pricesIncludeTax       Boolean   @default(true)
-  gstin                  String?
-  fssai                  String?
-  staffCanDiscount       Boolean   @default(false)
-  taxModeConfirmedAt     DateTime? @db.Timestamptz(3)
-  bookingCapacityPerSlot Int       @default(30)
-  maxPartySize           Int       @default(12)
-  bookingCutoffMinutes   Int       @default(60)
+  id                          Int       @id @default(1)
+  name                        String
+  about                       Json
+  address                     String
+  phone                       String
+  whatsappPhone               String
+  ownerAlertPhone             String?
+  mapEmbedUrl                 String?
+  googleReviewUrl             String?
+  hours                       Json
+  taxMode                     TaxMode   @default(NONE)
+  gstRatePercent              Int       @default(5)
+  pricesIncludeTax            Boolean   @default(true)
+  gstin                       String?
+  fssai                       String?
+  staffCanDiscount            Boolean   @default(false)
+  taxModeConfirmedAt          DateTime? @db.Timestamptz(3)
+  bookingCapacityPerSlot      Int       @default(30)
+  maxPartySize                Int       @default(12)
+  bookingCutoffMinutes        Int       @default(60)
+  loyaltyEnabled              Boolean   @default(false)
+  loyaltyEarnPer100Rupees     Int       @default(1)
+  loyaltyRedeemUnitPoints     Int       @default(100)
+  loyaltyRedeemUnitValuePaise Int       @default(5000)
 }
 
 enum TaxMode {
@@ -42,16 +46,16 @@ enum Role {
 }
 
 model User {
-  id           String        @id @default(cuid())
-  name         String
-  phone        String?       @unique
-  passwordHash String?
-  pinHash      String?
-  role         Role
-  active       Boolean       @default(true)
-  sessions     AuthSession[]
-  auditLogs    AuditLog[]
-  bookings     Booking[]
+  id             String         @id @default(cuid())
+  name           String
+  phone          String?        @unique
+  passwordHash   String?
+  pinHash        String?
+  role           Role
+  active         Boolean        @default(true)
+  sessions       AuthSession[]
+  auditLogs      AuditLog[]
+  bookings       Booking[]
   eventEnquiries EventEnquiry[]
 }
 
@@ -187,18 +191,19 @@ enum SessionStatus {
 }
 
 model DiningSession {
-  id            String           @id @default(cuid())
-  kind          SessionKind
-  tableId       String?
-  status        SessionStatus    @default(OPEN)
-  openedAt      DateTime         @default(now()) @db.Timestamptz(3)
-  closedAt      DateTime?        @db.Timestamptz(3)
-  customerName  String?
-  customerPhone String?
-  table         RestaurantTable? @relation(fields: [tableId], references: [id], onDelete: Restrict)
-  orders        Order[]
-  requests      ServiceRequest[]
-  bill          Bill?
+  id                      String           @id @default(cuid())
+  kind                    SessionKind
+  tableId                 String?
+  status                  SessionStatus    @default(OPEN)
+  openedAt                DateTime         @default(now()) @db.Timestamptz(3)
+  closedAt                DateTime?        @db.Timestamptz(3)
+  customerName            String?
+  customerPhone           String?
+  customerPhoneVerifiedAt DateTime?
+  table                   RestaurantTable? @relation(fields: [tableId], references: [id], onDelete: Restrict)
+  orders                  Order[]
+  requests                ServiceRequest[]
+  bill                    Bill?
 }
 
 enum ServiceKind {
@@ -310,53 +315,84 @@ enum DiscountType {
 }
 
 model Bill {
-  id                String        @id @default(cuid())
-  sessionId         String        @unique
-  docType           DocType
-  status            BillStatus    @default(OPEN)
-  number            String?       @unique
-  taxMode           TaxMode
-  gstRatePercent    Int
-  pricesIncludeTax  Boolean
-  header            Json
-  subtotalPaise     Int
-  discountType      DiscountType?
-  discountValue     Int?
-  discountPaise     Int
-  discountReason    String?
-  taxableValuePaise Int
-  cgstPaise         Int
-  sgstPaise         Int
-  roundOffPaise     Int
-  totalPaise        Int
-  customerName      String?
-  customerPhone     String?
-  phoneVerifiedAt   DateTime?
-  marketingConsent  Boolean?
-  generatedAt       DateTime      @default(now()) @db.Timestamptz(3)
-  generatedById     String
-  settledAt         DateTime?     @db.Timestamptz(3)
-  settledById       String?
-  cancelledAt       DateTime?     @db.Timestamptz(3)
-  cancelledById     String?
-  cancelReason      String?
+  id                    String        @id @default(cuid())
+  sessionId             String        @unique
+  docType               DocType
+  status                BillStatus    @default(OPEN)
+  number                String?       @unique
+  taxMode               TaxMode
+  gstRatePercent        Int
+  pricesIncludeTax      Boolean
+  header                Json
+  subtotalPaise         Int
+  discountType          DiscountType?
+  discountValue         Int?
+  discountPaise         Int
+  discountReason        String?
+  taxableValuePaise     Int
+  cgstPaise             Int
+  sgstPaise             Int
+  roundOffPaise         Int
+  totalPaise            Int
+  loyaltyPointsRedeemed Int           @default(0)
+  loyaltyDiscountPaise  Int           @default(0)
+  customerName          String?
+  customerPhone         String?
+  phoneVerifiedAt       DateTime?
+  marketingConsent      Boolean?
+  generatedAt           DateTime      @default(now()) @db.Timestamptz(3)
+  generatedById         String
+  settledAt             DateTime?     @db.Timestamptz(3)
+  settledById           String?
+  cancelledAt           DateTime?     @db.Timestamptz(3)
+  cancelledById         String?
+  cancelReason          String?
 
-  session  DiningSession @relation(fields: [sessionId], references: [id], onDelete: Restrict)
-  lines    BillLine[]
-  payments Payment[]
+  session     DiningSession @relation(fields: [sessionId], references: [id], onDelete: Restrict)
+  lines       BillLine[]
+  payments    Payment[]
+  loyaltyTxns LoyaltyTxn[]
 }
 
 model Customer {
-  id              String       @id @default(cuid())
-  phone           String       @unique // E.164
-  name            String?
-  birthday        DateTime?    @db.Date
-  anniversary     DateTime?    @db.Date
-  verifiedAt      DateTime?    @db.Timestamptz(3)
-  createdAt       DateTime     @default(now()) @db.Timestamptz(3)
-  updatedAt       DateTime     @updatedAt @db.Timestamptz(3)
+  id          String    @id @default(cuid())
+  phone       String    @unique // E.164
+  name        String?
+  birthday    DateTime? @db.Date
+  anniversary DateTime? @db.Date
+  verifiedAt  DateTime? @db.Timestamptz(3)
+  createdAt   DateTime  @default(now()) @db.Timestamptz(3)
+  updatedAt   DateTime  @updatedAt @db.Timestamptz(3)
 
-  consentRecords  ConsentRecord[]
+  consentRecords ConsentRecord[]
+  loyaltyTxns    LoyaltyTxn[]
+}
+
+enum LoyaltyKind {
+  EARN
+  REDEEM
+  ADJUST
+  REVERSE
+}
+
+model LoyaltyTxn {
+  id         String      @id @default(cuid())
+  customerId String
+  kind       LoyaltyKind
+  points     Int
+  billId     String?
+  reversesId String?     @unique
+  note       String?
+  actorId    String?
+  at         DateTime    @default(now()) @db.Timestamptz(3)
+
+  customer   Customer    @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  bill       Bill?       @relation(fields: [billId], references: [id], onDelete: Restrict)
+  reverses   LoyaltyTxn? @relation("LoyaltyReverses", fields: [reversesId], references: [id], onDelete: Restrict)
+  reversedBy LoyaltyTxn? @relation("LoyaltyReverses")
+
+  @@index([customerId, at])
+  @@index([billId])
 }
 
 enum ConsentPurpose {
@@ -371,15 +407,15 @@ enum ConsentSource {
 }
 
 model ConsentRecord {
-  id              String         @id @default(cuid())
-  customerId      String
-  customer        Customer       @relation(fields: [customerId], references: [id], onDelete: Cascade)
-  purpose         ConsentPurpose
-  granted         Boolean
-  textVersion     String
-  source          ConsentSource
-  actorId         String?
-  at              DateTime       @default(now()) @db.Timestamptz(3)
+  id          String         @id @default(cuid())
+  customerId  String
+  customer    Customer       @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  purpose     ConsentPurpose
+  granted     Boolean
+  textVersion String
+  source      ConsentSource
+  actorId     String?
+  at          DateTime       @default(now()) @db.Timestamptz(3)
 
   @@index([customerId, purpose, at])
 }
@@ -511,6 +547,7 @@ model BlockedDate {
   date   String  @id // YYYY-MM-DD, IST
   reason String?
 }
+
 enum EventType {
   BIRTHDAY
   CORPORATE
@@ -532,26 +569,26 @@ model EventPackage {
   minGuests          Int
   active             Boolean @default(true)
   sortOrder          Int     @default(0)
-  
-  enquiries          EventEnquiry[]
+
+  enquiries EventEnquiry[]
 }
 
 model EventEnquiry {
-  id           String        @id @default(uuid())
-  packageId    String?
-  eventType    EventType
-  name         String
-  phone        String
-  guests       Int
-  eventDate    DateTime      @db.Date
-  message      String?
-  status       EnquiryStatus @default(NEW)
-  quotedPaise  Int?
-  notes        String?
-  locale       String        @default("en")
-  createdAt    DateTime      @default(now()) @db.Timestamptz(3)
-  handledById  String?
-  
-  package      EventPackage? @relation(fields: [packageId], references: [id], onDelete: SetNull)
-  handledBy    User?         @relation(fields: [handledById], references: [id], onDelete: SetNull)
+  id          String        @id @default(uuid())
+  packageId   String?
+  eventType   EventType
+  name        String
+  phone       String
+  guests      Int
+  eventDate   DateTime      @db.Date
+  message     String?
+  status      EnquiryStatus @default(NEW)
+  quotedPaise Int?
+  notes       String?
+  locale      String        @default("en")
+  createdAt   DateTime      @default(now()) @db.Timestamptz(3)
+  handledById String?
+
+  package   EventPackage? @relation(fields: [packageId], references: [id], onDelete: SetNull)
+  handledBy User?         @relation(fields: [handledById], references: [id], onDelete: SetNull)
 }

@@ -39,6 +39,10 @@ export const settingsInputSchema = z.object({
   bookingCapacityPerSlot: z.coerce.number().int().min(1).default(30),
   maxPartySize: z.coerce.number().int().min(1).default(12),
   bookingCutoffMinutes: z.coerce.number().int().min(0).default(60),
+  loyaltyEnabled: z.coerce.boolean().default(false),
+  loyaltyEarnPer100Rupees: z.coerce.number().int().min(0).default(1),
+  loyaltyRedeemUnitPoints: z.coerce.number().int().min(1).default(100),
+  loyaltyRedeemUnitValuePaise: z.coerce.number().int().min(1).default(5000),
 }).superRefine((data, ctx) => {
   if (data.taxMode === "REGULAR" && (!data.gstin || data.gstin.trim() === "")) {
     ctx.addIssue({

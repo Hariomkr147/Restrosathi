@@ -89,26 +89,37 @@ export async function generateBill(
         fssai: settings.fssai
       };
 
-      const billData = {
-        docType: computed.docType,
-        taxMode: settings.taxMode,
-        gstRatePercent: settings.gstRatePercent,
-        pricesIncludeTax: settings.pricesIncludeTax,
-                          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        header: header as any,
-        subtotalPaise: computed.subtotalPaise,
-        discountType: opts.discount?.type || null,
-        discountValue: opts.discount?.value || null,
-        discountPaise: computed.discountPaise,
-        discountReason: opts.discount?.reason || null,
-        taxableValuePaise: computed.taxableValuePaise,
-        cgstPaise: computed.cgstPaise,
-        sgstPaise: computed.sgstPaise,
-        roundOffPaise: computed.roundOffPaise,
-        totalPaise: computed.totalPaise,
-        customerName: opts.customerName || null,
-        customerPhone: opts.customerPhone || null,
-        marketingConsent: opts.marketingConsent || false,
+        const finalPhone = opts.customerPhone || session.customerPhone || null;
+        let finalVerifiedAt: Date | null = null;
+        if (session.bill && session.bill.customerPhone === finalPhone && session.bill.phoneVerifiedAt) {
+          finalVerifiedAt = session.bill.phoneVerifiedAt;
+        } else if (finalPhone && finalPhone === session.customerPhone && session.customerPhoneVerifiedAt) {
+          finalVerifiedAt = session.customerPhoneVerifiedAt;
+        }
+
+        const billData = {
+          docType: computed.docType,
+          taxMode: settings.taxMode,
+          gstRatePercent: settings.gstRatePercent,
+          pricesIncludeTax: settings.pricesIncludeTax,
+                            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          header: header as any,
+          subtotalPaise: computed.subtotalPaise,
+          discountType: opts.discount?.type || null,
+          discountValue: opts.discount?.value || null,
+          discountPaise: computed.discountPaise,
+          discountReason: opts.discount?.reason || null,
+          taxableValuePaise: computed.taxableValuePaise,
+          cgstPaise: computed.cgstPaise,
+          sgstPaise: computed.sgstPaise,
+          roundOffPaise: computed.roundOffPaise,
+          totalPaise: computed.totalPaise,
+          loyaltyPointsRedeemed: session.bill?.loyaltyPointsRedeemed || 0,
+          loyaltyDiscountPaise: session.bill?.loyaltyDiscountPaise || 0,
+          customerName: opts.customerName || session.customerName || null,
+          customerPhone: finalPhone,
+          phoneVerifiedAt: finalVerifiedAt,
+          marketingConsent: opts.marketingConsent || session.bill?.marketingConsent || false,
         generatedAt: new Date(),
         generatedById: actor.id
       };

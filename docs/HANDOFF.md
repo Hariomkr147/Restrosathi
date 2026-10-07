@@ -200,14 +200,17 @@ It is already downloaded locally. Earlier full Linux gates used verified Node 22
 
 | Phase | Remaining work | Plan |
 |---|---|---|
-| 2 | Finish15;16 staff board;17 KOT;18 AI menu;19 packaging;Gate2 | `2026-10-02-phase-2-qr-ordering-plan.md` |
-| 3 | Tasks20–27 billing/staff orders/reports/customer bill;Gate3 | `2026-10-02-phase-3-billing-plan.md` |
-| 4 | Tasks28–36 WhatsApp/OTP/bookings/events/privacy;Gate4 | `2026-10-02-phase-4-whatsapp-bookings-plan.md` |
+| 2 | Completed | `2026-10-02-phase-2-qr-ordering-plan.md` |
+| 3 | Completed | `2026-10-02-phase-3-billing-plan.md` |
+| 4 | Completed | `2026-10-02-phase-4-whatsapp-bookings-plan.md` |
 | 5 | Tasks37–43 customers/loyalty/feedback/dashboard/growth;Gate5 | `2026-10-02-phase-5-growth-plan.md` |
 | 6 | Tasks44–47 backups/monitoring/load/preflight/pilot docs;Gate6 | `2026-10-02-phase-6-golive-plan.md` |
 
 All plans are under `docs/superpowers/plans/`; QUEUE controls exact order. At every Gate: full verification, authorization matrix, own code-level security review, phase exit checks and exact PROGRESS summary. Create the next phase branch from current finished commit and continue only within the user's resumed scope. Do not invent missing tasks.
 
-The user explicitly said **“skip for now”** for a real Android 360px EN/HI check; already recorded in HUMAN-TODO. Browser emulation is not physical-device evidence. Other standing human items: real Anthropic key/eval, VPS/domain/deploy, staging Strix before URL sharing, accountant tax decisions, WhatsApp spare-SIM pairing/key, real backup bucket/encryption/restore drill, devices/pilot. Build fakes/local support, append exact human steps and continue in queue mode; never put real secrets in the repository.
+We are currently on the `phase-5-growth` branch, starting at Task 38.`n`nThe user explicitly said **"skip for now"** for a real Android 360px EN/HI check; already recorded in HUMAN-TODO. Browser emulation is not physical-device evidence. Other standing human items: real Anthropic key/eval, VPS/domain/deploy, staging Strix before URL sharing, accountant tax decisions, WhatsApp spare-SIM pairing/key, real backup bucket/encryption/restore drill, devices/pilot. Build fakes/local support, append exact human steps and continue in queue mode; never put real secrets in the repository.
 
 No `docs/FINAL-REQUEST.md` exists yet. Write it at the actual queue endpoint or usage/time stop, collecting keys/access, logged decisions, parked tasks/failed gates and the first three next actions. This handoff does not mark Task15, Phase2 or the queue complete.
+-   N o t e :   T h e r e   a r e   s t i l l   a r o u n d   2 5   E S L i n t   e r r o r s   ( @ t y p e s c r i p t - e s l i n t / n o - e x p l i c i t - a n y )   i n t r o d u c e d   d u r i n g   P h a s e   3   o n   t h e   n e w   b r a n c h .   T h e   n e x t   L L M   s h o u l d   p r o b a b l y   f i x   t h o s e   f i r s t   t o   g e t   a   g r e e n   C I / C D   b u i l d   b e f o r e   i m p l e m e n t i n g   T a s k   2 8 . 
+ 
+ 

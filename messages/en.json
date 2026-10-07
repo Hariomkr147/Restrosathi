@@ -259,7 +259,13 @@
     "bookingHint": "Settings for customer bookings and reservations.",
     "bookingCapacityPerSlot": "Capacity per slot",
     "maxPartySize": "Max party size",
-    "bookingCutoffMinutes": "Booking cutoff (minutes)"
+    "bookingCutoffMinutes": "Booking cutoff (minutes)",
+    "loyalty": "Loyalty Program",
+    "loyaltyHint": "Reward regular customers with points.",
+    "loyaltyEnabled": "Enable Loyalty Program",
+    "loyaltyEarnPer100Rupees": "Points earned per ₹100",
+    "loyaltyRedeemUnitPoints": "Redemption unit (points)",
+    "loyaltyRedeemUnitValuePaise": "Value of unit (paise)"
   },
   "menuAdmin": {
     "title": "Manage menu",

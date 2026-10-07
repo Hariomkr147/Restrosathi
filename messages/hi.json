@@ -259,7 +259,13 @@
     "bookingHint": "ग्राहक बुकिंग के लिए सेटिंग्स। (Settings for customer bookings.)",
     "bookingCapacityPerSlot": "प्रति स्लॉट क्षमता (Capacity per slot)",
     "maxPartySize": "अधिकतम पार्टी का आकार (Max party size)",
-    "bookingCutoffMinutes": "बुकिंग कटऑफ मिनट (Booking cutoff mins)"
+    "bookingCutoffMinutes": "बुकिंग कटऑफ मिनट (Booking cutoff mins)",
+    "loyalty": "लॉयल्टी प्रोग्राम",
+    "loyaltyHint": "नियमित ग्राहकों को पॉइंट से पुरस्कृत करें।",
+    "loyaltyEnabled": "लॉयल्टी प्रोग्राम सक्षम करें",
+    "loyaltyEarnPer100Rupees": "प्रति ₹100 पर अर्जित पॉइंट",
+    "loyaltyRedeemUnitPoints": "रिडीम यूनिट (पॉइंट)",
+    "loyaltyRedeemUnitValuePaise": "यूनिट का मूल्य (पैसे)"
   },
   "menuAdmin": {
     "title": "व्यंजन सूची का प्रबंधन",

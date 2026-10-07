@@ -50,7 +50,11 @@ export function SettingsForm({ settings }: { settings: SettingsView }) {
           gstin: value("gstin"), fssai: value("fssai"), staffCanDiscount: form.get("staffCanDiscount") === "on",
           bookingCapacityPerSlot: parseInt(value("bookingCapacityPerSlot") || "30", 10),
           maxPartySize: parseInt(value("maxPartySize") || "12", 10),
-          bookingCutoffMinutes: parseInt(value("bookingCutoffMinutes") || "60", 10)
+          bookingCutoffMinutes: parseInt(value("bookingCutoffMinutes") || "60", 10),
+          loyaltyEnabled: form.get("loyaltyEnabled") === "on",
+          loyaltyEarnPer100Rupees: parseInt(value("loyaltyEarnPer100Rupees") || "1", 10),
+          loyaltyRedeemUnitPoints: parseInt(value("loyaltyRedeemUnitPoints") || "100", 10),
+          loyaltyRedeemUnitValuePaise: parseInt(value("loyaltyRedeemUnitValuePaise") || "5000", 10),
         });
         if (result.ok) setStatus("saved"); else setFieldErrors(result.fieldErrors);
       } catch { setStatus("network"); }
@@ -140,6 +144,28 @@ export function SettingsForm({ settings }: { settings: SettingsView }) {
             <label htmlFor="bookingCutoffMinutes" className="block font-medium">{t("bookingCutoffMinutes")}</label>
             <input id="bookingCutoffMinutes" name="bookingCutoffMinutes" type="number" min="0" className={inputClass} defaultValue={settings.bookingCutoffMinutes} required aria-invalid={!!fieldErrors.bookingCutoffMinutes} />
             {error("bookingCutoffMinutes")}
+          </div>
+        </div>
+      </fieldset>
+      <fieldset className="min-w-0 space-y-4">
+        <legend className="mb-4 font-heading text-2xl">{t("loyalty")}</legend>
+        <p className="text-sm text-muted-foreground">{t("loyaltyHint")}</p>
+        <label className="flex items-center gap-3 py-2"><input type="checkbox" name="loyaltyEnabled" defaultChecked={settings.loyaltyEnabled} />{t("loyaltyEnabled")}</label>
+        <div className="grid gap-4 md:grid-cols-3">
+          <div className="min-w-0 space-y-2">
+            <label htmlFor="loyaltyEarnPer100Rupees" className="block font-medium">{t("loyaltyEarnPer100Rupees")}</label>
+            <input id="loyaltyEarnPer100Rupees" name="loyaltyEarnPer100Rupees" type="number" min="0" className={inputClass} defaultValue={settings.loyaltyEarnPer100Rupees} required aria-invalid={!!fieldErrors.loyaltyEarnPer100Rupees} />
+            {error("loyaltyEarnPer100Rupees")}
+          </div>
+          <div className="min-w-0 space-y-2">
+            <label htmlFor="loyaltyRedeemUnitPoints" className="block font-medium">{t("loyaltyRedeemUnitPoints")}</label>
+            <input id="loyaltyRedeemUnitPoints" name="loyaltyRedeemUnitPoints" type="number" min="1" className={inputClass} defaultValue={settings.loyaltyRedeemUnitPoints} required aria-invalid={!!fieldErrors.loyaltyRedeemUnitPoints} />
+            {error("loyaltyRedeemUnitPoints")}
+          </div>
+          <div className="min-w-0 space-y-2">
+            <label htmlFor="loyaltyRedeemUnitValuePaise" className="block font-medium">{t("loyaltyRedeemUnitValuePaise")}</label>
+            <input id="loyaltyRedeemUnitValuePaise" name="loyaltyRedeemUnitValuePaise" type="number" min="1" className={inputClass} defaultValue={settings.loyaltyRedeemUnitValuePaise} required aria-invalid={!!fieldErrors.loyaltyRedeemUnitValuePaise} />
+            {error("loyaltyRedeemUnitValuePaise")}
           </div>
         </div>
       </fieldset>
