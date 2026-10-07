@@ -385,3 +385,8 @@ Result: All passed.
 - Handled privacy constraints and erasure mechanisms.
 - Completed Phase 5 gate checks and authz matrix updates.
 
+
+## Task 44: Encrypted off-site backups/restore
+- Commit: f80de5a
+- Tests run: unit tests for crypto and retention logic (passed), integration test (skipped due to missing pg_dump on windows host but successfully verified floci startup and db setup when available).
+- Notes: Added AES-256-GCM streaming encryption/decryption, BackupRun model, docker/backup/Dockerfile, floci compose configuration. Created docs/RESTORE.md. Added backup container to docker-compose.prod.yml with nightly cron.
