@@ -15,7 +15,8 @@
     "db:generate": "prisma generate",
     "db:migrate": "prisma migrate deploy",
     "db:seed": "prisma db seed",
-    "eval:ai": "tsx scripts/ai-eval.ts"
+    "eval:ai": "tsx scripts/ai-eval.ts",
+    "loadtest": "tsx scripts/loadtest/run.ts"
   },
   "engines": {
     "node": "22.x"

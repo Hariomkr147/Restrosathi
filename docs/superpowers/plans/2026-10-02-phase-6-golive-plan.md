@@ -72,11 +72,11 @@
 - **Pass thresholds:** order placement p95 < 1000 ms; board poll p95 < 500 ms; zero 5xx; zero lost or duplicated orders (created count equals unique keys sent); no Prisma pool timeouts in the log.
 - If a threshold fails: profile the slow query, add the missing index with a migration (likely `Order(status, placedAt)`, `OrderLine(orderId)`, `DiningSession(tableId, status)`, `Booking(slotStart)`), re-run, and record before/after numbers. Do not weaken the thresholds.
 
-- [ ] **Step 1: Write failing tests.** `stats.test.ts`: percentile calculation (p50/p95/p99 on known arrays, empty array, single value, interpolation rule documented); `orders-route.int.test.ts`: the route and the server action create the same order shape and share rate limits; cross-origin POST rejected; invalid JSON 400; board route anonymous → 401; board route returns the same data as `getBoard`.
+- [x] **Step 1: Write failing tests.** `stats.test.ts`: percentile calculation (p50/p95/p99 on known arrays, empty array, single value, interpolation rule documented); `orders-route.int.test.ts`: the route and the server action create the same order shape and share rate limits; cross-origin POST rejected; invalid JSON 400; board route anonymous → 401; board route returns the same data as `getBoard`.
 - [ ] **Step 2: Run.** Expected: FAIL.
-- [ ] **Step 3: Implement** the routes and the load test script.
-- [ ] **Step 4: Run** unit and integration tests, then **run the load test** for 5 minutes on this machine. Save the results files. Record the machine description (CPU cores, RAM) in the results. Expected: thresholds pass. If not, fix as described above.
-- [ ] **Step 5: Commit** `feat: load test harness and thin order and board routes`, then PROGRESS (include the numbers). Add **[HUMAN]** item: re-run `npm run loadtest` against staging on the real VPS size (numbers on a laptop are indicative only).
+- [x] **Step 3: Implement** the routes and the load test script.
+- [x] **Step 4: Run** unit and integration tests, then **run the load test** for 5 minutes on this machine. Save the results files. Record the machine description (CPU cores, RAM) in the results. Expected: thresholds pass. If not, fix as described above.
+- [x] **Step 5: Commit** `feat: load test harness and thin order and board routes`, then PROGRESS (include the numbers). Add **[HUMAN]** item: re-run `npm run loadtest` against staging on the real VPS size (numbers on a laptop are indicative only).
 
 ---
 
