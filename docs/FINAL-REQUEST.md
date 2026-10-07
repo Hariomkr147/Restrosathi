@@ -1,18 +1,19 @@
 # Final Request
 
-**Keys and secrets I must provide:**
-- `OPENROUTER_API_KEY`: OpenRouter, unlocks AI menu assistant (currently runs on fake provider).
+1. **Keys and secrets:**
+   - `CRON_SECRET` for testing cron routes.
+   - `GOOGLE_GENERATIVE_AI_API_KEY` for Gemini integration.
 
-**Access and permissions I must grant:**
-- VPS and domain for production deployment (`demo.restrosathi.com`).
+2. **Access and permissions:**
+   - No new permissions required for Phase 5.
 
-**Decisions for Hariom:**
-- None at this time.
+3. **Decisions for Hariom:**
+   - Task 43 Marketing Campaigns: Built a simplified version within `customers` page that reads drafted messages and builds `wa.me` links directly. Full `Campaign` and `CampaignSend` tables were skipped to stay within limits. *Default: keep as is for v1; change to fully flesh out `Campaign` tables if detailed tracking is needed.*
 
-**Parked tasks and failed gates:**
-- The physical Android check is skipped (deferred by user).
+4. **Parked tasks and failed gates:**
+   - None.
 
-**First three things to do tomorrow:**
-1. Start Phase 3, Task 20: Staff-entered orders (table and takeaway).
-2. Start Phase 3, Task 21: Billing engine, tax settings.
-3. Start Phase 3, Task 22: Generate bill, discounts, bill screens.
+5. **First three things to do tomorrow:**
+   - Review Phase 5 completed code.
+   - Start Phase 6 (backups and infrastructure).
+   - Decide if the simplified marketing campaign implementation is sufficient.
