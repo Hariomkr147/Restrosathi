@@ -390,3 +390,12 @@ Result: All passed.
 - Commit: f80de5a
 - Tests run: unit tests for crypto and retention logic (passed), integration test (skipped due to missing pg_dump on windows host but successfully verified floci startup and db setup when available).
 - Notes: Added AES-256-GCM streaming encryption/decryption, BackupRun model, docker/backup/Dockerfile, floci compose configuration. Created docs/RESTORE.md. Added backup container to docker-compose.prod.yml with nightly cron.
+
+## Task 45: Monitoring & Alerts
+- Added ErrorLog and AlertState models
+- Implemented error scrub and global catch in instrumentation.ts
+- Wrote checks.ts (db, disk, backup, outbox, ai, errors, whatsapp)
+- Created /api/cron/alerts route for checking and sending WhatsApp alerts
+- Created /admin/system page to view checks and error logs
+- Checked monitoring checks and alerts cron routes via tests
+

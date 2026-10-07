@@ -42,6 +42,7 @@ export default async function AdminLayout({ children }: { children: ReactNode })
       <Link href="/admin/customers" className="inline-flex min-h-touch min-w-touch items-center text-primary underline">Customers</Link>
       <Link href="/admin/feedback" className="inline-flex min-h-touch min-w-touch items-center text-primary underline">Feedback</Link>
       {user.role === "OWNER" && <Link href="/admin/settings" className="inline-flex min-h-touch min-w-touch items-center text-primary underline">{t("settings")}</Link>}
+      {user.role === "OWNER" && <Link href="/admin/system" className="inline-flex min-h-touch min-w-touch items-center text-primary underline">System</Link>}
       {user.role === "OWNER" && <Link href="/admin/reports/day-end" className="inline-flex min-h-touch min-w-touch items-center text-primary underline">{t("reports")}</Link>}
       {user.role === "OWNER" && <Link href="/admin/tables" className="inline-flex min-h-touch min-w-touch items-center text-primary underline">{t("tables")}</Link>}
       <Link href="/admin/tables/print" className="inline-flex min-h-touch min-w-touch items-center text-primary underline">{t("printTables")}</Link>

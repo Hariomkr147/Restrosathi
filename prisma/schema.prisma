@@ -619,3 +619,17 @@ model BackupRun {
   error      String?
 }
 
+model ErrorLog {
+  id      String   @id @default(uuid())
+  at      DateTime @default(now()) @db.Timestamptz(3)
+  where   String
+  message String
+  digest  String
+}
+
+model AlertState {
+  key           String    @id
+  active        Boolean
+  lastSentAt    DateTime? @db.Timestamptz(3)
+  firstFailedAt DateTime? @db.Timestamptz(3)
+}

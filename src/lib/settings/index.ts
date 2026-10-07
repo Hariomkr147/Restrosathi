@@ -24,6 +24,10 @@ export type SettingsView = {
   bookingCapacityPerSlot: number;
   maxPartySize: number;
   bookingCutoffMinutes: number;
+  loyaltyEnabled: boolean;
+  loyaltyEarnPer100Rupees: number;
+  loyaltyRedeemUnitPoints: number;
+  loyaltyRedeemUnitValuePaise: number;
 };
 
 export async function getSettings(): Promise<SettingsView> {

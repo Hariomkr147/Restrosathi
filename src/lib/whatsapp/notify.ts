@@ -56,3 +56,10 @@ export function renderMessage(kind: MessageKind, params: any, locale: "en" | "hi
 
   return rendered;
 }
+
+import { getWhatsApp } from "./index";
+
+export async function internalSendSystemAlert(phone: string, message: string) {
+  const provider = getWhatsApp();
+  await provider.sendText(phone, message);
+}
