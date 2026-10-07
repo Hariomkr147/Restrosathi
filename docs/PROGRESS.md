@@ -361,3 +361,10 @@ Result: All passed.
 - Implemented owner dashboard computing today's metrics from midnight IST and 7-day trailing averages
 - Displayed open sessions and unresolved WhatsApp threads
 
+
+## Task 41: AI feedback themes and draft review replies
+- Created cron endpoint for weekly AI themes via Gemini
+- Added draftReplyAction using Gemini to draft a WhatsApp reply to specific feedback
+- Added Draft WhatsApp Reply button to admin feedback UI
+- Checked authorization and tests
+
