@@ -3,6 +3,7 @@ import { PaymentMethod } from "@prisma/client";
 import { closeSession, lockSession } from "../sessions";
 import { financialYear, formatInvoiceNumber } from "./fy";
 import { audit } from "../audit";
+import { randomBytes } from "crypto";
 
 export async function settleBill(
   billId: string,
@@ -85,6 +86,7 @@ export async function settleBill(
 
     // Upsert customer and record consent BEFORE generating invoice number to respect lock order
     // "session advisory lock -> bill row -> customer row -> invoice counter"
+    let customerId: string | null = null;
     if (bill.customerPhone) {
       const { upsertCustomer } = await import("../customers");
       const { recordConsent } = await import("../customers/consent");
@@ -92,6 +94,7 @@ export async function settleBill(
       if (opts.marketingConsent) {
         await recordConsent(c.id, true, "BILLING", actor.id);
       }
+      customerId = c.id;
       
       const settings = await tx.settings.findUnique({ where: { id: 1 } });
       if (settings?.loyaltyEnabled && bill.phoneVerifiedAt) {
@@ -184,6 +187,31 @@ export async function settleBill(
       entityId: billId,
       data: { number, totalPaise: bill.totalPaise, payments }
     }, tx);
+
+    // Create Feedback token
+    const token = randomBytes(32).toString("base64url");
+    const tokenExpiresAt = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000);
+    await tx.feedback.create({
+      data: {
+        billId,
+        customerId,
+        token,
+        tokenExpiresAt
+      }
+    });
+
+    if (bill.customerPhone && bill.phoneVerifiedAt) {
+      const { notify } = await import("../whatsapp/notify");
+      const settings = await tx.settings.findUnique({ where: { id: 1 } });
+      const firstName = bill.customerName ? bill.customerName.split(" ")[0] : "";
+      const baseUrl = process.env.APP_URL || "http://localhost:3000";
+      
+      await notify("THANK_YOU_FEEDBACK", bill.customerPhone, {
+        name: firstName,
+        feedbackLink: `${baseUrl}/feedback/${token}`,
+        googleLink: settings?.googleReviewUrl || ""
+      });
+    }
 
     return { ok: true, number } as const;
   }, { maxWait: 20000, timeout: 30000 });

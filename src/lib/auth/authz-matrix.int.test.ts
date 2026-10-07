@@ -21,6 +21,7 @@ import { requestOtpAction, verifyOtpAction } from "../../app/(public)/book/otp-a
 import { submitEnquiryAction } from "../../app/(public)/events/actions";
 import { adminUpsertPackageAction, adminUpdateEnquiryStatusAction } from "../../app/admin/events/actions";
 import { getEnquiries } from "../../lib/events/enquiries";
+import { submitFeedbackAction } from "../../app/(public)/feedback/[token]/actions";
 
 vi.mock("next/cache", () => ({ revalidatePath: vi.fn() }));
 const roles = [
@@ -228,6 +229,11 @@ for (const { role, signIn } of roles) {
     } else {
       expect(Array.isArray(await getEnquiries())).toBe(true);
     }
+  });
+
+  it(`${role}: submitFeedbackAction is explicitly public and validates input`, async () => {
+    await signIn();
+    expect(await submitFeedbackAction("token", 6)).toEqual({ ok: false, error: "INVALID_RATING" });
   });
 }
 // Public: password/PIN login establishes authentication (auth.int.test.ts).

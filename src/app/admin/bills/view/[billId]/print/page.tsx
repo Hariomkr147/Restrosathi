@@ -3,6 +3,7 @@ import { getBillPrint } from "@/lib/billing/print";
 import { notFound } from "next/navigation";
 import { getTranslations } from "next-intl/server";
 import { formatINR } from "@/lib/money/format";
+import { qrSvg } from "@/lib/qr";
 import "./print.css";
 
 export default async function PrintBillPage({ params }: { params: Promise<{ billId: string }> }) {
@@ -11,6 +12,11 @@ export default async function PrintBillPage({ params }: { params: Promise<{ bill
   
   const print = await getBillPrint(billId, user);
   if (!print) notFound();
+
+  let feedbackQrSvg = "";
+  if (print.feedbackUrl) {
+    feedbackQrSvg = await qrSvg(print.feedbackUrl);
+  }
 
   return (
     <div className="bill-print-container font-mono text-sm leading-tight text-black max-w-[80mm] mx-auto bg-white min-h-screen p-3">
@@ -122,6 +128,17 @@ export default async function PrintBillPage({ params }: { params: Promise<{ bill
       <div className="text-center text-xs mt-6 mb-2">
         Thank you! Visit again.
       </div>
+
+      {print.feedbackUrl && (
+        <div className="mt-8 text-center border-t border-dashed border-black pt-4">
+          <div className="font-bold text-sm mb-2">Tell us how we did</div>
+          <div 
+            className="qr-code mx-auto" 
+            style={{ width: "100px", height: "100px", margin: "0 auto" }}
+            dangerouslySetInnerHTML={{ __html: feedbackQrSvg }} 
+          />
+        </div>
+      )}
     </div>
   );
 }

@@ -32,6 +32,7 @@ export type BillPrint = {
   total: number;
   payments: Array<{ method: string; amountPaise: number }>;
   cancelledAt?: string;
+  feedbackUrl?: string;
 };
 
 export async function getBillPrint(billId: string, actor: { id: string, role: string }): Promise<BillPrint | null> {
@@ -42,7 +43,8 @@ export async function getBillPrint(billId: string, actor: { id: string, role: st
     include: {
       payments: true,
       lines: true,
-      session: { include: { table: true } }
+      session: { include: { table: true } },
+      feedback: true
     }
   });
 
@@ -64,6 +66,12 @@ export async function getBillPrint(billId: string, actor: { id: string, role: st
   }
 
   const where = bill.session.kind === "TAKEAWAY" ? "Takeaway" : `Table ${bill.session.table?.label || ""}`;
+  
+  let feedbackUrl: string | undefined;
+  if (bill.status === "SETTLED" && !bill.phoneVerifiedAt && bill.feedback) {
+    const baseUrl = process.env.APP_URL || "http://localhost:3000";
+    feedbackUrl = `${baseUrl}/feedback/${bill.feedback.token}`;
+  }
   
   return {
     header,
@@ -88,6 +96,7 @@ export async function getBillPrint(billId: string, actor: { id: string, role: st
     roundOff: bill.roundOffPaise,
     total: bill.totalPaise,
     payments: bill.payments.map(p => ({ method: p.method, amountPaise: p.amountPaise })),
-    cancelledAt: bill.cancelledAt ? bill.cancelledAt.toLocaleString("en-IN", { timeZone: "Asia/Kolkata" }) : undefined
+    cancelledAt: bill.cancelledAt ? bill.cancelledAt.toLocaleString("en-IN", { timeZone: "Asia/Kolkata" }) : undefined,
+    feedbackUrl
   };
 }

@@ -352,6 +352,7 @@ model Bill {
   lines       BillLine[]
   payments    Payment[]
   loyaltyTxns LoyaltyTxn[]
+  feedback    Feedback?
 }
 
 model Customer {
@@ -366,6 +367,7 @@ model Customer {
 
   consentRecords ConsentRecord[]
   loyaltyTxns    LoyaltyTxn[]
+  feedbacks      Feedback[]
 }
 
 enum LoyaltyKind {
@@ -591,4 +593,19 @@ model EventEnquiry {
 
   package   EventPackage? @relation(fields: [packageId], references: [id], onDelete: SetNull)
   handledBy User?         @relation(fields: [handledById], references: [id], onDelete: SetNull)
+}
+
+model Feedback {
+  id             String    @id @default(uuid())
+  billId         String    @unique
+  customerId     String?
+  token          String    @unique
+  tokenExpiresAt DateTime
+  rating         Int?
+  comment        String?
+  submittedAt    DateTime?
+  createdAt      DateTime  @default(now())
+
+  bill           Bill      @relation(fields: [billId], references: [id])
+  customer       Customer? @relation(fields: [customerId], references: [id])
 }

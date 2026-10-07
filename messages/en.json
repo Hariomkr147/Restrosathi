@@ -489,7 +489,7 @@
     "BOOKING_REMINDER": "Reminder: Your table is booked for {time}.",
     "EVENT_ENQUIRY_RECEIVED": "We received your event enquiry and will contact you soon.",
     "ORDER_ESCALATION": "Staff attention required at {label}.",
-    "THANK_YOU_FEEDBACK": "Thank you! Leave a review: {link}",
+    "THANK_YOU_FEEDBACK": "Thank you for visiting{name}! Tell us how we did: {feedbackLink}",
     "WEEKLY_REPORT": "Weekly report: {orderCount} orders, {sales} sales.",
     "STOP_CONFIRMED": "You have been unsubscribed from our messages.",
     "AUTO_REPLY": "{answer}"
