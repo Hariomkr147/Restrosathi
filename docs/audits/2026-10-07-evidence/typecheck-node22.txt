@@ -1,0 +1,58 @@
+scripts/backup/backup.int.test.ts(95,9): error TS2353: Object literal may only specify known properties, and 'currency' does not exist in type '(Without<SettingsCreateInput, SettingsUncheckedCreateInput> & SettingsUncheckedCreateInput) | (Without<...> & SettingsCreateInput)'.
+scripts/backup/retention.ts(8,11): error TS7022: 'listRes' implicitly has type 'any' because it does not have a type annotation and is referenced directly or indirectly in its own initializer.
+scripts/loadtest/run.ts(36,35): error TS2353: Object literal may only specify known properties, and 'name' does not exist in type '(Without<RestaurantTableCreateInput, RestaurantTableUncheckedCreateInput> & RestaurantTableUncheckedCreateInput) | (Without<...> & RestaurantTableCreateInput)'.
+scripts/preflight-checks.ts(2,9): error TS7034: Variable 'results' implicitly has type 'any[]' in some locations where its type cannot be determined.
+scripts/preflight-checks.ts(39,10): error TS7005: Variable 'results' implicitly has an 'any[]' type.
+src/app/(public)/book/BookingForm.tsx(58,7): error TS2353: Object literal may only specify known properties, and 'marketingConsent' does not exist in type '{ name: string; phone: string; partySize: number; slotStart: string; note?: string | undefined; }'.
+src/app/(public)/book/BookingForm.tsx(109,7): error TS2353: Object literal may only specify known properties, and 'marketingConsent' does not exist in type '{ name: string; phone: string; partySize: number; slotStart: string; note?: string | undefined; }'.
+src/app/admin/bills/actions.ts(62,21): error TS2554: Expected 3 arguments, but got 2.
+src/app/admin/bills/actions.ts(93,34): error TS2554: Expected 1 arguments, but got 2.
+src/app/admin/customers/[id]/page.tsx(16,7): error TS2353: Object literal may only specify known properties, and 'bills' does not exist in type 'CustomerInclude<DefaultArgs>'.
+src/app/admin/customers/[id]/page.tsx(58,35): error TS2339: Property 'consentRecords' does not exist on type '{ name: string | null; id: string; phone: string; createdAt: Date; birthday: Date | null; anniversary: Date | null; verifiedAt: Date | null; updatedAt: Date; }'.
+src/app/admin/customers/[id]/page.tsx(62,27): error TS2339: Property 'consentRecords' does not exist on type '{ name: string | null; id: string; phone: string; createdAt: Date; birthday: Date | null; anniversary: Date | null; verifiedAt: Date | null; updatedAt: Date; }'.
+src/app/admin/customers/[id]/page.tsx(62,57): error TS2339: Property 'consentRecords' does not exist on type '{ name: string | null; id: string; phone: string; createdAt: Date; birthday: Date | null; anniversary: Date | null; verifiedAt: Date | null; updatedAt: Date; }'.
+src/app/admin/customers/[id]/page.tsx(66,23): error TS2339: Property 'consentRecords' does not exist on type '{ name: string | null; id: string; phone: string; createdAt: Date; birthday: Date | null; anniversary: Date | null; verifiedAt: Date | null; updatedAt: Date; }'.
+src/app/admin/customers/[id]/page.tsx(69,27): error TS2339: Property 'consentRecords' does not exist on type '{ name: string | null; id: string; phone: string; createdAt: Date; birthday: Date | null; anniversary: Date | null; verifiedAt: Date | null; updatedAt: Date; }'.
+src/app/admin/customers/[id]/page.tsx(69,46): error TS7006: Parameter 'cr' implicitly has an 'any' type.
+src/app/admin/customers/[id]/page.tsx(92,23): error TS2339: Property 'bills' does not exist on type '{ name: string | null; id: string; phone: string; createdAt: Date; birthday: Date | null; anniversary: Date | null; verifiedAt: Date | null; updatedAt: Date; }'.
+src/app/admin/customers/[id]/page.tsx(107,31): error TS2339: Property 'bills' does not exist on type '{ name: string | null; id: string; phone: string; createdAt: Date; birthday: Date | null; anniversary: Date | null; verifiedAt: Date | null; updatedAt: Date; }'.
+src/app/admin/customers/[id]/page.tsx(107,41): error TS7006: Parameter 'b' implicitly has an 'any' type.
+src/app/admin/customers/[id]/page.tsx(124,23): error TS2339: Property 'bookings' does not exist on type '{ name: string | null; id: string; phone: string; createdAt: Date; birthday: Date | null; anniversary: Date | null; verifiedAt: Date | null; updatedAt: Date; }'.
+src/app/admin/customers/[id]/page.tsx(138,31): error TS2339: Property 'bookings' does not exist on type '{ name: string | null; id: string; phone: string; createdAt: Date; birthday: Date | null; anniversary: Date | null; verifiedAt: Date | null; updatedAt: Date; }'.
+src/app/admin/customers/[id]/page.tsx(138,44): error TS7006: Parameter 'b' implicitly has an 'any' type.
+src/app/admin/customers/page.tsx(30,7): error TS2353: Object literal may only specify known properties, and 'bills' does not exist in type 'CustomerInclude<DefaultArgs>'.
+src/app/admin/customers/page.tsx(41,49): error TS2339: Property 'consentRecords' does not exist on type '{ name: string | null; id: string; phone: string; createdAt: Date; birthday: Date | null; anniversary: Date | null; verifiedAt: Date | null; updatedAt: Date; }'.
+src/app/admin/customers/page.tsx(77,32): error TS2339: Property 'bills' does not exist on type '{ name: string | null; id: string; phone: string; createdAt: Date; birthday: Date | null; anniversary: Date | null; verifiedAt: Date | null; updatedAt: Date; }'.
+src/app/admin/customers/page.tsx(80,33): error TS2339: Property 'bills' does not exist on type '{ name: string | null; id: string; phone: string; createdAt: Date; birthday: Date | null; anniversary: Date | null; verifiedAt: Date | null; updatedAt: Date; }'.
+src/app/admin/customers/page.tsx(80,43): error TS7006: Parameter 'b' implicitly has an 'any' type.
+src/app/admin/customers/page.tsx(80,83): error TS7006: Parameter 'a' implicitly has an 'any' type.
+src/app/admin/customers/page.tsx(80,86): error TS7006: Parameter 'b' implicitly has an 'any' type.
+src/app/admin/customers/page.tsx(84,33): error TS2339: Property 'consentRecords' does not exist on type '{ name: string | null; id: string; phone: string; createdAt: Date; birthday: Date | null; anniversary: Date | null; verifiedAt: Date | null; updatedAt: Date; }'.
+src/app/admin/page.tsx(46,12): error TS2339: Property 'session' does not exist on type 'PrismaClient<PrismaClientOptions, never, DefaultArgs>'.
+src/app/t/[code]/actions.ts(35,40): error TS2339: Property 'phone' does not exist on type '{ ok: true; }'.
+src/components/table/JoinRewards.tsx(46,9): error TS2322: Type '(phone: string, otp: string) => Promise<{ ok: false; error: string | undefined; phone?: undefined; } | { ok: true; phone: string; error?: undefined; }>' is not assignable to type '(phone: string, code: string) => Promise<{ ok: true; phone: string; } | { ok: false; error: string; }>'.
+  Type 'Promise<{ ok: false; error: string | undefined; phone?: undefined; } | { ok: true; phone: string; error?: undefined; }>' is not assignable to type 'Promise<{ ok: true; phone: string; } | { ok: false; error: string; }>'.
+    Type '{ ok: false; error: string | undefined; phone?: undefined; } | { ok: true; phone: string; error?: undefined; }' is not assignable to type '{ ok: true; phone: string; } | { ok: false; error: string; }'.
+      Type '{ ok: false; error: string | undefined; phone?: undefined; }' is not assignable to type '{ ok: true; phone: string; } | { ok: false; error: string; }'.
+        Type '{ ok: false; error: string | undefined; phone?: undefined; }' is not assignable to type '{ ok: false; error: string; }'.
+          Types of property 'error' are incompatible.
+            Type 'string | undefined' is not assignable to type 'string'.
+              Type 'undefined' is not assignable to type 'string'.
+src/lib/auth/accounts.ts(3,10): error TS2305: Module '"./password"' has no exported member 'generateHash'.
+src/lib/auth/accounts.ts(30,7): error TS2353: Object literal may only specify known properties, and 'userId' does not exist in type '(Without<AuditLogCreateInput, AuditLogUncheckedCreateInput> & AuditLogUncheckedCreateInput) | (Without<...> & AuditLogCreateInput)'.
+src/lib/auth/accounts.ts(54,7): error TS2353: Object literal may only specify known properties, and 'userId' does not exist in type '(Without<AuditLogCreateInput, AuditLogUncheckedCreateInput> & AuditLogUncheckedCreateInput) | (Without<...> & AuditLogCreateInput)'.
+src/lib/auth/accounts.ts(75,7): error TS2353: Object literal may only specify known properties, and 'userId' does not exist in type '(Without<AuditLogCreateInput, AuditLogUncheckedCreateInput> & AuditLogUncheckedCreateInput) | (Without<...> & AuditLogCreateInput)'.
+src/lib/auth/accounts.ts(89,11): error TS2339: Property 'verifyPassword' does not exist on type 'typeof import("/work/src/lib/auth/password")'.
+src/lib/auth/accounts.ts(120,7): error TS2353: Object literal may only specify known properties, and 'userId' does not exist in type '(Without<AuditLogCreateInput, AuditLogUncheckedCreateInput> & AuditLogUncheckedCreateInput) | (Without<...> & AuditLogCreateInput)'.
+src/lib/auth/authz-matrix.int.test.ts(290,45): error TS2554: Expected 1 arguments, but got 2.
+src/lib/auth/authz-matrix.int.test.ts(297,32): error TS2554: Expected 0 arguments, but got 1.
+src/lib/feedback/feedback.int.test.ts(5,1): error TS2582: Cannot find name 'describe'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+src/lib/feedback/feedback.int.test.ts(6,3): error TS2582: Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+src/lib/feedback/feedback.int.test.ts(8,5): error TS2304: Cannot find name 'expect'.
+src/lib/feedback/feedback.int.test.ts(9,5): error TS2304: Cannot find name 'expect'.
+src/lib/monitoring/checks.ts(77,42): error TS18047: 'alertState.firstFailedAt' is possibly 'null'.
+src/lib/seo/jsonld.test.ts(8,7): error TS2739: Type '{ name: string; about: { en: string; }; address: string; phone: string; whatsappPhone: string; ownerAlertPhone: null; mapEmbedUrl: null; googleReviewUrl: null; hours: { mon: { open: string; close: string; }[]; ... 5 more ...; sun: { ...; }[]; }; ... 9 more ...; bookingCutoffMinutes: number; }' is missing the following properties from type 'SettingsView': loyaltyEnabled, loyaltyEarnPer100Rupees, loyaltyRedeemUnitPoints, loyaltyRedeemUnitValuePaise
+tests/e2e/loyalty.spec.ts(2,31): error TS2307: Cannot find module './helpers' or its corresponding type declarations.
+tests/e2e/phase-4-exit.spec.ts(64,68): error TS2322: Type '"OUTBOUND"' is not assignable to type 'MessageDirection | EnumMessageDirectionFilter<"MessageLog"> | undefined'.
+tests/e2e/phase-4-exit.spec.ts(69,19): error TS18047: 'body' is possibly 'null'.
+tests/e2e/phase-4-exit.spec.ts(94,65): error TS2322: Type '"OUTBOUND"' is not assignable to type 'MessageDirection | EnumMessageDirectionFilter<"MessageLog"> | undefined'.

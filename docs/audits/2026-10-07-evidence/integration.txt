@@ -1,0 +1,620 @@
+
+> restrosathi@0.1.0 test:int
+> vitest run --project integration
+
+
+ RUN  v5.0.3 C:/Users/Hario/Documents/Restrosathi
+
+warn The configuration property `package.json#prisma` is deprecated and will be removed in Prisma 7. Please migrate to a Prisma config file (e.g., `prisma.config.ts`).
+For more information, see: https://pris.ly/prisma-config
+
+Environment variables loaded from .env
+Prisma schema loaded from prisma\schema.prisma
+Datasource "db": PostgreSQL database "restrosathi_test", schema "public" at "127.0.0.1:15432"
+
+Applying migration `20261002000000_foundation`
+Applying migration `20261002010000_menu`
+Applying migration `20261002020000_tables`
+Applying migration `20261002021000_dining_sessions`
+Applying migration `20261002022000_orders_rate_hits`
+Applying migration `20261002023000_service_requests`
+Applying migration `20261003202906_ai_usage`
+Applying migration `20261004191335_billing_settings`
+Applying migration `20261004194518_billing_models`
+Applying migration `20261005033857_settlement`
+Applying migration `20261006045944_whatsapp_models`
+Applying migration `20261006090029_phase4_otp`
+Applying migration `20261006091335_phase4_bookings`
+Applying migration `20261006105311_phase4_events`
+Applying migration `20261006185659_phase4_escalation`
+Applying migration `20261006192517_phase5_customers`
+Applying migration `20261006194217_phase5_loyalty`
+Applying migration `20261007000000_phase5_feedback`
+Applying migration `20261007110545_add_backup_run`
+Applying migration `20261007112140_phase6_monitoring`
+Applying migration `20261007112642_phase6_alert_first_failed`
+
+Database reset successful
+
+The following migration(s) have been applied:
+
+migrations/
+  └─ 20261002000000_foundation/
+    └─ migration.sql
+  └─ 20261002010000_menu/
+    └─ migration.sql
+  └─ 20261002020000_tables/
+    └─ migration.sql
+  └─ 20261002021000_dining_sessions/
+    └─ migration.sql
+  └─ 20261002022000_orders_rate_hits/
+    └─ migration.sql
+  └─ 20261002023000_service_requests/
+    └─ migration.sql
+  └─ 20261003202906_ai_usage/
+    └─ migration.sql
+  └─ 20261004191335_billing_settings/
+    └─ migration.sql
+  └─ 20261004194518_billing_models/
+    └─ migration.sql
+  └─ 20261005033857_settlement/
+    └─ migration.sql
+  └─ 20261006045944_whatsapp_models/
+    └─ migration.sql
+  └─ 20261006090029_phase4_otp/
+    └─ migration.sql
+  └─ 20261006091335_phase4_bookings/
+    └─ migration.sql
+  └─ 20261006105311_phase4_events/
+    └─ migration.sql
+  └─ 20261006185659_phase4_escalation/
+    └─ migration.sql
+  └─ 20261006192517_phase5_customers/
+    └─ migration.sql
+  └─ 20261006194217_phase5_loyalty/
+    └─ migration.sql
+  └─ 20261007000000_phase5_feedback/
+    └─ migration.sql
+  └─ 20261007110545_add_backup_run/
+    └─ migration.sql
+  └─ 20261007112140_phase6_monitoring/
+    └─ migration.sql
+  └─ 20261007112642_phase6_alert_first_failed/
+    └─ migration.sql
+┌─────────────────────────────────────────────────────────┐
+│  Update available 6.19.3 -> 8.0.0-rc.21                 │
+│                                                         │
+│  This is a major update - please follow the guide at    │
+│  https://pris.ly/d/major-version-upgrade                │
+│                                                         │
+│  Run the following to update                            │
+│    npm i --save-dev prisma@latest                       │
+│    npm i @prisma/client@latest                          │
+└─────────────────────────────────────────────────────────┘
+
+ ❯ |integration| src/lib/auth/authz-matrix.int.test.ts (138 tests | 6 failed) 26269ms
+   × anonymous: POST /api/t/[code]/orders is explicitly public 125ms
+   × staff: draftCampaignAction requires staff or owner 6286ms
+   × staff: POST /api/t/[code]/orders is explicitly public 51ms
+   × staff: GET /api/board requires STAFF or OWNER 102ms
+   × owner: POST /api/t/[code]/orders is explicitly public 28ms
+   × owner: GET /api/board requires STAFF or OWNER 35ms
+ ❯ |integration| src/lib/billing/settle.int.test.ts (10 tests | 9 failed) 727ms
+   ❯ settleBill (10)
+     × split Cash + UPI works; sum one paisa short -> PAYMENT_MISMATCH and no number consumed 36ms
+     × zero/negative/non-integer -> INVALID_PAYMENT 13ms
+     × settling twice -> ALREADY_SETTLED, cancelled -> BILL_CANCELLED 13ms
+     × stale checks 13ms
+     × two concurrent settlements -> one ok, one ALREADY_SETTLED 11ms
+     ❯ 10 concurrent settlements (3)
+       × run 1 10ms
+       × run 2 11ms
+       × run 3 12ms
+     × number resets per financial year 14ms
+ ❯ |integration| src/lib/billing/generate.int.test.ts (9 tests | 9 failed) 75ms
+   ❯ Generate Bill (9)
+     × empty session -> EMPTY_BILL 38ms
+     × NEW order blocks generation with UNACCEPTED_ORDERS 5ms
+     × rejected orders and voided lines are excluded, matches computeBill 3ms
+     × regenerating after another order/void updates totals and keeps one Bill row 3ms
+     × header snapshot equals Settings at generation, changing settings leaves bill untouched 5ms
+     × discount: STAFF without permission -> DISCOUNT_FORBIDDEN 5ms
+     × discount: STAFF with permission -> allowed, missing reason -> DISCOUNT_INVALID 4ms
+     × closed session -> SESSION_CLOSED 6ms
+     × voidLine refused after settlement 3ms
+ ❯ |integration| src/lib/loyalty/loyalty.int.test.ts (7 tests | 7 skipped) 35ms
+ ❯ |integration| src/lib/billing/history.int.test.ts (3 tests | 3 failed) 55ms
+   ❯ history (3)
+     × lists only that IST day 39ms
+     × search by number works 8ms
+     × anonymous rejected 7ms
+ ❯ |integration| src/lib/billing/cancel.int.test.ts (6 tests | 6 failed) 96ms
+   ❯ cancelBill (6)
+     × Staff -> FORBIDDEN 53ms
+     × owner on OPEN -> NOT_SETTLED 9ms
+     × owner on settled with short reason -> REASON_REQUIRED 9ms
+     × success keeps number, payments, sets status, audit 9ms
+     × second cancel -> ALREADY_CANCELLED 7ms
+     × doesn't free invoice number 7ms
+ ❯ |integration| src/lib/billing/day-end.int.test.ts (1 test | 1 failed) 196ms
+   ❯ getDayEnd (1)
+     × aggregates data correctly and respects window 193ms
+ ❯ |integration| src/lib/ai/assistant.int.test.ts (7 tests | 7 failed) 148ms
+   ❯ askMenuAssistant (7)
+     × allergy questions never invoke the provider and return the fixed message 65ms
+     × unknown item ids are dropped 14ms
+     × sold-out items are dropped, prices are from DB 12ms
+     × invalid JSON -> fallback reply 13ms
+     × provider throwing -> fallback reply, no exception 17ms
+     × question of 301 characters -> TOO_LONG 12ms
+     × context passed to provider contains no sold-out items 11ms
+ ❯ |integration| src/lib/orders/escalation.int.test.ts (2 tests | 2 failed) 75ms
+   × escalates stale orders and sends one message 60ms
+   × no owner phone -> returns 0 13ms
+ ❯ |integration| src/lib/whatsapp/outbox.int.test.ts (6 tests | 1 failed) 1170ms
+   ❯ processOutbox() (6)
+     × successful send marks SENT with providerId and scrubs OTP params 69ms
+ ❯ |integration| src/lib/billing/print.int.test.ts (1 test | 1 failed) 1084ms
+   ❯ getBillPrint (1)
+     × extracts totals and lines, handles GSTIN correctly, rejects anonymous 1079ms
+ ❯ |integration| src/lib/ai/usage.int.test.ts (2 tests | 2 failed) 191ms
+   ❯ AI Usage limits (2)
+     × limits device to 20 per day, another device unaffected, resets next day 150ms
+     × caps monthly quota at 2000, emits audit at 80%, concurrent calls protected 38ms
+ ❯ |integration| src/lib/orders/board.int.test.ts (2 tests | 2 failed) 98ms
+   ❯ board (2)
+     × anonymous rejected 78ms
+     × groups by status; SERVED older than 2h excluded; REJECTED excluded; takeaway shows Takeaway; voided flagged; names fallback 17ms
+ ❯ |integration| src/app/api/orders-route.int.test.ts (5 tests | 5 failed) 199ms
+   ❯ Thin routes for loadtest (5)
+     ❯ Board Route (2)
+       × returns 401 for anonymous users 95ms
+       × returns the same data as getBoard 27ms
+     ❯ Orders Route (3)
+       × rejects cross-origin POST 26ms
+       × returns 400 on invalid JSON 28ms
+       × calls placeOrder the same way as action 18ms
+ ❯ |integration| src/lib/orders/kot.int.test.ts (4 tests | 4 skipped) 168ms
+ ❯ |integration| src/lib/customers/erase.int.test.ts (3 tests | 3 skipped) 75ms
+ ❯ |integration| src/lib/whatsapp/notify.int.test.ts (5 tests | 1 failed) 121ms
+   ❯ renderMessage() (2)
+     × renders templates in both languages without leftover placeholders 8ms
+ ❯ |integration| src/lib/feedback/feedback.int.test.ts (0 test)
+
+⎯⎯⎯⎯⎯⎯ Failed Suites 4 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  |integration| src/lib/customers/erase.int.test.ts [ src/lib/customers/erase.int.test.ts ]
+PrismaClientKnownRequestError: 
+Invalid `prisma.bill.deleteMany()` invocation in
+C:/Users/Hario/Documents/Restrosathi/src/lib/customers/erase.int.test.ts:12:21
+
+   9 await prisma.auditLog.deleteMany();
+  10 await prisma.consentRecord.deleteMany();
+  11 await prisma.billLine.deleteMany();
+→ 12 await prisma.bill.deleteMany(
+Foreign key constraint violated on the constraint: `Feedback_billId_fkey`
+ ❯ ei.handleRequestError node_modules/@prisma/client/src/runtime/RequestHandler.ts:228:13
+ ❯ ei.handleAndLogRequestError node_modules/@prisma/client/src/runtime/RequestHandler.ts:174:12
+ ❯ ei.request node_modules/@prisma/client/src/runtime/RequestHandler.ts:143:12
+ ❯ a node_modules/@prisma/client/src/runtime/getPrismaClient.ts:833:24
+ ❯ src/lib/customers/erase.int.test.ts:12:3
+     10|   await prisma.consentRecord.deleteMany();
+     11|   await prisma.billLine.deleteMany();
+     12|   await prisma.bill.deleteMany();
+       |   ^
+     13|   await prisma.diningSession.deleteMany();
+     14|   await prisma.booking.deleteMany();
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/59]⎯
+
+ FAIL  |integration| src/lib/feedback/feedback.int.test.ts [ src/lib/feedback/feedback.int.test.ts ]
+ReferenceError: describe is not defined
+ ❯ src/lib/feedback/feedback.int.test.ts:5:1
+      3| import { draftReplyAction } from "../../app/admin/feedback/actions";
+      4|
+      5| describe("Feedback integration", () => {
+       | ^
+      6|   it("submits feedback successfully", async () => {
+      7|     // Basic unit test check since Docker is down
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/59]⎯
+
+ FAIL  |integration| src/lib/loyalty/loyalty.int.test.ts [ src/lib/loyalty/loyalty.int.test.ts ]
+PrismaClientKnownRequestError: 
+Invalid `prisma.bill.deleteMany()` invocation in
+C:/Users/Hario/Documents/Restrosathi/src/lib/loyalty/loyalty.int.test.ts:14:21
+
+  11 await prisma.loyaltyTxn.deleteMany();
+  12 await prisma.payment.deleteMany();
+  13 await prisma.billLine.deleteMany();
+→ 14 await prisma.bill.deleteMany(
+Foreign key constraint violated on the constraint: `Feedback_billId_fkey`
+ ❯ ei.handleRequestError node_modules/@prisma/client/src/runtime/RequestHandler.ts:228:13
+ ❯ ei.handleAndLogRequestError node_modules/@prisma/client/src/runtime/RequestHandler.ts:174:12
+ ❯ ei.request node_modules/@prisma/client/src/runtime/RequestHandler.ts:143:12
+ ❯ a node_modules/@prisma/client/src/runtime/getPrismaClient.ts:833:24
+ ❯ src/lib/loyalty/loyalty.int.test.ts:14:3
+     12|   await prisma.payment.deleteMany();
+     13|   await prisma.billLine.deleteMany();
+     14|   await prisma.bill.deleteMany();
+       |   ^
+     15|   await prisma.serviceRequest.deleteMany();
+     16|   await prisma.order.deleteMany();
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/59]⎯
+
+ FAIL  |integration| src/lib/orders/kot.int.test.ts [ src/lib/orders/kot.int.test.ts ]
+PrismaClientKnownRequestError: 
+Invalid `db.billLine.deleteMany()` invocation in
+C:/Users/Hario/Documents/Restrosathi/tests/helpers/db.ts:9:39
+
+  6 export const TABLE_CODES = Array.from({ length: 8 }, (_, index) => `TESTCODE0${index + 1}`);
+  7 export async function resetOperationalData() {
+  8   await db.$transaction([
+→ 9     db.billLine.deleteMany(
+Foreign key constraint violated on the constraint: `Feedback_billId_fkey`
+ ❯ ei.handleRequestError node_modules/@prisma/client/src/runtime/RequestHandler.ts:228:13
+ ❯ ei.handleAndLogRequestError node_modules/@prisma/client/src/runtime/RequestHandler.ts:174:12
+ ❯ ei.request node_modules/@prisma/client/src/runtime/RequestHandler.ts:143:12
+ ❯ a node_modules/@prisma/client/src/runtime/getPrismaClient.ts:833:24
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/59]⎯
+
+
+⎯⎯⎯⎯⎯⎯ Failed Tests 55 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  |integration| src/app/api/orders-route.int.test.ts > Thin routes for loadtest > Board Route > returns 401 for anonymous users
+ FAIL  |integration| src/app/api/orders-route.int.test.ts > Thin routes for loadtest > Board Route > returns the same data as getBoard
+ FAIL  |integration| src/app/api/orders-route.int.test.ts > Thin routes for loadtest > Orders Route > rejects cross-origin POST
+ FAIL  |integration| src/app/api/orders-route.int.test.ts > Thin routes for loadtest > Orders Route > returns 400 on invalid JSON
+ FAIL  |integration| src/app/api/orders-route.int.test.ts > Thin routes for loadtest > Orders Route > calls placeOrder the same way as action
+PrismaClientKnownRequestError: 
+Invalid `prisma.diningSession.deleteMany()` invocation in
+C:/Users/Hario/Documents/Restrosathi/src/app/api/orders-route.int.test.ts:14:32
+
+  11 beforeEach(async () => {
+  12   await prisma.orderLine.deleteMany();
+  13   await prisma.order.deleteMany();
+→ 14   await prisma.diningSession.deleteMany(
+Foreign key constraint violated on the constraint: `ServiceRequest_sessionId_fkey`
+ ❯ ei.handleRequestError node_modules/@prisma/client/src/runtime/RequestHandler.ts:228:13
+ ❯ ei.handleAndLogRequestError node_modules/@prisma/client/src/runtime/RequestHandler.ts:174:12
+ ❯ ei.request node_modules/@prisma/client/src/runtime/RequestHandler.ts:143:12
+ ❯ a node_modules/@prisma/client/src/runtime/getPrismaClient.ts:833:24
+ ❯ src/app/api/orders-route.int.test.ts:14:5
+     12|     await prisma.orderLine.deleteMany();
+     13|     await prisma.order.deleteMany();
+     14|     await prisma.diningSession.deleteMany();
+       |     ^
+     15|     await prisma.restaurantTable.deleteMany();
+     16|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/59]⎯
+
+ FAIL  |integration| src/lib/ai/assistant.int.test.ts > askMenuAssistant > allergy questions never invoke the provider and return the fixed message
+ FAIL  |integration| src/lib/ai/assistant.int.test.ts > askMenuAssistant > unknown item ids are dropped
+ FAIL  |integration| src/lib/ai/assistant.int.test.ts > askMenuAssistant > sold-out items are dropped, prices are from DB
+ FAIL  |integration| src/lib/ai/assistant.int.test.ts > askMenuAssistant > invalid JSON -> fallback reply
+ FAIL  |integration| src/lib/ai/assistant.int.test.ts > askMenuAssistant > provider throwing -> fallback reply, no exception
+ FAIL  |integration| src/lib/ai/assistant.int.test.ts > askMenuAssistant > question of 301 characters -> TOO_LONG
+ FAIL  |integration| src/lib/ai/assistant.int.test.ts > askMenuAssistant > context passed to provider contains no sold-out items
+ FAIL  |integration| src/lib/ai/usage.int.test.ts > AI Usage limits > limits device to 20 per day, another device unaffected, resets next day
+ FAIL  |integration| src/lib/ai/usage.int.test.ts > AI Usage limits > caps monthly quota at 2000, emits audit at 80%, concurrent calls protected
+PrismaClientKnownRequestError: 
+Invalid `db.billLine.deleteMany()` invocation in
+C:/Users/Hario/Documents/Restrosathi/tests/helpers/db.ts:9:39
+
+  6 export const TABLE_CODES = Array.from({ length: 8 }, (_, index) => `TESTCODE0${index + 1}`);
+  7 export async function resetOperationalData() {
+  8   await db.$transaction([
+→ 9     db.billLine.deleteMany(
+Foreign key constraint violated on the constraint: `Feedback_billId_fkey`
+ ❯ ei.handleRequestError node_modules/@prisma/client/src/runtime/RequestHandler.ts:228:13
+ ❯ ei.handleAndLogRequestError node_modules/@prisma/client/src/runtime/RequestHandler.ts:174:12
+ ❯ ei.request node_modules/@prisma/client/src/runtime/RequestHandler.ts:143:12
+ ❯ a node_modules/@prisma/client/src/runtime/getPrismaClient.ts:833:24
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/59]⎯
+
+ FAIL  |integration| src/lib/auth/authz-matrix.int.test.ts > anonymous: POST /api/t/[code]/orders is explicitly public
+ FAIL  |integration| src/lib/auth/authz-matrix.int.test.ts > staff: POST /api/t/[code]/orders is explicitly public
+ FAIL  |integration| src/lib/auth/authz-matrix.int.test.ts > owner: POST /api/t/[code]/orders is explicitly public
+AssertionError: expected 200 to be 400 // Object.is equality
+
+- Expected
++ Received
+
+- 400
++ 200
+
+ ❯ src/lib/auth/authz-matrix.int.test.ts:291:24
+    289|     });
+    290|     const res = await getOrders(req as any, { params: Promise.resolve(…
+    291|     expect(res.status).toBe(400); // Invalid JSON or signature fails, …
+       |                        ^
+    292|   });
+    293|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[7/59]⎯
+
+ FAIL  |integration| src/lib/auth/authz-matrix.int.test.ts > staff: draftCampaignAction requires staff or owner
+Error: Test timed out in 5000ms.
+If this is a long-running test, pass a timeout value as the last argument or configure it globally with "testTimeout".
+ ❯ src/lib/auth/authz-matrix.int.test.ts:253:3
+    251|   });
+    252|
+    253|   it(`${role}: draftCampaignAction requires staff or owner`, async () …
+       |   ^
+    254|     await signIn();
+    255|     if (role === "anonymous") {
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[8/59]⎯
+
+ FAIL  |integration| src/lib/auth/authz-matrix.int.test.ts > staff: GET /api/board requires STAFF or OWNER
+ FAIL  |integration| src/lib/auth/authz-matrix.int.test.ts > owner: GET /api/board requires STAFF or OWNER
+AssertionError: expected 500 to be 200 // Object.is equality
+
+- Expected
++ Received
+
+- 200
++ 500
+
+ ❯ src/lib/auth/authz-matrix.int.test.ts:298:24
+    296|     const req = new Request("http://localhost:3000/api/board", { metho…
+    297|     const res = await getBoard(req);
+    298|     expect(res.status).toBe(role === "anonymous" ? 401 : 200);
+       |                        ^
+    299|   });
+    300| }
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[9/59]⎯
+
+ FAIL  |integration| src/lib/billing/cancel.int.test.ts > cancelBill > Staff -> FORBIDDEN
+ FAIL  |integration| src/lib/billing/cancel.int.test.ts > cancelBill > owner on OPEN -> NOT_SETTLED
+ FAIL  |integration| src/lib/billing/cancel.int.test.ts > cancelBill > owner on settled with short reason -> REASON_REQUIRED
+ FAIL  |integration| src/lib/billing/cancel.int.test.ts > cancelBill > success keeps number, payments, sets status, audit
+ FAIL  |integration| src/lib/billing/cancel.int.test.ts > cancelBill > second cancel -> ALREADY_CANCELLED
+ FAIL  |integration| src/lib/billing/cancel.int.test.ts > cancelBill > doesn't free invoice number
+PrismaClientKnownRequestError: 
+Invalid `prisma.bill.deleteMany()` invocation in
+C:/Users/Hario/Documents/Restrosathi/src/lib/billing/cancel.int.test.ts:22:23
+
+  19 await prisma.invoiceCounter.deleteMany();
+  20 await prisma.payment.deleteMany();
+  21 await prisma.billLine.deleteMany();
+→ 22 await prisma.bill.deleteMany(
+Foreign key constraint violated on the constraint: `Feedback_billId_fkey`
+ ❯ ei.handleRequestError node_modules/@prisma/client/src/runtime/RequestHandler.ts:228:13
+ ❯ ei.handleAndLogRequestError node_modules/@prisma/client/src/runtime/RequestHandler.ts:174:12
+ ❯ ei.request node_modules/@prisma/client/src/runtime/RequestHandler.ts:143:12
+ ❯ a node_modules/@prisma/client/src/runtime/getPrismaClient.ts:833:24
+ ❯ src/lib/billing/cancel.int.test.ts:22:5
+     20|     await prisma.payment.deleteMany();
+     21|     await prisma.billLine.deleteMany();
+     22|     await prisma.bill.deleteMany();
+       |     ^
+     23|     await prisma.serviceRequest.deleteMany();
+     24|     await prisma.orderLine.deleteMany();
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[10/59]⎯
+
+ FAIL  |integration| src/lib/billing/day-end.int.test.ts > getDayEnd > aggregates data correctly and respects window
+PrismaClientKnownRequestError: 
+Invalid `prisma.bill.update()` invocation:
+
+
+Unique constraint failed on the fields: (`number`)
+ ❯ ei.handleRequestError node_modules/@prisma/client/src/runtime/RequestHandler.ts:228:13
+ ❯ ei.handleAndLogRequestError node_modules/@prisma/client/src/runtime/RequestHandler.ts:174:12
+ ❯ ei.request node_modules/@prisma/client/src/runtime/RequestHandler.ts:143:12
+ ❯ a node_modules/@prisma/client/src/runtime/getPrismaClient.ts:833:24
+ ❯ prisma.$transaction.maxWait src/lib/billing/settle.ts:164:5
+    162|     });
+    163|
+    164|     await tx.bill.update({
+       |     ^
+    165|       where: { id: billId },
+    166|       data: {
+ ❯ Proxy._transactionWithCallback node_modules/@prisma/client/src/runtime/getPrismaClient.ts:722:18
+ ❯ settleBill src/lib/billing/settle.ts:14:10
+ ❯ makeSettledBill src/lib/billing/day-end.int.test.ts:42:25
+ ❯ src/lib/billing/day-end.int.test.ts:47:16
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[11/59]⎯
+
+ FAIL  |integration| src/lib/billing/generate.int.test.ts > Generate Bill > empty session -> EMPTY_BILL
+ FAIL  |integration| src/lib/billing/generate.int.test.ts > Generate Bill > NEW order blocks generation with UNACCEPTED_ORDERS
+ FAIL  |integration| src/lib/billing/generate.int.test.ts > Generate Bill > rejected orders and voided lines are excluded, matches computeBill
+ FAIL  |integration| src/lib/billing/generate.int.test.ts > Generate Bill > regenerating after another order/void updates totals and keeps one Bill row
+ FAIL  |integration| src/lib/billing/generate.int.test.ts > Generate Bill > header snapshot equals Settings at generation, changing settings leaves bill untouched
+ FAIL  |integration| src/lib/billing/generate.int.test.ts > Generate Bill > discount: STAFF without permission -> DISCOUNT_FORBIDDEN
+ FAIL  |integration| src/lib/billing/generate.int.test.ts > Generate Bill > discount: STAFF with permission -> allowed, missing reason -> DISCOUNT_INVALID
+ FAIL  |integration| src/lib/billing/generate.int.test.ts > Generate Bill > closed session -> SESSION_CLOSED
+ FAIL  |integration| src/lib/billing/generate.int.test.ts > Generate Bill > voidLine refused after settlement
+PrismaClientKnownRequestError: 
+Invalid `prisma.bill.deleteMany()` invocation in
+C:/Users/Hario/Documents/Restrosathi/src/lib/billing/generate.int.test.ts:12:23
+
+   9 
+  10 describe("Generate Bill", () => {
+  11   beforeEach(async () => {
+→ 12     await prisma.bill.deleteMany(
+Foreign key constraint violated on the constraint: `Feedback_billId_fkey`
+ ❯ ei.handleRequestError node_modules/@prisma/client/src/runtime/RequestHandler.ts:228:13
+ ❯ ei.handleAndLogRequestError node_modules/@prisma/client/src/runtime/RequestHandler.ts:174:12
+ ❯ ei.request node_modules/@prisma/client/src/runtime/RequestHandler.ts:143:12
+ ❯ a node_modules/@prisma/client/src/runtime/getPrismaClient.ts:833:24
+ ❯ src/lib/billing/generate.int.test.ts:12:5
+     10| describe("Generate Bill", () => {
+     11|   beforeEach(async () => {
+     12|     await prisma.bill.deleteMany();
+       |     ^
+     13|     await prisma.orderLine.deleteMany();
+     14|     await prisma.order.deleteMany();
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[12/59]⎯
+
+ FAIL  |integration| src/lib/billing/history.int.test.ts > history > lists only that IST day
+ FAIL  |integration| src/lib/billing/history.int.test.ts > history > search by number works
+ FAIL  |integration| src/lib/billing/history.int.test.ts > history > anonymous rejected
+PrismaClientKnownRequestError: 
+Invalid `prisma.bill.deleteMany()` invocation in
+C:/Users/Hario/Documents/Restrosathi/src/lib/billing/history.int.test.ts:19:23
+
+  16 await prisma.invoiceCounter.deleteMany();
+  17 await prisma.payment.deleteMany();
+  18 await prisma.billLine.deleteMany();
+→ 19 await prisma.bill.deleteMany(
+Foreign key constraint violated on the constraint: `Feedback_billId_fkey`
+ ❯ ei.handleRequestError node_modules/@prisma/client/src/runtime/RequestHandler.ts:228:13
+ ❯ ei.handleAndLogRequestError node_modules/@prisma/client/src/runtime/RequestHandler.ts:174:12
+ ❯ ei.request node_modules/@prisma/client/src/runtime/RequestHandler.ts:143:12
+ ❯ a node_modules/@prisma/client/src/runtime/getPrismaClient.ts:833:24
+ ❯ src/lib/billing/history.int.test.ts:19:5
+     17|     await prisma.payment.deleteMany();
+     18|     await prisma.billLine.deleteMany();
+     19|     await prisma.bill.deleteMany();
+       |     ^
+     20|     await prisma.serviceRequest.deleteMany();
+     21|     await prisma.orderLine.deleteMany();
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[13/59]⎯
+
+ FAIL  |integration| src/lib/billing/print.int.test.ts > getBillPrint > extracts totals and lines, handles GSTIN correctly, rejects anonymous
+PrismaClientKnownRequestError: 
+Invalid `prisma.bill.update()` invocation:
+
+
+Unique constraint failed on the fields: (`number`)
+ ❯ ei.handleRequestError node_modules/@prisma/client/src/runtime/RequestHandler.ts:228:13
+ ❯ ei.handleAndLogRequestError node_modules/@prisma/client/src/runtime/RequestHandler.ts:174:12
+ ❯ ei.request node_modules/@prisma/client/src/runtime/RequestHandler.ts:143:12
+ ❯ a node_modules/@prisma/client/src/runtime/getPrismaClient.ts:833:24
+ ❯ prisma.$transaction.maxWait src/lib/billing/settle.ts:164:5
+    162|     });
+    163|
+    164|     await tx.bill.update({
+       |     ^
+    165|       where: { id: billId },
+    166|       data: {
+ ❯ Proxy._transactionWithCallback node_modules/@prisma/client/src/runtime/getPrismaClient.ts:722:18
+ ❯ settleBill src/lib/billing/settle.ts:14:10
+ ❯ src/lib/billing/print.int.test.ts:52:18
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[14/59]⎯
+
+ FAIL  |integration| src/lib/billing/settle.int.test.ts > settleBill > split Cash + UPI works; sum one paisa short -> PAYMENT_MISMATCH and no number consumed
+ FAIL  |integration| src/lib/billing/settle.int.test.ts > settleBill > zero/negative/non-integer -> INVALID_PAYMENT
+ FAIL  |integration| src/lib/billing/settle.int.test.ts > settleBill > settling twice -> ALREADY_SETTLED, cancelled -> BILL_CANCELLED
+ FAIL  |integration| src/lib/billing/settle.int.test.ts > settleBill > stale checks
+ FAIL  |integration| src/lib/billing/settle.int.test.ts > settleBill > two concurrent settlements -> one ok, one ALREADY_SETTLED
+ FAIL  |integration| src/lib/billing/settle.int.test.ts > settleBill > 10 concurrent settlements > run 1
+ FAIL  |integration| src/lib/billing/settle.int.test.ts > settleBill > 10 concurrent settlements > run 2
+ FAIL  |integration| src/lib/billing/settle.int.test.ts > settleBill > 10 concurrent settlements > run 3
+ FAIL  |integration| src/lib/billing/settle.int.test.ts > settleBill > number resets per financial year
+PrismaClientKnownRequestError: 
+Invalid `prisma.bill.deleteMany()` invocation in
+C:/Users/Hario/Documents/Restrosathi/src/lib/billing/settle.int.test.ts:21:23
+
+  18 await prisma.invoiceCounter.deleteMany();
+  19 await prisma.payment.deleteMany();
+  20 await prisma.billLine.deleteMany();
+→ 21 await prisma.bill.deleteMany(
+Foreign key constraint violated on the constraint: `Feedback_billId_fkey`
+ ❯ ei.handleRequestError node_modules/@prisma/client/src/runtime/RequestHandler.ts:228:13
+ ❯ ei.handleAndLogRequestError node_modules/@prisma/client/src/runtime/RequestHandler.ts:174:12
+ ❯ ei.request node_modules/@prisma/client/src/runtime/RequestHandler.ts:143:12
+ ❯ a node_modules/@prisma/client/src/runtime/getPrismaClient.ts:833:24
+ ❯ src/lib/billing/settle.int.test.ts:21:5
+     19|     await prisma.payment.deleteMany();
+     20|     await prisma.billLine.deleteMany();
+     21|     await prisma.bill.deleteMany();
+       |     ^
+     22|     await prisma.serviceRequest.deleteMany();
+     23|     await prisma.orderLine.deleteMany();
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[15/59]⎯
+
+ FAIL  |integration| src/lib/orders/board.int.test.ts > board > anonymous rejected
+ FAIL  |integration| src/lib/orders/board.int.test.ts > board > groups by status; SERVED older than 2h excluded; REJECTED excluded; takeaway shows Takeaway; voided flagged; names fallback
+PrismaClientKnownRequestError: 
+Invalid `db.billLine.deleteMany()` invocation in
+C:/Users/Hario/Documents/Restrosathi/src/lib/orders/board.int.test.ts:16:41
+
+  13 beforeEach(async () => {
+  14   vi.clearAllMocks();
+  15   await db.$transaction([
+→ 16     db.billLine.deleteMany(
+Foreign key constraint violated on the constraint: `Feedback_billId_fkey`
+ ❯ ei.handleRequestError node_modules/@prisma/client/src/runtime/RequestHandler.ts:228:13
+ ❯ ei.handleAndLogRequestError node_modules/@prisma/client/src/runtime/RequestHandler.ts:174:12
+ ❯ ei.request node_modules/@prisma/client/src/runtime/RequestHandler.ts:143:12
+ ❯ a node_modules/@prisma/client/src/runtime/getPrismaClient.ts:833:24
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[16/59]⎯
+
+ FAIL  |integration| src/lib/orders/escalation.int.test.ts > escalates stale orders and sends one message
+ FAIL  |integration| src/lib/orders/escalation.int.test.ts > no owner phone -> returns 0
+PrismaClientKnownRequestError: 
+Invalid `prisma.order.deleteMany()` invocation in
+C:/Users/Hario/Documents/Restrosathi/src/lib/orders/escalation.int.test.ts:8:22
+
+  5 
+  6 beforeEach(async () => {
+  7   await prisma.messageLog.deleteMany({});
+→ 8   await prisma.order.deleteMany(
+Foreign key constraint violated on the constraint: `OrderLine_orderId_fkey`
+ ❯ ei.handleRequestError node_modules/@prisma/client/src/runtime/RequestHandler.ts:228:13
+ ❯ ei.handleAndLogRequestError node_modules/@prisma/client/src/runtime/RequestHandler.ts:174:12
+ ❯ ei.request node_modules/@prisma/client/src/runtime/RequestHandler.ts:143:12
+ ❯ a node_modules/@prisma/client/src/runtime/getPrismaClient.ts:833:24
+ ❯ src/lib/orders/escalation.int.test.ts:8:3
+      6| beforeEach(async () => {
+      7|   await prisma.messageLog.deleteMany({});
+      8|   await prisma.order.deleteMany({});
+       |   ^
+      9|   await prisma.diningSession.deleteMany({});
+     10|   await prisma.restaurantTable.deleteMany({});
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[17/59]⎯
+
+ FAIL  |integration| src/lib/whatsapp/notify.int.test.ts > renderMessage() > renders templates in both languages without leftover placeholders
+Error: Missing parameter otp for template OTP
+ ❯ src/lib/whatsapp/notify.ts:52:13
+     50|   const rendered = template.replace(/\{([a-zA-Z0-9_]+)\}/g, (match, pa…
+     51|     if (params[paramName] === undefined) {
+     52|       throw new Error(`Missing parameter ${paramName} for template ${k…
+       |             ^
+     53|     }
+     54|     return String(params[paramName]);
+ ❯ renderMessage src/lib/whatsapp/notify.ts:50:29
+ ❯ src/lib/whatsapp/notify.int.test.ts:64:22
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[18/59]⎯
+
+ FAIL  |integration| src/lib/whatsapp/outbox.int.test.ts > processOutbox() > successful send marks SENT with providerId and scrubs OTP params
+AssertionError: expected +0 to be 1 // Object.is equality
+
+- Expected
++ Received
+
+- 1
++ 0
+
+ ❯ src/lib/whatsapp/outbox.int.test.ts:34:22
+     32|
+     33|     const res = await processOutbox({ provider });
+     34|     expect(res.sent).toBe(1);
+       |                      ^
+     35|
+     36|     const updated = await prisma.messageLog.findUnique({ where: { id: …
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[19/59]⎯
+
+
+ Test Files  18 failed | 36 passed (54)
+      Tests  55 failed | 327 passed | 14 skipped (396)
+   Start at  21:31:39
+   Duration  163.66s (tests 60%, import 24%, transform 16%, worker 1%)
+

@@ -454,3 +454,22 @@ pm run preflight\ on the real server and fix every FAIL.
 - Multi-restaurant support (multi-tenant isolation).
 - Online payments integration (Razorpay/Stripe).
 - Official WhatsApp API integration instead of AKG.
+
+## Task N: NUL-corrupted progress reconstruction — repair R00
+
+**Correction:**
+- The execution of the original plan has been suspended due to audit failures (see docs/audits/2026-10-07-plan-audit.md).
+- Execution now proceeds under docs/superpowers/plans/2026-10-07-production-readiness-repair-plan.md.
+- The earlier build and test success claims were sometimes placeholders or conceptual runs rather than actual assertions. The simulated load results in Phase 6 were not measured on a real target deployment or production-ready hardware context.
+
+**Reconstruction of Corrupted Text:**
+- Modified \BackupRun\ fields in preflight logic from \startedAt\ to \at\ to match the actual schema. (The NUL bytes originally replaced backticks or letters).
+- Re-run npm run loadtest against staging on the real VPS size. (The 'n' in 'npm' was lost due to corruption).
+- Run npm run preflight on the real server and fix every FAIL. (The 'n' in 'npm' was lost).
+
+
+- Run AI eval with real key: npm run eval:ai with ANTHROPIC_API_KEY set in .env (The 'n' in 'npm' was lost).
+- Ask the restaurant's accountant to confirm the tax mode, GST rate, and whether prices include tax before go-live (Spaces/NUL bytes corrupted it).
+- Run Strix on staging after Phase 3 billing (needs Docker + LLM key) (Spaces/NUL bytes corrupted it).
+- [HUMAN] Docker Desktop failed to start/connect (postgres unavailable) during Task 38. Please run E2E/Int tests manually, or restart Docker Desktop and continue the queue. (Spaces/NUL bytes corrupted it).
+

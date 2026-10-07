@@ -1,0 +1,21 @@
+
+> restrosathi@0.1.0 test:e2e
+> playwright test --list
+
+
+Error: Cannot find module 'C:\Users\Hario\Documents\Restrosathi\node_modules\next\headers' imported from C:\Users\Hario\Documents\Restrosathi\src\lib\auth\session.ts
+Did you mean to import "next/headers.js"?
+    at eval (<anonymous>:1:1)
+Listing tests:
+
+Error: Cannot find module 'C:\Users\Hario\Documents\Restrosathi\node_modules\next\headers' imported from C:\Users\Hario\Documents\Restrosathi\src\lib\auth\session.ts
+Did you mean to import "next/headers.js"?
+    at eval (<anonymous>:1:1)
+
+Error: Cannot find module 'C:\Users\Hario\Documents\Restrosathi\node_modules\next\headers' imported from C:\Users\Hario\Documents\Restrosathi\src\lib\auth\session.ts
+Did you mean to import "next/headers.js"?
+    at eval (<anonymous>:1:1)
+
+Error: Cannot find module 'C:\Users\Hario\Documents\Restrosathi\tests\e2e\helpers' imported from C:\Users\Hario\Documents\Restrosathi\tests\e2e\loyalty.spec.ts
+    at eval (<anonymous>:1:1)
+Total: 0 tests in 0 files

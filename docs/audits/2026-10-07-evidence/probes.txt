@@ -1,0 +1,9 @@
+
+ RUN  v5.0.3 C:/Users/Hario/Documents/Restrosathi
+
+
+ Test Files  1 passed (1)
+      Tests  9 passed (9)
+   Start at  21:51:26
+   Duration  532ms (import 45%, transform 30%, tests 23%, worker 1%)
+
