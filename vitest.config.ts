@@ -13,8 +13,8 @@ export default defineConfig({
         test: {
           name: "unit",
           environment: "node",
-          include: ["src/**/*.test.ts", "prisma/**/*.test.ts"],
-          exclude: ["src/**/*.int.test.ts"],
+          include: ["src/**/*.test.ts", "prisma/**/*.test.ts", "scripts/**/*.test.ts"],
+          exclude: ["src/**/*.int.test.ts", "scripts/**/*.int.test.ts"],
         },
       },
       {
@@ -22,7 +22,7 @@ export default defineConfig({
         test: {
           name: "integration",
           environment: "node",
-          include: ["src/**/*.int.test.ts"],
+          include: ["src/**/*.int.test.ts", "scripts/**/*.int.test.ts"],
           fileParallelism: false,
           globalSetup: ["tests/setup/db.ts"],
           env: { DATABASE_URL: process.env.TEST_DATABASE_URL ?? "" },

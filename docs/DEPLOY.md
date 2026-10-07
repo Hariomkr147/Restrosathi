@@ -18,5 +18,6 @@
 8. **Security Note**:
    - Change the staff PIN from the UI after initial deployment.
 9. **Backups**:
-   - Backups run nightly at ~03:00.
-   - To restore, copy the `.sql.gz` from the `backups` volume, `gunzip`, and run `psql -U postgres restrosathi < file.sql` against the `postgres` container.
+   - The system performs a dual backup: a local database dump and an off-site encrypted archive (database + uploads).
+   - Off-site backups run nightly to the S3 bucket configured in `.env.production`.
+   - See `docs/RESTORE.md` for full instructions on how to test and perform an off-site restore.

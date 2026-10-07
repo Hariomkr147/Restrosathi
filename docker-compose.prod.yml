@@ -42,18 +42,24 @@ services:
       - app
 
   backup:
-    image: postgres:17
+    build:
+      context: .
+      dockerfile: docker/backup/Dockerfile
     restart: always
     env_file:
       - .env.production
-
     volumes:
       - ./scripts/backup-db.sh:/usr/local/bin/backup-db.sh
       - backups:/backups
+      - uploads:/app/uploads
+      - wa-akg-pgdata:/wa-akg-data
+    environment:
+      - BACKUP_PATHS=/app/uploads,/wa-akg-data
     entrypoint: >
       /bin/sh -c "chmod +x /usr/local/bin/backup-db.sh && while true; do
         sleep \$(( \$(date -d '03:00 tomorrow' +%s) - \$(date +%s) ));
-        /usr/local/bin/backup-db.sh;
+        /usr/local/bin/backup-db.sh || true;
+        npx tsx scripts/backup/run.ts || true;
       done"
     depends_on:
       postgres:

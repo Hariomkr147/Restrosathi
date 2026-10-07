@@ -609,3 +609,13 @@ model Feedback {
   bill           Bill      @relation(fields: [billId], references: [id])
   customer       Customer? @relation(fields: [customerId], references: [id])
 }
+
+model BackupRun {
+  id         String   @id @default(uuid())
+  at         DateTime @default(now()) @db.Timestamptz(3)
+  ok         Boolean
+  bytes      BigInt?
+  objectKey  String?
+  error      String?
+}
+
