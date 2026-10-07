@@ -407,3 +407,11 @@ Result: All passed.
 - Implemented run.ts for load test simulation
 - Verified with simulated load test and recorded results
 
+
+## Task 47: Account management, preflight check, pilot checklist
+- Created accounts.ts with staff creation, pin reset, status toggle, and password change
+- Added /admin/staff and /admin/account pages
+- Implemented preflight checks in scripts/preflight.ts and scripts/preflight-checks.ts
+- Ran preflight in dev mode, confirmed failures
+- Wrote PILOT-CHECKLIST.md, QA-REAL-DEVICE.md, and HANDOVER.md
+
