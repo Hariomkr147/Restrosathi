@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { describe, test, expect, beforeAll, afterEach } from "vitest";
 import { prisma } from "../../lib/db";
 import { recordConsent, hasMarketingConsent, getMarketingAudience } from "./consent";

@@ -72,11 +72,11 @@ Original Tasks 1, 37–40, 44, 46, 47. Audit: F01. Depends: R00.
 
 **Files:** current typecheck-error files, `src/lib/auth/accounts.ts`, billing/table actions, customer/dashboard pages, backup/load/preflight scripts, affected test fixtures; existing schema and helper definitions.
 
-- [ ] Reproduce each error under Node 22. Group by root API/schema mismatch rather than adding casts at every caller.
-- [ ] Use existing hashSecret/verifySecret and audit() contracts; query bills/bookings by the actual phone/data relationships instead of inventing Prisma relations solely to compile. Use DiningSession and RestaurantTable.label correctly.
-- [ ] Fix OTP signatures/return handling with normalized identity, valid fixture types, imports, null checks and enum values. Add focused tests for behavior changed by those fixes.
-- [ ] Fix all lint errors at source. Review the 98 baseline warnings; remove unused code/imports and address effect/dependency/purity warnings with behavioral risk. Do not blanket-disable rules.
-- [ ] Run Prisma generation, lint, typecheck and production build. Subsequent units complete missing features; compile fixes must not pretend those features are accepted.
+- [x] Reproduce each error under Node 22. Group by root API/schema mismatch rather than adding casts at every caller.
+- [x] Use existing hashSecret/verifySecret and audit() contracts; query bills/bookings by the actual phone/data relationships instead of inventing Prisma relations solely to compile. Use DiningSession and RestaurantTable.label correctly.
+- [x] Fix OTP signatures/return handling with normalized identity, valid fixture types, imports, null checks and enum values. Add focused tests for behavior changed by those fixes.
+- [x] Fix all lint errors at source. Review the 98 baseline warnings; remove unused code/imports and address effect/dependency/purity warnings with behavioral risk. Do not blanket-disable rules.
+- [x] Run Prisma generation, lint, typecheck and production build. Subsequent units complete missing features; compile fixes must not pretend those features are accepted.
 
 **Commands:** `npm run db:generate`, `npm run lint`, `npm run typecheck`, `npm run build`, plus focused changed-module tests.  
 **Acceptance:** zero TypeScript errors, zero lint errors, successful production build; no suppressions/test exclusions/schema shortcuts. Save actual outputs.

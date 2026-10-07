@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 "use server";
 
 import { requireUser } from "@/lib/auth/session";
@@ -59,7 +60,7 @@ import { upsertCustomer } from "@/lib/customers";
 
 export async function verifyBillPhoneAction(billId: string, phone: string, code: string) {
   const user = await requireUser();
-  const res = await verifyOtp(phone, code);
+  const res = await verifyOtp(phone, code, {});
   if (!res.ok) return res;
   
   await prisma.$transaction(async (tx) => {
@@ -90,6 +91,6 @@ export async function applyRedemptionAction(billId: string, points: number) {
 
 export async function removeRedemptionAction(billId: string) {
   const user = await requireUser();
-  await removeRedemption(billId, user.id);
+  await removeRedemption(billId);
   revalidatePath(`/admin/bills`);
 }

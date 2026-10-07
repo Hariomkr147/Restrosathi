@@ -45,7 +45,7 @@ export function JoinRewards({ code, customerPhone, onJoined }: Props) {
         onSuccess={onJoined} 
         onVerify={async (phone, otp) => {
           const res = await linkPhoneToSessionAction(code, phone, otp);
-          if (!res.ok) return { ok: false, error: res.error };
+          if (!res.ok) return { ok: false, error: res.error ?? "Unknown error" };
           return { ok: true, phone };
         }}
       />

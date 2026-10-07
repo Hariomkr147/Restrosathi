@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { test, expect } from "@playwright/test";
 import { TABLE_CODES, resetOperationalData, createOrderableItem } from "../helpers/db";
 

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 // Add every new server action/route here; document explicit public exceptions.
 import { afterEach, expect, it, vi } from "vitest";
@@ -287,14 +288,14 @@ for (const { role, signIn } of roles) {
       body: "{}",
       headers: { "origin": "http://localhost:3000" }
     });
-    const res = await getOrders(req as any, { params: Promise.resolve({ code: "fake" }) });
+    const res = await getOrders(req as any);
     expect(res.status).toBe(400); // Invalid JSON or signature fails, but not 401
   });
 
   it(`${role}: GET /api/board requires STAFF or OWNER`, async () => {
     await signIn();
     const req = new Request("http://localhost:3000/api/board", { method: "GET" });
-    const res = await getBoard(req);
+    const res = await getBoard();
     expect(res.status).toBe(role === "anonymous" ? 401 : 200);
   });
 }

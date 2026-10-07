@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { describe, expect, it, beforeEach, vi, afterEach } from "vitest";
 import { getBoard, resolveServiceRequest } from "./board";
 import { prisma as db } from "../db";

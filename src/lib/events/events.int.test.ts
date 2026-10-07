@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { mockCookies, asOwner } from "../../../tests/helpers/auth";
 import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
 import { submitEnquiry, getEnquiries, updateEnquiryStatusAction } from "./enquiries";

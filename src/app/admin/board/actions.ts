@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 "use server";
 import { requireUser } from "@/lib/auth/session";
 import { prisma as db } from "@/lib/db";

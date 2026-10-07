@@ -13,22 +13,26 @@ export default async function CustomerDetailPage({ params }: { params: Promise<{
   const customer = await prisma.customer.findUnique({
     where: { id },
     include: {
-      bills: {
-        orderBy: { generatedAt: "desc" },
-        take: 50,
-        include: { session: { include: { table: true } } }
-      },
       consentRecords: {
         orderBy: { at: "desc" }
-      },
-      bookings: {
-        orderBy: { slotStart: "desc" },
-        take: 50
       }
     }
   });
 
   if (!customer) notFound();
+
+  const bills = await prisma.bill.findMany({
+    where: { customerPhone: customer.phone },
+    orderBy: { generatedAt: "desc" },
+    take: 50,
+    include: { session: { include: { table: true } } }
+  });
+
+  const bookings = await prisma.booking.findMany({
+    where: { phone: customer.phone },
+    orderBy: { slotStart: "desc" },
+    take: 50
+  });
 
   return (
     <main className="max-w-6xl mx-auto p-4 sm:p-6 space-y-8">
@@ -89,7 +93,7 @@ export default async function CustomerDetailPage({ params }: { params: Promise<{
         <div className="md:col-span-2 space-y-8">
           <div>
             <h2 className="text-xl font-bold mb-4">Recent Visits</h2>
-            {customer.bills.length === 0 ? (
+            {bills.length === 0 ? (
               <p className="text-sm text-muted-foreground">No visits recorded.</p>
             ) : (
               <div className="bg-card border rounded-lg overflow-x-auto">
@@ -104,7 +108,7 @@ export default async function CustomerDetailPage({ params }: { params: Promise<{
                     </tr>
                   </thead>
                   <tbody className="divide-y">
-                    {customer.bills.map(b => (
+                    {bills.map(b => (
                       <tr key={b.id}>
                         <td className="px-4 py-2">{b.generatedAt.toLocaleString("en-IN", { timeZone: "Asia/Kolkata" })}</td>
                         <td className="px-4 py-2">{b.session.kind === "DINE_IN" ? b.session.table?.label : "Takeaway"}</td>
@@ -121,7 +125,7 @@ export default async function CustomerDetailPage({ params }: { params: Promise<{
 
           <div>
             <h2 className="text-xl font-bold mb-4">Bookings</h2>
-            {customer.bookings.length === 0 ? (
+            {bookings.length === 0 ? (
               <p className="text-sm text-muted-foreground">No bookings.</p>
             ) : (
               <div className="bg-card border rounded-lg overflow-x-auto">
@@ -135,7 +139,7 @@ export default async function CustomerDetailPage({ params }: { params: Promise<{
                     </tr>
                   </thead>
                   <tbody className="divide-y">
-                    {customer.bookings.map(b => (
+                    {bookings.map(b => (
                       <tr key={b.id}>
                         <td className="px-4 py-2">{b.slotStart.toLocaleString("en-IN", { timeZone: "Asia/Kolkata" })}</td>
                         <td className="px-4 py-2">{b.partySize}</td>

@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { submitBooking, getBookingSlots, requestOtpAction, verifyOtpAction } from "./actions";
 import Link from "next/link";
 
@@ -30,9 +30,16 @@ export function BookingForm({ maxPartySize, marketingText }: { maxPartySize: num
   const [error, setError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
 
+  const minDate = useMemo(() => new Date().toISOString().slice(0, 10), []);
+  // eslint-disable-next-line react-hooks/purity
+  const maxDate = useMemo(() => new Date(Date.now() + 60 * 24 * 60 * 60 * 1000).toISOString().slice(0, 10), []);
+
   useEffect(() => {
     let active = true;
+    
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setLoadingSlots(true);
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setSelectedSlot(null);
     getBookingSlots(dateStr).then(res => {
       if (active) {
@@ -54,8 +61,7 @@ export function BookingForm({ maxPartySize, marketingText }: { maxPartySize: num
       phone,
       partySize,
       slotStart: selectedSlot,
-      note: note || undefined,
-      marketingConsent
+      note: note || undefined
     });
     setSubmitting(false);
 
@@ -105,8 +111,7 @@ export function BookingForm({ maxPartySize, marketingText }: { maxPartySize: num
       phone,
       partySize,
       slotStart: selectedSlot!,
-      note: note || undefined,
-      marketingConsent
+      note: note || undefined
     });
     setSubmitting(false);
     
@@ -185,8 +190,8 @@ export function BookingForm({ maxPartySize, marketingText }: { maxPartySize: num
           type="date" 
           value={dateStr}
           onChange={e => setDateStr(e.target.value)}
-          min={new Date().toISOString().slice(0, 10)}
-          max={new Date(Date.now() + 60 * 24 * 60 * 60 * 1000).toISOString().slice(0, 10)}
+          min={minDate}
+          max={maxDate}
           className="w-full p-2 border rounded"
           required
         />

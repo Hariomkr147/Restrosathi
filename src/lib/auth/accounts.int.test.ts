@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { describe, it, expect, beforeEach } from "vitest";
 import { createStaff, resetStaffPin, setStaffActive, changeOwnerPassword } from "./accounts";
 import { prisma } from "../db";

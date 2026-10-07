@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { expect, it, describe, beforeEach } from "vitest";
 import { prisma } from "../db";
 import { generateBill } from "./generate";

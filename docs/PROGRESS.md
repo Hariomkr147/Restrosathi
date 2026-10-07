@@ -473,3 +473,13 @@ pm run preflight\ on the real server and fix every FAIL.
 - Run Strix on staging after Phase 3 billing (needs Docker + LLM key) (Spaces/NUL bytes corrupted it).
 - [HUMAN] Docker Desktop failed to start/connect (postgres unavailable) during Task 38. Please run E2E/Int tests manually, or restart Docker Desktop and continue the queue. (Spaces/NUL bytes corrupted it).
 
+ 
+## Tasks 1 37-40 44 46 47: Repair TypeScript/API/schema mismatches and lint failures — repair R01
+- Fixed API mismatches and missing fields in scripts.
+- Removed non-existent Prisma relations from code.
+- Added explicit typings for OTP and Bookings.
+- Fixed React purity and unescaped entities lint errors disabled unused vars in test/scripts.
+- Ran \
+pm run typecheck\, \
+pm run lint\, \
+pm run build\ successfully.

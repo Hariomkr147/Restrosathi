@@ -43,7 +43,7 @@ export default async function AdminPage() {
       _sum: { totalPaise: true },
       where: { status: "SETTLED", generatedAt: { gte: sevenDaysAgo, lt: todayMidnightIST } }
     }),
-    prisma.session.count({
+    prisma.diningSession.count({
       where: { status: "OPEN" }
     }),
     prisma.messageLog.groupBy({
@@ -69,7 +69,7 @@ export default async function AdminPage() {
 
     <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
       <div className="rounded-lg border bg-card p-6 shadow-sm">
-        <h2 className="text-sm font-medium text-muted-foreground">Today's Sales</h2>
+        <h2 className="text-sm font-medium text-muted-foreground">Today&apos;s Sales</h2>
         <div className="text-3xl font-bold mt-2">{formatINR(todayTotal)}</div>
         <div className="text-sm text-muted-foreground mt-1">From {todayCount} bills</div>
       </div>

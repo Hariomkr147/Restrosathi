@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { AiProvider } from "./provider";
 
 export class FakeAiProvider implements AiProvider {

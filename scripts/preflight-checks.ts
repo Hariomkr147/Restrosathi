@@ -1,5 +1,7 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable @typescript-eslint/ban-ts-comment */
 export function checkPreflight(snapshot: any) {
-  const results = [];
+  const results: { name: string, ok: boolean, error: string | null }[] = [];
   
   const assert = (name: string, condition: boolean, error: string) => {
     results.push({ name, ok: condition, error: condition ? null : error });

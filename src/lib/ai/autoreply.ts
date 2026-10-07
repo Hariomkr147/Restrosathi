@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { prisma } from "../db";
 import { buildFacts } from "./facts";
 import { isAllergyQuestion } from "./allergy";

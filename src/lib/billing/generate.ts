@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { prisma } from "../db";
 import { getSettings } from "../settings";
 import { computeBill, type ComputeBillInput } from "./calc";

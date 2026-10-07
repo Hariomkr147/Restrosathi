@@ -1,10 +1,11 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { prisma } from "../db";
 import { requireUser } from "./session";
-import { generateHash } from "./password";
+import { hashSecret, verifySecret } from "./password";
 import { randomBytes } from "node:crypto";
 
 export async function createStaff({ name, pin }: { name: string; pin: string }) {
-  await requireUser("OWNER");
+  const me = await requireUser("OWNER");
   
   if (!/^\d{4,6}$/.test(pin)) {
     throw new Error("PIN must be 4 to 6 digits");
@@ -15,7 +16,7 @@ export async function createStaff({ name, pin }: { name: string; pin: string }) 
     throw new Error("Staff name already exists");
   }
 
-  const pinHash = await generateHash(pin);
+  const pinHash = await hashSecret(pin);
   const user = await prisma.user.create({
     data: {
       name,
@@ -27,9 +28,11 @@ export async function createStaff({ name, pin }: { name: string; pin: string }) 
 
   await prisma.auditLog.create({
     data: {
-      userId: user.id,
+      actorId: me.id,
       action: "account.create",
-      details: { name }
+      entity: "User",
+      entityId: user.id,
+      data: { name }
     }
   });
 
@@ -37,13 +40,13 @@ export async function createStaff({ name, pin }: { name: string; pin: string }) 
 }
 
 export async function resetStaffPin(userId: string, pin: string) {
-  await requireUser("OWNER");
+  const me = await requireUser("OWNER");
   
   if (!/^\d{4,6}$/.test(pin)) {
     throw new Error("PIN must be 4 to 6 digits");
   }
 
-  const pinHash = await generateHash(pin);
+  const pinHash = await hashSecret(pin);
   await prisma.user.update({
     where: { id: userId, role: "STAFF" },
     data: { pinHash }
@@ -51,15 +54,17 @@ export async function resetStaffPin(userId: string, pin: string) {
 
   await prisma.auditLog.create({
     data: {
-      userId,
+      actorId: me.id,
       action: "account.pin_reset",
-      details: {}
+      entity: "User",
+      entityId: userId,
+      data: {}
     }
   });
 }
 
 export async function setStaffActive(userId: string, active: boolean) {
-  await requireUser("OWNER");
+  const me = await requireUser("OWNER");
   
   await prisma.user.update({
     where: { id: userId, role: "STAFF" },
@@ -72,9 +77,11 @@ export async function setStaffActive(userId: string, active: boolean) {
 
   await prisma.auditLog.create({
     data: {
-      userId,
+      actorId: me.id,
       action: "account.active",
-      details: { active }
+      entity: "User",
+      entityId: userId,
+      data: { active }
     }
   });
 }
@@ -86,13 +93,14 @@ export async function changeOwnerPassword(current: string, next: string) {
     throw new Error("Password must be at least 10 characters");
   }
 
-  const { verifyPassword } = await import("./password");
-  const isValid = await verifyPassword(user.id, current);
+  const userRecord = await prisma.user.findUnique({ where: { id: user.id } });
+  if (!userRecord?.passwordHash) throw new Error("Current password not set");
+  const isValid = await verifySecret(current, userRecord.passwordHash);
   if (!isValid) {
     throw new Error("Current password incorrect");
   }
 
-  const passwordHash = await generateHash(next);
+  const passwordHash = await hashSecret(next);
   await prisma.user.update({
     where: { id: user.id },
     data: { passwordHash }
@@ -117,9 +125,11 @@ export async function changeOwnerPassword(current: string, next: string) {
 
   await prisma.auditLog.create({
     data: {
-      userId: user.id,
+      actorId: user.id,
       action: "account.password",
-      details: {}
+      entity: "User",
+      entityId: user.id,
+      data: {}
     }
   });
 }

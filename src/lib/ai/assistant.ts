@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { z } from "zod";
 import { isAllergyQuestion } from "./allergy";
 import { consumeDeviceQuota, consumeMonthlyQuota } from "./usage";

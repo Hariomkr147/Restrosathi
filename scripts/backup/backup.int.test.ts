@@ -1,3 +1,6 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable @typescript-eslint/ban-ts-comment */
 import { describe, it, expect, beforeAll, afterAll } from "vitest";
 import { runBackup } from "./run";
 import { runRestore } from "./restore";
@@ -92,14 +95,14 @@ describe("Backup Integration", () => {
       where: { id: 1 },
       create: {
         name: "Test Restore",
-        currency: "INR",
         taxMode: "REGULAR",
         gstRatePercent: 5,
         pricesIncludeTax: false,
         about: {},
         hours: {},
         address: "123 Test St",
-        phone: "+919876543210"
+        phone: "+919876543210",
+        whatsappPhone: "+919876543210"
       },
       update: { name: "Test Restore" }
     });

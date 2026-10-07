@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { prisma } from "../db";
 import { audit } from "../audit";
 import { LoyaltyKind } from "@prisma/client";

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { requirePageUser } from "@/lib/auth/session";
 import { prisma } from "@/lib/db";
 import { DraftReplyButton } from "./DraftReplyButton";

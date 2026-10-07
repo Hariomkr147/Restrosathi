@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { PrismaClient } from "@prisma/client";
 import { exec } from "node:child_process";
 import { promisify } from "node:util";
@@ -33,7 +34,7 @@ async function run() {
   const tables = [];
   for (let i = 1; i <= 20; i++) {
     const table = await prisma.restaurantTable.create({
-      data: { code: `TABLE_${i}`, name: `Table ${i}`, active: true, size: 4 }
+      data: { code: `TABLE_${i}`, label: `Table ${i}`, active: true, sortOrder: i }
     });
     tables.push(table);
   }

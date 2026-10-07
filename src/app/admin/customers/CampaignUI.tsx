@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 "use client";
 
 import { useState } from "react";
@@ -58,7 +59,7 @@ export function CampaignUI({ eligibleCount }: { eligibleCount: number }) {
             />
           </div>
           <p className="text-sm text-muted-foreground">
-            To use this message, click the "Send Promo" button next to an eligible customer below.
+            To use this message, click the &quot;Send Promo&quot; button next to an eligible customer below.
             A new tab will open in WhatsApp Web with this text pre-filled.
           </p>
         </div>

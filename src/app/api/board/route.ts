@@ -14,6 +14,7 @@ export async function GET() {
         "Cache-Control": "no-store",
       }
     });
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (e: any) {
     if (e.name === "AuthError" || e.message === "Unauthorized") {
       return new NextResponse("Unauthorized", { status: 401 });

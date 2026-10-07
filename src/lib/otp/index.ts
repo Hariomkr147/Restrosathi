@@ -69,7 +69,7 @@ export async function requestOtp(rawPhone: string, ctx: { ip: string; now?: Date
   return { ok: true };
 }
 
-export async function verifyOtp(rawPhone: string, code: string, ctx: { now?: Date }): Promise<{ ok: true } | { ok: false; error: "INVALID" | "EXPIRED" | "TOO_MANY_ATTEMPTS" | "INVALID_PHONE" }> {
+export async function verifyOtp(rawPhone: string, code: string, ctx: { now?: Date }): Promise<{ ok: true, phone: string } | { ok: false; error: "INVALID" | "EXPIRED" | "TOO_MANY_ATTEMPTS" | "INVALID_PHONE" }> {
   const phone = cleanPhone(rawPhone);
   if (!isValidE164(phone)) return { ok: false, error: "INVALID_PHONE" };
   const now = ctx.now ?? new Date();
@@ -116,5 +116,5 @@ export async function verifyOtp(rawPhone: string, code: string, ctx: { now?: Dat
   await upsertCustomer(phone, { verified: true });
 
   await setPhoneVerifiedCookie(phone, now.getTime());
-  return { ok: true };
+  return { ok: true, phone };
 }

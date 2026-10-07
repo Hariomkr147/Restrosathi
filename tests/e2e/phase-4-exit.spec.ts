@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { test, expect } from "@playwright/test";
 import { PrismaClient } from "@prisma/client";
 import AxeBuilder from "@axe-core/playwright";
@@ -61,11 +62,11 @@ test.describe("Phase 4 Exit E2E", () => {
     await page.waitForTimeout(1000); 
     // In e2e test, we shouldn't read the DB for the OTP code directly if it's hashed.
     // However, the test environment fake outbox logs messages to MessageLog. We can read that!
-    const otpLog = await db.messageLog.findFirst({ where: { phone, direction: "OUTBOUND" }, orderBy: { createdAt: "desc" } });
+    const otpLog = await db.messageLog.findFirst({ where: { phone, direction: "OUT" }, orderBy: { createdAt: "desc" } });
     expect(otpLog).toBeTruthy();
     // In our test, we either parse it or use a default test OTP if `WA_PROVIDER=fake` always generates the same OTP. Wait, the OTP logic uses `crypto.randomInt`, it's not deterministic unless mocked.
     // The fake outbox dumps its content to the message body. Let's parse the OTP from the message body.
-    const body = otpLog!.body;
+    const body = otpLog!.body!;
     const match = body.match(/\b\d{6}\b/);
     expect(match).toBeTruthy();
     const otp = match![0];
@@ -91,7 +92,7 @@ test.describe("Phase 4 Exit E2E", () => {
     
     await page.waitForTimeout(1000);
     // Check outbox
-    const msg = await db.messageLog.findFirst({ where: { phone, direction: "OUTBOUND", body: { contains: "confirmed" } } });
+    const msg = await db.messageLog.findFirst({ where: { phone, direction: "OUT", body: { contains: "confirmed" } } });
     expect(msg).toBeTruthy();
   });
 

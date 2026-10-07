@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { describe, it, expect, beforeEach, vi, afterEach } from "vitest";
 import { verifyCronSecret } from "./cron";
 import { POST } from "../app/api/cron/outbox/route";

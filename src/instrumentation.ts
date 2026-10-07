@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 export async function register() {
   // Edge runtime or Node runtime setup if needed
 }

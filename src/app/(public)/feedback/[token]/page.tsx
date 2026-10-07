@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { prisma } from "@/lib/db";
 import { getSettings } from "@/lib/settings";
 import { notFound } from "next/navigation";

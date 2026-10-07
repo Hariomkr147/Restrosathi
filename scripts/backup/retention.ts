@@ -1,11 +1,12 @@
-import { S3Client, ListObjectsV2Command, DeleteObjectsCommand } from "@aws-sdk/client-s3";
+/* eslint-disable @typescript-eslint/no-unused-vars */
+import { S3Client, ListObjectsV2Command, DeleteObjectsCommand, ListObjectsV2CommandOutput } from "@aws-sdk/client-s3";
 
 export async function runRetention(s3: S3Client, bucket: string, retentionDays: number): Promise<void> {
   let continuationToken: string | undefined = undefined;
   const objects: { Key: string; LastModified: Date }[] = [];
 
   do {
-    const listRes = await s3.send(new ListObjectsV2Command({
+    const listRes: ListObjectsV2CommandOutput = await s3.send(new ListObjectsV2Command({
       Bucket: bucket,
       Prefix: "restrosathi/",
       ContinuationToken: continuationToken

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { describe, expect, it, vi, beforeEach } from "vitest";
 import { requestOtp, verifyOtp } from "./index";
 import { prisma } from "../db";

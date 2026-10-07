@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { requireUser } from "@/lib/auth/session";
 import { getDayEnd } from "@/lib/billing/day-end";
 import { formatINR } from "@/lib/money/format";

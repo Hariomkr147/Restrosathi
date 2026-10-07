@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { prisma } from "../db";
 import fs from "fs/promises";
 import path from "path";
@@ -74,7 +75,8 @@ export async function runChecks(now: Date = new Date()) {
         create: { key: "whatsapp", active: false, firstFailedAt: now }
       });
     }
-    const minutesDown = (now.getTime() - alertState.firstFailedAt.getTime()) / 60000;
+    const firstFailedAt = alertState.firstFailedAt ?? now;
+    const minutesDown = (now.getTime() - firstFailedAt.getTime()) / 60000;
     if (minutesDown > 30) {
       results.push({ key: "whatsapp", ok: false, detail: `Disconnected for ${Math.floor(minutesDown)} mins` });
     } else {

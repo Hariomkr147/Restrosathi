@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { expect, it } from "vitest";
 import { getSettings } from "./index";
 import { hoursSchema } from "./schema";
