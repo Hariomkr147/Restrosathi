@@ -373,3 +373,9 @@ Result: All passed.
 - Added cron route for weekly report
 - Configured to send WEEKLY_REPORT WhatsApp to ownerAlertPhone
 
+
+## Task 43: AI marketing drafts -> per-customer wa.me links
+- Created draftCampaignAction using Gemini to draft a promo message
+- Added CampaignUI and SendPromoButton to the admin customers page
+- Authorized access and tested via auth matrix
+
