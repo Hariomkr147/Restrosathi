@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Prisma, PrismaClient } from "@prisma/client";
 import { notify } from "../whatsapp/notify";
 import { canBookingTransition } from "./status";

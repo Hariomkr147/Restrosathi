@@ -341,3 +341,9 @@ Result: All passed.
 - Integrated with billing and OTP verification
 - Added admin UI for customers and GDPR erasure
 - All integration tests pass
+ 
+ # #   T a s k   3 8 :   L o y a l t y   l e d g e r   ( e a r n ,   r e d e e m ,   r e v e r s e )  
+ -   I m p l e m e n t e d   l o y a l t y   r u l e s ,   p a r t i a l   u n i q u e   i n d e x e s ,   a p p l y R e d e m p t i o n / r e m o v e R e d e m p t i o n ,   a d j u s t P o i n t s ,   c a n c e l ,   a n d   s e t t l e   u p d a t e s   w i t h   c o n c u r r e n c y   l o c k s .  
+ -   W r o t e   i n t e g r a t i o n   t e s t   a n d   E 2 E   s p e c s .  
+ -   P A R K E D :   I n t e g r a t i o n   a n d   E 2 E   t e s t s   a r e   u n v e r i f i e d   d u e   t o   D o c k e r   D e s k t o p   f a i l u r e   ( P 1 0 0 1 :   C a n ' t   r e a c h   d a t a b a s e   s e r v e r   a t   1 2 7 . 0 . 0 . 1 : 1 5 4 3 2 )   o u t s i d e   o f   a g e n t ' s   c o n t r o l .  
+ 

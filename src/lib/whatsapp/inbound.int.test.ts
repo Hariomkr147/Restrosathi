@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { describe, it, expect, beforeEach } from "vitest";
 import { POST } from "../../app/api/webhooks/whatsapp/[token]/route";
 import { NextRequest } from "next/server";

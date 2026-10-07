@@ -78,3 +78,18 @@ export async function verifyBillPhoneAction(billId: string, phone: string, code:
   // Also revalidate the sessionId page
   return { ok: true };
 }
+
+import { applyRedemption, removeRedemption } from "@/lib/loyalty";
+
+export async function applyRedemptionAction(billId: string, points: number) {
+  const user = await requireUser();
+  const res = await applyRedemption(billId, points, user.id);
+  if (res) revalidatePath(`/admin/bills`); // Revalidate any paths necessary
+  return res;
+}
+
+export async function removeRedemptionAction(billId: string) {
+  const user = await requireUser();
+  await removeRedemption(billId, user.id);
+  revalidatePath(`/admin/bills`);
+}

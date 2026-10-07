@@ -20,7 +20,7 @@ export default async function TablePage({ params }: { params: Promise<{ code: st
     <main id="main" className="mx-auto w-full max-w-content px-6 py-8 pb-28">
       <h1 id="table-heading" tabIndex={-1} className="break-words font-heading text-3xl">{text("tableLabel", { label: view.table.label })}</h1>
       <p className="mt-3 text-sm text-muted-foreground">{home("demo")}</p>
-      <OrderScreen menu={menu} locale={locale as Locale} code={code} initialView={view} />
+      <OrderScreen menu={menu} locale={locale as Locale} code={code} initialView={view} loyaltyEnabled={settings.loyaltyEnabled} />
     </main>
   </>;
 }

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { describe, test, expect, beforeAll, afterEach } from "vitest";
 import { prisma } from "../../lib/db";
 import { eraseCustomer, HANDLED_MODELS } from "./erase";

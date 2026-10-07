@@ -36,6 +36,26 @@ export async function cancelBill(
       }
     });
 
+    const txns = await tx.loyaltyTxn.findMany({
+      where: { billId }
+    });
+
+    for (const txn of txns) {
+      if (txn.kind === "EARN" || txn.kind === "REDEEM") {
+        await tx.loyaltyTxn.create({
+          data: {
+            customerId: txn.customerId,
+            kind: "REVERSE",
+            points: -txn.points,
+            billId: billId,
+            reversesId: txn.id,
+            actorId: actor.id,
+            note: "Bill cancelled"
+          }
+        });
+      }
+    }
+
     await audit({
       actorId: actor.id,
       action: "bill.cancel",

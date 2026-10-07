@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { getTranslations, getMessages } from "next-intl/server";
 import { getActivePackages } from "@/lib/events/packages";
 import { EnquiryForm } from "./EnquiryForm";

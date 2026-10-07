@@ -10,10 +10,11 @@ import { AskMenu } from "./AskMenu";
 import { useTableText } from "./TableText";
 import { StatusTracker } from "./StatusTracker";
 import { BillView } from "./BillView";
+import { JoinRewards } from "./JoinRewards";
 
 const ItemSheet = lazy(() => import("./ItemSheet"));
 const Cart = lazy(() => import("./Cart"));
-export function OrderScreen({ menu, locale, code, initialView }: { menu: PublicMenu; locale: Locale; code: string; initialView: SessionView }) {
+export function OrderScreen({ menu, locale, code, initialView, loyaltyEnabled }: { menu: PublicMenu; locale: Locale; code: string; initialView: SessionView; loyaltyEnabled: boolean }) {
   const text = useTableText(); const items = menu.categories.flatMap(({ items }) => items);
   const [lines, dispatch] = useReducer(cartReducer, []); const key = useRef<string | null>(null); const submitting = useRef(false);
   const [selected, setSelected] = useState<PublicItem | null>(null); const [cartOpen, setCartOpen] = useState(false);
@@ -109,6 +110,13 @@ export function OrderScreen({ menu, locale, code, initialView }: { menu: PublicM
           <button type="button" className={text.outlineClass} disabled={!!servicePending || view?.openRequests.includes("REQUEST_BILL")} onClick={() => void request("REQUEST_BILL")}>{view?.openRequests.includes("REQUEST_BILL") ? text.billRequested : servicePending === "REQUEST_BILL" ? text.requesting : text.requestBill}</button>
         </div>
         <BillView view={view} locale={locale} />
+        {loyaltyEnabled && (
+          <JoinRewards 
+            code={code} 
+            customerPhone={view?.customerPhone ?? null}
+            onJoined={() => refresh()}
+          />
+        )}
       </>
     )}
     {!!lines.length && <div className="cart-bar fixed inset-x-0 bottom-0 z-20 border-t border-border bg-background px-6 py-3">

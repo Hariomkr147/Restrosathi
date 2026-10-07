@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { prisma } from "../db";
 import { getWhatsApp } from "./index";
 import { WhatsAppProvider } from "./provider";

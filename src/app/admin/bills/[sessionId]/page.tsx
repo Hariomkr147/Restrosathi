@@ -1,5 +1,7 @@
 import { requirePageUser } from "@/lib/auth/session";
 import { getBillData } from "@/lib/billing/queries";
+import { prisma } from "@/lib/db";
+import { getBalance } from "@/lib/loyalty";
 import { notFound } from "next/navigation";
 import { BillPanel } from "./BillPanel";
 import Link from "next/link";
@@ -19,6 +21,14 @@ export default async function BillDetailPage({ params }: { params: Promise<{ ses
   const tConsent = await getTranslations("consent.marketing");
   const marketingText = tConsent("text", { restaurant: settings.name });
   
+  let customerPointsBalance = null;
+  if (session.bill?.customerPhone && session.bill.phoneVerifiedAt) {
+    const customer = await prisma.customer.findUnique({ where: { phone: session.bill.customerPhone } });
+    if (customer) {
+      customerPointsBalance = await getBalance(customer.id);
+    }
+  }
+  
   return (
     <main className="mx-auto w-full max-w-content px-6 py-4">
       <div className="mb-6 flex items-center gap-4">
@@ -34,6 +44,7 @@ export default async function BillDetailPage({ params }: { params: Promise<{ ses
         settings={settings}
         userRole={user.role}
         marketingText={marketingText}
+        customerPointsBalance={customerPointsBalance}
       />
     </main>
   );

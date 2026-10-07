@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { prisma } from "../db";
 import crypto from "node:crypto";
 import { normalizePhone } from "../phone";

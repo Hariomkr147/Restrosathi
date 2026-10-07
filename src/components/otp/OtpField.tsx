@@ -7,9 +7,10 @@ import { useTranslations } from "next-intl";
 interface Props {
   onSuccess: (phone: string) => void;
   defaultPhone?: string;
+  onVerify?: (phone: string, code: string) => Promise<{ ok: true; phone: string } | { ok: false; error: string }>;
 }
 
-export function OtpField({ onSuccess, defaultPhone = "" }: Props) {
+export function OtpField({ onSuccess, defaultPhone = "", onVerify }: Props) {
   const [phone, setPhone] = useState(defaultPhone);
   const [step, setStep] = useState<"PHONE" | "OTP">("PHONE");
   const [loading, setLoading] = useState(false);
@@ -48,7 +49,7 @@ export function OtpField({ onSuccess, defaultPhone = "" }: Props) {
   async function handleVerify(fullCode: string) {
     setLoading(true);
     setError("");
-    const res = await verifyOtpAction(phone, fullCode);
+    const res = onVerify ? await onVerify(phone, fullCode) : await verifyOtpAction(phone, fullCode);
     setLoading(false);
     
     if (res.ok) {

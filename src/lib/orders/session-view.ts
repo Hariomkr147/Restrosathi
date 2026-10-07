@@ -8,6 +8,7 @@ export type SessionView = {
   orders: { id: string; status: OrderStatus; rejectReason: string | null; placedAt: string;
     lines: { name: L10n; variant: L10n | null; modifiers: L10n[]; qty: number; linePaise: number; note: string | null; voided: boolean }[] }[];
   openRequests: ServiceKind[]; amountPaise: number;
+  customerPhone: string | null; customerPhoneVerifiedAt: string | null;
   bill: null | { status: "OPEN" | "SETTLED"; title: string; lines: { name: string; qty: number; totalPaise: number }[]; subtotalPaise: number; discountPaise: number; taxLines: { label: string; amountPaise: number }[]; roundOffPaise: number; totalPaise: number };
 };
 // Public: the active code scopes every read to its current, non-closed session.
@@ -23,7 +24,7 @@ export async function getSessionView(code: string): Promise<SessionView | null> 
       bill: { where: { status: { in: ["OPEN", "SETTLED"] } }, include: { lines: true } }
     }
   });
-  if (!session) return { table: { label: table.label }, session: null, orders: [], openRequests: [], amountPaise: 0, bill: null };
+  if (!session) return { table: { label: table.label }, session: null, orders: [], openRequests: [], amountPaise: 0, customerPhone: null, customerPhoneVerifiedAt: null, bill: null };
   const orders = session.orders.map((order) => ({ id: order.id, status: order.status, rejectReason: order.rejectReason, placedAt: order.placedAt.toISOString(),
     lines: order.lines.map((line) => ({ name: l10nSchema.parse(line.nameSnapshot), variant: line.variantSnapshot === null ? null : l10nSchema.parse(line.variantSnapshot),
       modifiers: (line.modifiersSnapshot as unknown[]).map((name) => l10nSchema.parse(name)), qty: line.qty,
@@ -52,6 +53,8 @@ export async function getSessionView(code: string): Promise<SessionView | null> 
 
   return { table: { label: table.label }, session: { status: session.status }, orders, openRequests: session.requests.map(({ kind }) => kind),
     amountPaise: orders.filter(({ status }) => status !== "REJECTED").reduce((total, order) => total + order.lines.filter(({ voided }) => !voided).reduce((sum, line) => sum + line.linePaise, 0), 0),
+    customerPhone: session.customerPhone,
+    customerPhoneVerifiedAt: session.customerPhoneVerifiedAt?.toISOString() || null,
     bill 
   };
 }

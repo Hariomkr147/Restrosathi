@@ -1,8 +1,9 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import { useState, useTransition } from "react";
 import { formatINR } from "@/lib/money/format";
-import { generateBillAction, verifyBillPhoneAction } from "../actions";
+import { generateBillAction, verifyBillPhoneAction, applyRedemptionAction, removeRedemptionAction } from "../actions";
 import { requestOtpAction } from "@/app/(public)/book/actions";
 import { useFormStatus } from "react-dom";
 
@@ -16,7 +17,7 @@ function SubmitButton({ isRecalculate, disabled }: { isRecalculate: boolean, dis
 }
 
                                                                                     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export function BillPanel({ sessionId, bill, lines, computed, settings, userRole, marketingText }: any) {
+export function BillPanel({ sessionId, bill, lines, computed, settings, userRole, marketingText, customerPointsBalance }: any) {
   const [error, setError] = useState<string | null>(null);
   const [customerPhone, setCustomerPhone] = useState(bill?.customerPhone || "");
   const [customerName, setCustomerName] = useState(bill?.customerName || "");
@@ -83,6 +84,29 @@ export function BillPanel({ sessionId, bill, lines, computed, settings, userRole
     });
   };
 
+  const [redeemPoints, setRedeemPoints] = useState<number>(settings.loyaltyRedeemUnitPoints || 100);
+  const handleApplyRedemption = () => {
+    if (!bill?.id) return;
+    startOtpTransition(async () => {
+      try {
+        await applyRedemptionAction(bill.id, redeemPoints);
+      } catch (err: any) {
+        setError(err.message || "Failed to apply redemption");
+      }
+    });
+  };
+
+  const handleRemoveRedemption = () => {
+    if (!bill?.id) return;
+    startOtpTransition(async () => {
+      try {
+        await removeRedemptionAction(bill.id);
+      } catch (err: any) {
+        setError(err.message || "Failed to remove redemption");
+      }
+    });
+  };
+
   return (
     <div className="grid gap-8 lg:grid-cols-3">
       <div className="lg:col-span-2 space-y-6">
@@ -103,8 +127,7 @@ export function BillPanel({ sessionId, bill, lines, computed, settings, userRole
               </tr>
             </thead>
             <tbody className="divide-y">
-                             // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                             // eslint-disable-next-line @typescript-eslint/no-explicit-any
+              {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
               {lines.map((l: any, i: number) => (
                 <tr key={i}>
                   <td className="py-3">
@@ -183,6 +206,43 @@ export function BillPanel({ sessionId, bill, lines, computed, settings, userRole
             <SubmitButton isRecalculate={!!bill} disabled={hasUnaccepted} />
           </div>
         </form>
+        
+        {settings.loyaltyEnabled && bill?.id && bill?.customerPhone && bill?.phoneVerifiedAt && customerPointsBalance !== null && customerPointsBalance !== undefined && (
+          <div className="rounded-lg border bg-card p-4 space-y-4">
+            <h2 className="text-lg font-semibold">Saffron Rewards</h2>
+            <div className="text-sm">
+              Current Balance: <span className="font-bold text-orange-600">{customerPointsBalance} pts</span>
+            </div>
+            
+            {bill.loyaltyPointsRedeemed > 0 ? (
+              <div className="flex items-center justify-between p-3 bg-orange-50 border border-orange-100 rounded-md">
+                <span className="text-sm text-orange-800">Redeemed <strong>{bill.loyaltyPointsRedeemed} pts</strong> (-{formatINR(bill.loyaltyDiscountPaise)})</span>
+                <button type="button" onClick={handleRemoveRedemption} disabled={isPendingOtp} className="text-sm px-3 py-1 bg-white text-orange-600 border border-orange-200 rounded hover:bg-orange-50 disabled:opacity-50">
+                  Remove
+                </button>
+              </div>
+            ) : (
+              <div className="flex gap-2 items-center">
+                <input 
+                  type="number" 
+                  className="rounded-md border bg-background px-3 py-2 text-sm w-32" 
+                  value={redeemPoints}
+                  onChange={e => setRedeemPoints(parseInt(e.target.value) || 0)}
+                  min={settings.loyaltyRedeemUnitPoints}
+                  step={settings.loyaltyRedeemUnitPoints}
+                />
+                <button 
+                  type="button" 
+                  onClick={handleApplyRedemption}
+                  disabled={isPendingOtp || customerPointsBalance < redeemPoints}
+                  className="rounded-md bg-orange-600 text-white px-4 py-2 text-sm disabled:opacity-50 hover:bg-orange-700"
+                >
+                  Redeem Points
+                </button>
+              </div>
+            )}
+          </div>
+        )}
       </div>
       
       <div className="space-y-4">

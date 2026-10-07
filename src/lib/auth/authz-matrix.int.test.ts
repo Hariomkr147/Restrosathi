@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 // Add every new server action/route here; document explicit public exceptions.
 import { afterEach, expect, it, vi } from "vitest";
 import { asAnonymous, asOwner, asStaff, cookieJar } from "../../../tests/helpers/auth";

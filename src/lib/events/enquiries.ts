@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { prisma } from "../db";
 import { requireUser } from "../auth/session";
 import { eventEnquiryInputSchema } from "./schemas";

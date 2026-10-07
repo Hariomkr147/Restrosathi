@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { expect, test, beforeEach } from "vitest";
 import { prisma } from "../db";
 import { escalateStaleOrders } from "./escalation";

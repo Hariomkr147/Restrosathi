@@ -24,8 +24,8 @@ export async function settleBill(
     await lockSession(tx, { id: billMeta.sessionId, kind: billMeta.session.kind, tableId: billMeta.session.tableId });
 
     // Now lock the bill itself
-    const res = await tx.$queryRaw<{ id: string; status: string; totalPaise: number; generatedAt: Date; customerPhone: string | null; customerName: string | null }[]>`
-      SELECT id, status, "totalPaise", "generatedAt", "customerPhone", "customerName" FROM "Bill" WHERE id = ${billId} FOR UPDATE
+    const res = await tx.$queryRaw<{ id: string; status: string; totalPaise: number; generatedAt: Date; customerPhone: string | null; customerName: string | null; phoneVerifiedAt: Date | null; loyaltyPointsRedeemed: number }[]>`
+      SELECT id, status, "totalPaise", "generatedAt", "customerPhone", "customerName", "phoneVerifiedAt", "loyaltyPointsRedeemed" FROM "Bill" WHERE id = ${billId} FOR UPDATE
     `;
 
     if (res.length === 0) {
@@ -91,6 +91,48 @@ export async function settleBill(
       const c = await upsertCustomer(bill.customerPhone, { name: bill.customerName }, tx);
       if (opts.marketingConsent) {
         await recordConsent(c.id, true, "BILLING", actor.id);
+      }
+      
+      const settings = await tx.settings.findUnique({ where: { id: 1 } });
+      if (settings?.loyaltyEnabled && bill.phoneVerifiedAt) {
+        // Lock the customer row as per lock order
+        const [lockedCustomer] = await tx.$queryRaw<{ id: string }[]>`
+          SELECT id FROM "Customer" WHERE id = ${c.id} FOR UPDATE
+        `;
+
+        if (lockedCustomer) {
+          const { getBalance, calculateEarnedPoints } = await import("../loyalty");
+          const balance = await getBalance(c.id);
+
+          if (bill.loyaltyPointsRedeemed > balance) {
+            return { ok: false, error: "LOYALTY_BALANCE_CHANGED" } as const;
+          }
+
+          if (bill.loyaltyPointsRedeemed > 0) {
+            await tx.loyaltyTxn.create({
+              data: {
+                customerId: c.id,
+                kind: "REDEEM",
+                points: -bill.loyaltyPointsRedeemed,
+                billId: bill.id,
+                actorId: actor.id
+              }
+            });
+          }
+
+          const earnedPoints = calculateEarnedPoints(bill.totalPaise, settings.loyaltyEarnPer100Rupees);
+          if (earnedPoints > 0) {
+            await tx.loyaltyTxn.create({
+              data: {
+                customerId: c.id,
+                kind: "EARN",
+                points: earnedPoints,
+                billId: bill.id,
+                actorId: actor.id
+              }
+            });
+          }
+        }
       }
     }
 

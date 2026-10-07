@@ -1,4 +1,4 @@
-import { BookingStatus } from "@prisma/client";
+import { BookingStatus, PrismaClient } from "@prisma/client";
 
 export function canBookingTransition(from: BookingStatus, to: BookingStatus): boolean {
   if (from === to) return true;
@@ -14,7 +14,6 @@ export function canBookingTransition(from: BookingStatus, to: BookingStatus): bo
   return false;
 }
 export async function markBookingStatus(bookingId: string, status: BookingStatus, actorId: string): Promise<{ ok: true } | { ok: false; error: "NOT_FOUND" | "INVALID_STATUS" }> {
-  const { PrismaClient } = require("@prisma/client");
   const prisma = new PrismaClient();
   const booking = await prisma.booking.findUnique({ where: { id: bookingId } });
   if (!booking) return { ok: false, error: "NOT_FOUND" };

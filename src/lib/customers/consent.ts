@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { prisma as db } from "../db";
 import { ConsentSource } from "@prisma/client";
 

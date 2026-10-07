@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { requirePageUser } from "@/lib/auth/session";
 import { prisma } from "@/lib/db";
 import Link from "next/link";

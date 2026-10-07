@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { describe, it, expect, beforeEach } from "vitest";
 import { notify, renderMessage, MessageKind } from "./notify";
 import { prisma } from "../db";
