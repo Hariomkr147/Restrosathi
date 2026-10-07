@@ -114,12 +114,12 @@ Original Tasks 13, 19, 28–36, 45–46; security gates. Audit: F05, F19. Depend
 
 **Files:** `src/lib/cron.ts`, public order route, all cron/webhook routes, authz matrix and route tests.
 
-- [ ] Write failing unauthenticated/wrong-secret/missing-secret/Unicode-token tests for every cron endpoint; correct callers must pass. Compare token bytes safely and fail closed when configuration is absent.
-- [ ] Reuse verifyCronSecret; convert state-changing cron endpoints to POST and reject GET. Protect alerts immediately; implement its full behavior in R22.
-- [ ] Replace origin substring matching with parsed exact expected origin/host/port comparison. Test a real valid attacker subdomain, wrong port/scheme, absent/malformed origin and missing/untrusted forwarding headers.
-- [ ] Read public JSON bodies with a streaming 100 KB cap, including absent/spoofed Content-Length and multibyte input. Return stable 400/413 errors; never call business logic for rejected bodies.
-- [ ] Preserve the shared placeOrder code path/device/IP limits for route and action. Test route-path code vs body-code tampering and board anonymous rejection/no-store response.
-- [ ] Update the authorization matrix to exercise real successful permitted operations, exact denials and explicitly public exceptions; remove “any exception counts as pass.”
+- [x] Write failing unauthenticated/wrong-secret/missing-secret/Unicode-token tests for every cron endpoint; correct callers must pass. Compare token bytes safely and fail closed when configuration is absent.
+- [x] Reuse verifyCronSecret; convert state-changing cron endpoints to POST and reject GET. Protect alerts immediately; implement its full behavior in R22.
+- [x] Replace origin substring matching with parsed exact expected origin/host/port comparison. Test a real valid attacker subdomain, wrong port/scheme, absent/malformed origin and missing/untrusted forwarding headers.
+- [x] Read public JSON bodies with a streaming 100 KB cap, including absent/spoofed Content-Length and multibyte input. Return stable 400/413 errors; never call business logic for rejected bodies.
+- [x] Preserve the shared placeOrder code path/device/IP limits for route and action. Test route-path code vs body-code tampering and board anonymous rejection/no-store response.
+- [x] Update the authorization matrix to exercise real successful permitted operations, exact denials and explicitly public exceptions; remove “any exception counts as pass.”
 
 **Acceptance:** nine-probe origin/alerts/body regressions have conventional tests asserting rejection; anonymous/wrong-role/secret cases cannot mutate data or leak health details.
 

@@ -497,3 +497,11 @@ pm run build\ successfully.
  -   d e e p m e r g e - t s   < 8 . 0 . 0   ( H i g h   s e v e r i t y )   i s   r e a c h e d   o n l y   v i a   p r i s m a   - >   @ p r i s m a / c o n f i g   - >   d e e p m e r g e - t s .   T h i s   i s   a   d e v - t i m e   t o o l   s t a c k   e x h a u s t i o n   r i s k   w h e n   m e r g i n g   r e c u r s i v e   c o n f i g   o b j e c t s ,   n o t   r e a c h a b l e   b y   p r o d u c t i o n   r u n t i m e   c o d e .   L e f t   a s - i s   t o   a v o i d   a   f o r c e d   m a j o r   v e r s i o n   u p g r a d e   t o   P r i s m a   7 / 8 .  
  -   R e - r a n   n p m   r u n   t e s t : u n i t ,   n p m   r u n   b u i l d .  
  
+## Task R04: Close route authentication, origin and body-size gaps
+Commit: 91549a4
+Status: Complete.
+- Replaced GET cron routes with POST and byte-time safe secret verification.
+- Origin exactly matching against protocol and host.
+- Applied JSON payload cap (100KB) across required routes.
+- Authorization matrix int tests now accurately test real exceptions.
+
