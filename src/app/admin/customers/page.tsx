@@ -2,13 +2,15 @@ import { requirePageUser } from "@/lib/auth/session";
 import { prisma } from "@/lib/db";
 import Link from "next/link";
 import { Customer } from "@prisma/client";
+import { CampaignUI } from "./CampaignUI";
+import { SendPromoButton } from "./SendPromoButton";
 
 export const metadata = {
   title: "Customers | Admin | RestroSathi"
 };
 
 export default async function CustomersPage({ searchParams }: { searchParams: Promise<{ q?: string }> }) {
-  await requirePageUser();
+  const user = await requirePageUser();
   const q = (await searchParams).q || "";
 
   let where = {};
@@ -36,6 +38,8 @@ export default async function CustomersPage({ searchParams }: { searchParams: Pr
     }
   });
 
+  const eligibleCount = customers.filter(c => c.consentRecords[0]?.granted).length;
+
   return (
     <main className="max-w-6xl mx-auto p-4 sm:p-6">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
@@ -51,6 +55,8 @@ export default async function CustomersPage({ searchParams }: { searchParams: Pr
           <button type="submit" className="bg-primary text-primary-foreground px-4 py-2 rounded">Search</button>
         </form>
       </div>
+
+      {user.role === "OWNER" && <CampaignUI eligibleCount={eligibleCount} />}
 
       <div className="bg-card rounded-lg shadow border overflow-x-auto">
         <table className="w-full text-left text-sm">
@@ -93,6 +99,9 @@ export default async function CustomersPage({ searchParams }: { searchParams: Pr
                   {/* <td className="px-4 py-3">-</td> */}
                   <td className="px-4 py-3 text-right">
                     <Link href={`/admin/customers/${c.id}`} className="text-primary hover:underline font-medium">View</Link>
+                    {consentStatus === "Yes" && user.role === "OWNER" && (
+                      <SendPromoButton phone={c.phone} />
+                    )}
                   </td>
                 </tr>
               );

@@ -18,6 +18,7 @@ import { askMenuAction } from "../ai/actions";
 import { getDayEnd } from "../billing/day-end";
 import { GET as getHealth } from "../../app/api/health/route";
 import { draftReplyAction } from "../../app/admin/feedback/actions";
+import { draftCampaignAction } from "../../app/admin/customers/actions";
 import { requestOtpAction, verifyOtpAction } from "../../app/(public)/book/otp-actions";
 import { submitEnquiryAction } from "../../app/(public)/events/actions";
 import { adminUpsertPackageAction, adminUpdateEnquiryStatusAction } from "../../app/admin/events/actions";
@@ -243,6 +244,16 @@ for (const { role, signIn } of roles) {
       await expect(draftReplyAction("__absent")).rejects.toBeInstanceOf(AuthError);
     } else {
       expect(await draftReplyAction("__absent")).toEqual({ ok: false, error: "NOT_FOUND" });
+    }
+  });
+
+  it(`${role}: draftCampaignAction requires staff or owner`, async () => {
+    await signIn();
+    if (role === "anonymous") {
+      await expect(draftCampaignAction()).rejects.toBeInstanceOf(AuthError);
+    } else {
+      const res = await draftCampaignAction();
+      expect(res.ok).toBe(true);
     }
   });
 }

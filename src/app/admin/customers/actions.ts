@@ -23,3 +23,21 @@ export async function recordConsentAction(customerId: string, granted: boolean) 
   revalidatePath(`/admin/customers/${customerId}`);
   return { ok: true };
 }
+
+export async function draftCampaignAction() {
+  const user = await requireUser();
+  if (user.role !== "STAFF" && user.role !== "OWNER") {
+    return { ok: false, error: "FORBIDDEN" };
+  }
+
+  const { generateText } = await import("ai");
+  const { google } = await import("@ai-sdk/google");
+
+  const { text } = await generateText({
+    model: google("gemini-2.5-flash"),
+    system: "You are the marketing manager at Saffron Tadka.",
+    prompt: `Write a short, engaging 2-sentence WhatsApp promo for Saffron Tadka. Mention a generic special offer or welcoming message. Use emojis. Just output the draft text.`
+  });
+
+  return { ok: true, draft: text };
+}
