@@ -347,3 +347,11 @@ Result: All passed.
  -   W r o t e   i n t e g r a t i o n   t e s t   a n d   E 2 E   s p e c s .  
  -   P A R K E D :   I n t e g r a t i o n   a n d   E 2 E   t e s t s   a r e   u n v e r i f i e d   d u e   t o   D o c k e r   D e s k t o p   f a i l u r e   ( P 1 0 0 1 :   C a n ' t   r e a c h   d a t a b a s e   s e r v e r   a t   1 2 7 . 0 . 0 . 1 : 1 5 4 3 2 )   o u t s i d e   o f   a g e n t ' s   c o n t r o l .  
  
+## Task 39: Feedback links and Google review link
+- Implemented Feedback row creation on settlement
+- Sent WhatsApp THANK_YOU_FEEDBACK to verified phones
+- Added QR code to printed bill for unverified phones
+- Implemented public feedback form and rating submission with IP and token rate limits
+- Created admin feedback dashboard to view feedback and recent averages
+- Verified Auth matrix and updated messages/en.json and hi.json
+
