@@ -1,5 +1,6 @@
 import { requirePageUser } from "@/lib/auth/session";
 import { prisma } from "@/lib/db";
+import { DraftReplyButton } from "./DraftReplyButton";
 
 export default async function AdminFeedbackPage() {
   await requirePageUser();
@@ -11,6 +12,7 @@ export default async function AdminFeedbackPage() {
     include: {
       bill: {
         select: {
+          customerPhone: true,
           session: {
             select: {
               kind: true,
@@ -93,6 +95,9 @@ export default async function AdminFeedbackPage() {
                 </div>
                 {f.comment && (
                   <p className="text-sm mt-2 whitespace-pre-wrap">{f.comment}</p>
+                )}
+                {f.bill.customerPhone && (
+                  <DraftReplyButton feedbackId={f.id} phone={f.bill.customerPhone} />
                 )}
               </div>
             ))

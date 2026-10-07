@@ -17,6 +17,7 @@ import * as bills from "../../app/admin/bills/actions";
 import { askMenuAction } from "../ai/actions";
 import { getDayEnd } from "../billing/day-end";
 import { GET as getHealth } from "../../app/api/health/route";
+import { draftReplyAction } from "../../app/admin/feedback/actions";
 import { requestOtpAction, verifyOtpAction } from "../../app/(public)/book/otp-actions";
 import { submitEnquiryAction } from "../../app/(public)/events/actions";
 import { adminUpsertPackageAction, adminUpdateEnquiryStatusAction } from "../../app/admin/events/actions";
@@ -234,6 +235,15 @@ for (const { role, signIn } of roles) {
   it(`${role}: submitFeedbackAction is explicitly public and validates input`, async () => {
     await signIn();
     expect(await submitFeedbackAction("token", 6)).toEqual({ ok: false, error: "INVALID_RATING" });
+  });
+
+  it(`${role}: draftReplyAction requires staff or owner`, async () => {
+    await signIn();
+    if (role === "anonymous") {
+      await expect(draftReplyAction("__absent")).rejects.toBeInstanceOf(AuthError);
+    } else {
+      expect(await draftReplyAction("__absent")).toEqual({ ok: false, error: "NOT_FOUND" });
+    }
   });
 }
 // Public: password/PIN login establishes authentication (auth.int.test.ts).
