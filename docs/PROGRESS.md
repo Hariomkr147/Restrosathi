@@ -355,3 +355,9 @@ Result: All passed.
 - Created admin feedback dashboard to view feedback and recent averages
 - Verified Auth matrix and updated messages/en.json and hi.json
 
+
+## Task 40: Owner dashboard
+- Rendered generic welcome for STAFF
+- Implemented owner dashboard computing today's metrics from midnight IST and 7-day trailing averages
+- Displayed open sessions and unresolved WhatsApp threads
+
