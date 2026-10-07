@@ -368,3 +368,8 @@ Result: All passed.
 - Added Draft WhatsApp Reply button to admin feedback UI
 - Checked authorization and tests
 
+
+## Task 42: Monday 09:00 IST weekly report to the owner
+- Added cron route for weekly report
+- Configured to send WEEKLY_REPORT WhatsApp to ownerAlertPhone
+
