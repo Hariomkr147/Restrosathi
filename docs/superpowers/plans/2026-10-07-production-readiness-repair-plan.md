@@ -86,13 +86,13 @@ Original Tasks 1, 10 and all test/gate contracts. Audit: F18, F01. Depends: R01.
 
 **Files:** `playwright.config.ts`, `vitest.config.ts`, `tests/setup/db.ts`, `tests/helpers/{auth,db}.ts`, affected E2E imports, `src/lib/ai/index.ts`, fake providers, CI.
 
-- [ ] Fix browser specs importing server-only auth/actions into Playwright's runner. Drive production behavior via browser/HTTP; use the guarded DB helper only for fixtures. Resolve the nonexistent loyalty helpers import using established helpers.
-- [ ] Expand resetOperationalData for Feedback, LoyaltyTxn/reversals, Payment, BillLine/Bill and all later operational tables in FK-safe order. Preserve settings/users/menu/tables deliberately; reset changed settings/fake controls between specs.
-- [ ] Keep real migrations in setup, including hand-written partial indexes/CHECK constraints. Test rejection of non-test URLs before reset.
-- [ ] Run Playwright against `npm run build && npm run start`, on a dedicated test port, without reusing an unrelated running server. Use explicit test database and uploads/outbox locations.
-- [ ] Make `AI_PROVIDER=fake` take precedence even with an API key and NODE_ENV=production; fake WhatsApp still requires ALLOW_FAKE_WA=1. Prove fake-mode tests make no outbound provider calls.
-- [ ] Fix retention boundary tests with an injected/frozen clock. Make Docker/pg_dump prerequisites explicit; absence may not silently return a “passed restore.”
-- [ ] Enumerate every placeholder, empty test, skipped viewport and swallowed-error assertion; replace them in their owning units below. Until replaced, report affected acceptance scenarios as missing, not satisfied.
+- [x] Fix browser specs importing server-only auth/actions into Playwright's runner. Drive production behavior via browser/HTTP; use the guarded DB helper only for fixtures. Resolve the nonexistent loyalty helpers import using established helpers.
+- [x] Expand resetOperationalData for Feedback, LoyaltyTxn/reversals, Payment, BillLine/Bill and all later operational tables in FK-safe order. Preserve settings/users/menu/tables deliberately; reset changed settings/fake controls between specs.
+- [x] Keep real migrations in setup, including hand-written partial indexes/CHECK constraints. Test rejection of non-test URLs before reset.
+- [x] Run Playwright against `npm run build && npm run start`, on a dedicated test port, without reusing an unrelated running server. Use explicit test database and uploads/outbox locations.
+- [x] Make `AI_PROVIDER=fake` take precedence even with an API key and NODE_ENV=production; fake WhatsApp still requires ALLOW_FAKE_WA=1. Prove fake-mode tests make no outbound provider calls.
+- [x] Fix retention boundary tests with an injected/frozen clock. Make Docker/pg_dump prerequisites explicit; absence may not silently return a “passed restore.”
+- [x] Enumerate every placeholder, empty test, skipped viewport and swallowed-error assertion; replace them in their owning units below. Until replaced, report affected acceptance scenarios as missing, not satisfied.
 
 **Commands:** `npm run test:e2e -- --list`; `npm run test:unit`; focused fixture/auth checks; one production-build smoke spec in both Playwright projects.  
 **Acceptance:** actual specs collect; no next/headers/helpers errors; fixtures reliably reset twice; fakes remain deterministic in production mode; no accidental dev/live database or service use.

@@ -6,8 +6,47 @@ export const db = new PrismaClient({ datasourceUrl: url });
 export const TABLE_CODES = Array.from({ length: 8 }, (_, index) => `TESTCODE0${index + 1}`);
 export async function resetOperationalData() {
   await db.$transaction([
-    db.billLine.deleteMany(), db.bill.deleteMany(), db.orderLine.deleteMany(), db.order.deleteMany(), db.serviceRequest.deleteMany(), db.diningSession.deleteMany(), db.rateHit.deleteMany(), db.loginAttempt.deleteMany(),
+    db.payment.deleteMany(),
+    db.billLine.deleteMany(),
+    db.loyaltyTxn.deleteMany(),
+    db.feedback.deleteMany(),
+    db.bill.deleteMany(),
+    db.orderLine.deleteMany(),
+    db.order.deleteMany(),
+    db.serviceRequest.deleteMany(),
+    db.diningSession.deleteMany(),
+    db.booking.deleteMany(),
+    db.eventEnquiry.deleteMany(),
+    db.consentRecord.deleteMany(),
+    db.messageLog.deleteMany(),
+    db.threadState.deleteMany(),
+    db.customer.deleteMany(),
+    db.authSession.deleteMany(),
+    db.loginAttempt.deleteMany(),
+    db.auditLog.deleteMany(),
+    db.rateHit.deleteMany(),
+    db.aiUsage.deleteMany(),
+    db.aiDeviceUsage.deleteMany(),
+    db.invoiceCounter.deleteMany(),
+    db.optOut.deleteMany(),
+    db.otpCode.deleteMany(),
+    db.blockedDate.deleteMany(),
+    db.backupRun.deleteMany(),
+    db.errorLog.deleteMany(),
+    db.alertState.deleteMany(),
   ]);
+  
+  await db.settings.update({
+    where: { id: 1 },
+    data: {
+      taxMode: "NONE",
+      gstin: null,
+      staffCanDiscount: false,
+      hours: { open: "10:00", close: "23:00", days: ["MON", "TUE", "WED", "THU", "FRI", "SAT", "SUN"] },
+      bookingCapacityPerSlot: 10,
+      maxPartySize: 8,
+    }
+  });
 }
 export async function markSoldOut(itemId: string) { await db.menuItem.update({ where: { id: itemId }, data: { available: false } }); }
 export async function createLongHindiItem() {

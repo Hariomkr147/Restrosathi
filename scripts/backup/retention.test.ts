@@ -6,7 +6,9 @@ import { S3Client } from "@aws-sdk/client-s3";
 
 describe("Backup Retention", () => {
   it("selects exactly the >35 days old objects", async () => {
-    const now = Date.now();
+    vi.useFakeTimers();
+    const now = new Date("2026-10-07T12:00:00Z").getTime();
+    vi.setSystemTime(now);
     const day = 24 * 60 * 60 * 1000;
     
     const mockObjects = [
@@ -32,10 +34,13 @@ describe("Backup Retention", () => {
 
     await runRetention(mockS3 as S3Client, "bucket", 35);
     expect(deleted).toEqual(["b36.enc", "b90.enc"]);
+    vi.useRealTimers();
   });
 
   it("never deletes the newest object even if everything is old", async () => {
-    const now = Date.now();
+    vi.useFakeTimers();
+    const now = new Date("2026-10-07T12:00:00Z").getTime();
+    vi.setSystemTime(now);
     const day = 24 * 60 * 60 * 1000;
     
     const mockObjects = [
@@ -58,6 +63,7 @@ describe("Backup Retention", () => {
 
     await runRetention(mockS3 as S3Client, "bucket", 35);
     expect(deleted).toEqual(["b90.enc"]);
+    vi.useRealTimers();
   });
 
   it("deletes nothing on listing error", async () => {

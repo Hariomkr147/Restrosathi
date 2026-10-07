@@ -1,8 +1,7 @@
 import { test, expect } from "@playwright/test";
 import { db, resetOperationalData } from "../helpers/db";
-import { generateBill } from "../../src/lib/billing/generate";
-import { settleBill } from "../../src/lib/billing/settle";
 import { randomUUID } from "crypto";
+import { createSettledBill } from "../helpers/billing";
 
 test.describe("Cancel Bill", () => {
   let billId: string;
@@ -15,16 +14,9 @@ test.describe("Cancel Bill", () => {
     const o = await db.order.create({ data: { sessionId: s.id, idempotencyKey: randomUUID(), source: "QR", status: "PREPARING" } });
     await db.orderLine.create({ data: { orderId: o.id, nameSnapshot: {}, modifiersSnapshot: {}, qty: 1, unitPricePaise: 100 } });
     
-    const owner = await db.user.findFirstOrThrow({ where: { role: "OWNER" } });
-    const bRes = await generateBill(s.id, {}, { id: owner.id, role: "OWNER" });
-    if (!bRes.ok) throw new Error("b failed");
-    
-    billId = bRes.billId;
-    const bill = await db.bill.findUniqueOrThrow({ where: { id: billId } });
-    
-    const sRes = await settleBill(billId, [{ method: "CASH", amountPaise: bill.totalPaise }], { id: owner.id }, { expectedTotalPaise: bill.totalPaise });
-    if (!sRes.ok) throw new Error("s failed");
-    invoiceNumber = sRes.number;
+    const bill = await createSettledBill(s.id, 100);
+    billId = bill.id;
+    invoiceNumber = bill.number || "INV-1";
   });
 
   test.afterAll(async () => { await resetOperationalData(); await db.$disconnect(); });

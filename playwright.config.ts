@@ -14,7 +14,7 @@ export default defineConfig({
   workers: 1, // The public/admin checks share one restaurant's seeded settings and menu.
   reporter: [["list"], ["html", { open: "never" }]],
   use: {
-    baseURL: "http://localhost:3000",
+    baseURL: "http://127.0.0.1:3001",
     trace: "retain-on-failure",
   },
   projects: [
@@ -25,13 +25,14 @@ export default defineConfig({
     { name: "desktop", use: { ...devices["Desktop Chrome"] } },
   ],
   webServer: {
-    command: "npm run dev",
-    port: 3000,
+    command: "npm run build && npm run start",
+    port: 3001,
     timeout: 120_000,
-    reuseExistingServer: true,
+    reuseExistingServer: false,
     env: {
+      PORT: "3001",
       DATABASE_URL: process.env.TEST_DATABASE_URL ?? "",
-      UPLOAD_DIR: "public/uploads",
+      UPLOAD_DIR: "test-results/uploads",
       WHATSAPP_PROVIDER: "fake",
       ALLOW_FAKE_WA: "1",
       FAKE_WA_OUTBOX: "test-results/fake-wa-outbox.jsonl",

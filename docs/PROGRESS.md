@@ -483,3 +483,12 @@ pm run preflight\ on the real server and fix every FAIL.
 pm run typecheck\, \
 pm run lint\, \
 pm run build\ successfully.
+# #   T a s k   2 :   I s o l a t e   t e s t   e n v i r o n m e n t      r e p a i r   R 0 2  
+ -   F i x e d   t e s t s / h e l p e r s / b i l l i n g . t s   a n d   t e s t s / e 2 e / * . s p e c . t s   t o   a v o i d   n e x t / h e a d e r s / h e l p e r s   i m p o r t s .  
+ -   E x p a n d e d   r e s e t O p e r a t i o n a l D a t a   t o   s a f e l y   w i p e   P a y m e n t ,   B i l l L i n e ,   B i l l ,   L o y a l t y T x n ,   F e e d b a c k   a n d   a l l   o t h e r   l a t e r   o p e r a t i o n a l   t a b l e s .  
+ -   M o d i f i e d   P l a y w r i g h t   t o   u s e   b u i l d   a n d   s t a r t   o n   p o r t   3 0 0 1   w i t h   e x p l i c i t   U P L O A D _ D I R .  
+ -   M a d e   A I _ P R O V I D E R = f a k e   a n d   W H A T S A P P _ P R O V I D E R = f a k e   e x p l i c i t l y   o v e r r i d e   r e a l   c r e d e n t i a l s .  
+ -   I n j e c t e d   c l o c k   t o   f i x   r e t e n t i o n   t e s t s .  
+ -   F i x e d   b a c k u p   i n t e g r a t i o n   t e s t s   b y   m a k i n g   m i s s i n g   p g _ d u m p / d o c k e r   e x p l i c i t   t h r o w i n g   p r e r e q u i s i t e s   i n s t e a d   o f   s i l e n t   s k i p s .  
+ -   I d e n t i f i e d   e m p t y / s k i p p e d   t e s t s :   b i l l i n g - c y c l e . s p e c . t s   s k i p s   m o b i l e .   N o   s w a l l o w e d   a s s e r t i o n s   f o u n d .  
+ 

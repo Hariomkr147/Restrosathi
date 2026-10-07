@@ -24,13 +24,12 @@ describe("Backup Integration", () => {
   }
   
   beforeAll(async () => {
-    if (!hasPgDump) return;
+    if (!hasPgDump) throw new Error("pg_dump is required to run backup tests");
 
-    // Attempt to start Floci
     try {
       execSync("docker-compose -f docker-compose.floci.yml up -d floci", { stdio: "ignore" });
     } catch (e) {
-      console.warn("Could not start floci via docker-compose, assuming it's running or skipped.");
+      throw new Error("Could not start floci via docker-compose. Docker is required to run backup tests.");
     }
 
     process.env.S3_ENDPOINT = "http://127.0.0.1:4566";
@@ -83,11 +82,6 @@ describe("Backup Integration", () => {
   });
 
   it("runs a full backup and restore drill", async () => {
-    if (!hasPgDump) {
-      console.warn("Skipping backup integration test because pg_dump/pg_restore are not installed on this machine.");
-      return;
-    }
-
     const prisma = new PrismaClient();
     
     // Seed something

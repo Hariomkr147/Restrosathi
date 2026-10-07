@@ -1,8 +1,7 @@
 import { test, expect } from "@playwright/test";
 import { db, resetOperationalData } from "../helpers/db";
-import { generateBill } from "../../src/lib/billing/generate";
-import { settleBill } from "../../src/lib/billing/settle";
 import { randomUUID } from "crypto";
+import { createSettledBill } from "../helpers/billing";
 
 test.describe("Day End Report", () => {
   test.beforeEach(async () => { await resetOperationalData(); });
@@ -15,10 +14,7 @@ test.describe("Day End Report", () => {
     await db.orderLine.create({ data: { orderId: o.id, nameSnapshot: {}, modifiersSnapshot: {}, qty: 1, unitPricePaise: 50000 } }); // 500.00
     
     const owner = await db.user.findFirstOrThrow({ where: { role: "OWNER" } });
-    const bRes = await generateBill(s.id, {}, { id: owner.id, role: "OWNER" });
-    if (!bRes.ok) throw new Error();
-    const bill = await db.bill.findUniqueOrThrow({ where: { id: bRes.billId } });
-    await settleBill(bill.id, [{ method: "CASH", amountPaise: bill.totalPaise }], { id: owner.id }, { expectedTotalPaise: bill.totalPaise });
+    const bill = await createSettledBill(s.id, 50000);
 
     // Login as owner
     await page.goto("/login/owner");

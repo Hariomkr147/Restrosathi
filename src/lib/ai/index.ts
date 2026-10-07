@@ -7,7 +7,7 @@ let provider: AiProvider | null = null;
 export function getProvider(): AiProvider {
   if (provider) return provider;
   
-  if (process.env.NODE_ENV === "test" || !process.env.OPENROUTER_API_KEY) {
+  if (process.env.AI_PROVIDER === "fake" || process.env.NODE_ENV === "test" || !process.env.OPENROUTER_API_KEY) {
     provider = new FakeAiProvider();
   } else {
     provider = new OpenRouterProvider();

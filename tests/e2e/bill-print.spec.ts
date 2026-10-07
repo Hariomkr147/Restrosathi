@@ -1,9 +1,7 @@
 import { test, expect } from "@playwright/test";
 import { db, resetOperationalData } from "../helpers/db";
-import { generateBill } from "../../src/lib/billing/generate";
-import { settleBill } from "../../src/lib/billing/settle";
-import { cancelBill } from "../../src/lib/billing/cancel";
 import { randomUUID } from "crypto";
+import { createSettledBill } from "../helpers/billing";
 
 test.describe("Bill Print 80mm", () => {
   test.beforeEach(async () => { await resetOperationalData(); });
@@ -19,10 +17,7 @@ test.describe("Bill Print 80mm", () => {
     
     // REGULAR Bill
     await db.settings.update({ where: { id: 1 }, data: { taxMode: "REGULAR", gstin: "REG123" } });
-    const bRes1 = await generateBill(s.id, {}, { id: owner.id, role: "OWNER" });
-    if (!bRes1.ok) throw new Error();
-    const bill1 = await db.bill.findUniqueOrThrow({ where: { id: bRes1.billId } });
-    await settleBill(bill1.id, [{ method: "UPI", amountPaise: bill1.totalPaise }], { id: owner.id }, { expectedTotalPaise: bill1.totalPaise });
+    const bill1 = await createSettledBill(s.id, 100, "REGULAR");
 
     // Login
     await page.goto("/login/owner");
@@ -43,16 +38,17 @@ test.describe("Bill Print 80mm", () => {
     expect(scrollWidth).toBeLessThanOrEqual(clientWidth + 1); // allow 1px rounding
 
     // Check CANCELLED
-    await cancelBill(bill1.id, "Test reason", { id: owner.id, role: "OWNER" });
+    await db.bill.update({ where: { id: bill1.id }, data: { status: "CANCELLED", cancelReason: "Test" } });
     await page.reload();
     await expect(page.getByText("CANCELLED", { exact: true })).toBeVisible();
 
     // NONE Bill
     await db.settings.update({ where: { id: 1 }, data: { taxMode: "NONE", gstin: "REG123" } });
-    const bRes2 = await generateBill(s.id, {}, { id: owner.id, role: "OWNER" });
-    if (!bRes2.ok) throw new Error();
     
-    await page.goto(`/admin/bills/view/${bRes2.billId}/print`);
+    const s2 = await db.diningSession.create({ data: { kind: "TAKEAWAY" } });
+    const bill2 = await createSettledBill(s2.id, 100, "NONE");
+    
+    await page.goto(`/admin/bills/view/${bill2.id}/print`);
     await expect(page.getByText("Bill", { exact: true })).toBeVisible();
     await expect(page.getByText("GSTIN")).toBeHidden();
   });
