@@ -14,7 +14,10 @@ export async function GET() {
         "Cache-Control": "no-store",
       }
     });
-  } catch (e) {
-    return new NextResponse("Unauthorized", { status: 401 });
+  } catch (e: any) {
+    if (e.name === "AuthError" || e.message === "Unauthorized") {
+      return new NextResponse("Unauthorized", { status: 401 });
+    }
+    return new NextResponse("Internal Server Error", { status: 500 });
   }
 }

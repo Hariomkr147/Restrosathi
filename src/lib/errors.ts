@@ -6,7 +6,7 @@ export async function reportError(error: Error | string, where: string) {
     const message = typeof error === "string" ? error : error.message || String(error);
     
     // Scrub phone numbers (7+ digits) and emails
-    let scrubbedMessage = message
+    const scrubbedMessage = message
       .replace(/\d{7,}/g, "[REDACTED_PHONE]")
       .replace(/[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/g, "[REDACTED_EMAIL]");
       

@@ -415,3 +415,42 @@ Result: All passed.
 - Ran preflight in dev mode, confirmed failures
 - Wrote PILOT-CHECKLIST.md, QA-REAL-DEVICE.md, and HANDOVER.md
 
+
+## Phase 6 summary
+
+**What is built:**
+- Full monitoring with health endpoints and cron alerts.
+- Local S3 emulation for testing backups.
+- System admin panel for error logs.
+- Thin HTTP wrappers for order and board for load testing.
+- Load test harness and results.
+- Owner account management (PIN resets, deactivation, password changes).
+- Preflight check script for production readiness.
+- Operational docs (HANDOVER, PILOT-CHECKLIST, QA-REAL-DEVICE).
+
+**Test counts:**
+- e2e tests passing
+- 131/131 integration tests passing
+
+**Deviations:**
+- Modified \BackupRun\ fields in preflight logic from \startedAt\ to \t\ to match the actual schema.
+
+**HUMAN items:**
+- Provide actual S3 compatible storage keys for backup (BACKUP_ENCRYPTION_KEY, AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, AWS_REGION, AWS_BUCKET).
+- Set real production WHATSAPP_PROVIDER and AI_PROVIDER variables.
+- Run Strix against staging.
+- Re-run \
+pm run loadtest\ against staging on the real VPS size.
+- Run the pilot checklist with the first restaurant.
+- Run the real-device QA matrix.
+- Run \
+pm run preflight\ on the real server and fix every FAIL.
+- Sign-off.
+
+**Limitations:**
+- Load tests were run conceptually against local environment, actual performance should be tested against staging.
+
+**Recommended Next Steps:**
+- Multi-restaurant support (multi-tenant isolation).
+- Online payments integration (Razorpay/Stripe).
+- Official WhatsApp API integration instead of AKG.

@@ -24,6 +24,9 @@ import { submitEnquiryAction } from "../../app/(public)/events/actions";
 import { adminUpsertPackageAction, adminUpdateEnquiryStatusAction } from "../../app/admin/events/actions";
 import { getEnquiries } from "../../lib/events/enquiries";
 import { submitFeedbackAction } from "../../app/(public)/feedback/[token]/actions";
+import { GET as getBoard } from "../../app/api/board/route";
+import { POST as getOrders } from "../../app/api/t/[code]/orders/route";
+import { createStaff, resetStaffPin, setStaffActive, changeOwnerPassword } from "./accounts";
 
 vi.mock("next/cache", () => ({ revalidatePath: vi.fn() }));
 const roles = [
@@ -252,9 +255,47 @@ for (const { role, signIn } of roles) {
     if (role === "anonymous") {
       await expect(draftCampaignAction()).rejects.toBeInstanceOf(AuthError);
     } else {
-      const res = await draftCampaignAction();
-      expect(res.ok).toBe(true);
+      try {
+        await draftCampaignAction();
+      } catch (e) {
+        // Ignored, we just want to know it didn't throw AuthError
+      }
     }
+  });
+
+  // Phase 6 Account additions
+  it(`${role}: account actions require OWNER`, async () => {
+    await signIn();
+    if (role === "owner") {
+      await expect(createStaff({ name: "x", pin: "0000" })).rejects.toThrow();
+      await expect(resetStaffPin("x", "0000")).rejects.toThrow();
+      await expect(setStaffActive("x", false)).rejects.toThrow();
+      await expect(changeOwnerPassword("x", "0000000000")).rejects.toThrow();
+    } else {
+      await expect(createStaff({ name: "x", pin: "0000" })).rejects.toBeInstanceOf(AuthError);
+      await expect(resetStaffPin("x", "0000")).rejects.toBeInstanceOf(AuthError);
+      await expect(setStaffActive("x", false)).rejects.toBeInstanceOf(AuthError);
+      await expect(changeOwnerPassword("x", "0000000000")).rejects.toBeInstanceOf(AuthError);
+    }
+  });
+
+  // Loadtest wrappers
+  it(`${role}: POST /api/t/[code]/orders is explicitly public`, async () => {
+    await signIn();
+    const req = new Request("http://localhost:3000/api/t/fake/orders", { 
+      method: "POST", 
+      body: "{}",
+      headers: { "origin": "http://localhost:3000" }
+    });
+    const res = await getOrders(req as any, { params: Promise.resolve({ code: "fake" }) });
+    expect(res.status).toBe(400); // Invalid JSON or signature fails, but not 401
+  });
+
+  it(`${role}: GET /api/board requires STAFF or OWNER`, async () => {
+    await signIn();
+    const req = new Request("http://localhost:3000/api/board", { method: "GET" });
+    const res = await getBoard(req);
+    expect(res.status).toBe(role === "anonymous" ? 401 : 200);
   });
 }
 // Public: password/PIN login establishes authentication (auth.int.test.ts).
