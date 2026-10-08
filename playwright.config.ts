@@ -31,6 +31,8 @@ export default defineConfig({
     reuseExistingServer: false,
     env: {
       PORT: "3001",
+      APP_URL: "http://127.0.0.1:3001",
+      SITE_URL: "http://127.0.0.1:3001",
       DATABASE_URL: process.env.TEST_DATABASE_URL ?? "",
       UPLOAD_DIR: "test-results/uploads",
       WHATSAPP_PROVIDER: "fake",

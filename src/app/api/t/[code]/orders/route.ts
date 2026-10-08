@@ -28,8 +28,8 @@ export async function POST(req: NextRequest) {
   let input;
   try {
     input = await readJsonWithCap(req, 102400); // 100 KB cap
-  } catch (err: any) {
-    if (err.message === "Payload too large") {
+  } catch (err) {
+    if (err instanceof Error && err.message === "Payload too large") {
       return NextResponse.json({ ok: false, error: "Payload too large" }, { status: 413 });
     }
     return NextResponse.json({ ok: false, error: "Invalid JSON" }, { status: 400 });

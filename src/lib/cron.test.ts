@@ -53,10 +53,7 @@ describe("cron", () => {
       ];
 
       for (const c of cases) {
-        const req: any = {
-          method: "POST",
-          headers: { get: (name: string) => name === "authorization" ? c.header : null }
-        };
+        const req = { headers: { get: (name: string) => name === "authorization" ? c.header : null } } as unknown as NextRequest;
 
         const res = await ep.handler(req);
         expect(res.status).toBe(401);

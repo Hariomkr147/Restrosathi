@@ -1,4 +1,4 @@
-const fs = require('fs');
+const fs = process.getBuiltinModule('fs');
 const files = ['weekly-report','retention','reminders','feedback-themes','escalations','alerts'];
 for (const f of files) {
   const p = 'src/app/api/cron/' + f + '/route.ts';

@@ -55,20 +55,11 @@ describe("Thin routes for loadtest", () => {
       ];
 
       for (const c of cases) {
-        const req: any = {
-          headers: {
-            get: (name: string) => {
-              if (name === "origin") return c.origin;
-              if (name === "host") return c.host;
-              if (name === "x-forwarded-for") return "";
-              if (name === "x-forwarded-proto") return null;
-              return null;
-            }
-          },
-          nextUrl: { protocol: "http:" },
-          json: async () => ({})
-        };
-        const res = await POST(req as NextRequest);
+        const headers = new Headers();
+        if (c.origin) headers.set("origin", c.origin);
+        if (c.host) headers.set("host", c.host);
+        const req = new NextRequest("http://localhost/api/t/DEMO/orders", { method: "POST", headers, body: "{}" });
+        const res = await POST(req);
         if (res.status !== 403) {
           console.error(`Failed case: ${c.origin} / ${c.host}`);
         }

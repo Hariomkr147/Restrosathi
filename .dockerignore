@@ -6,6 +6,10 @@ README.md
 .next
 .git
 .gitignore
+.agents/
+.codex/
+.codex-logs/
+.impeccable/
 test-results/
 playwright-report/
 docs/
