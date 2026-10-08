@@ -23,43 +23,44 @@ export async function sendDueReminders({ now = new Date() }: { now?: Date } = {}
     }
   });
 
-  let count = 0;
-  for (const b of bookings) {
-    const createdAtPlus3 = new Date(b.createdAt.getTime() + 3 * 60 * 60 * 1000);
-    if (createdAtPlus3 > b.slotStart) {
-      continue; // made less than 3h ahead
-    }
+  const results = await Promise.all(
+    bookings.map(async (b) => {
+      const createdAtPlus3 = new Date(b.createdAt.getTime() + 3 * 60 * 60 * 1000);
+      if (createdAtPlus3 > b.slotStart) {
+        return 0; // made less than 3h ahead
+      }
 
-    // Process
-    const msgId = await prisma.$transaction(async (tx) => {
-      // Re-check lock
-      const locked = await tx.booking.findUnique({
-        where: { id: b.id, reminderSentAt: null },
+      // Process
+      const msgId = await prisma.$transaction(async (tx) => {
+        // Atomic lock via update
+        const updated = await tx.booking.updateMany({
+          where: { id: b.id, reminderSentAt: null },
+          data: { reminderSentAt: now }
+        });
+        
+        if (updated.count === 0) return undefined;
+
+        const timeFormatter = new Intl.DateTimeFormat(b.locale === "hi" ? "hi-IN" : "en-IN", {
+          timeZone: "Asia/Kolkata",
+          hour: "numeric",
+          minute: "numeric",
+          hour12: true
+        });
+        const timeStr = timeFormatter.format(b.slotStart);
+
+        const msg = await notify("BOOKING_REMINDER", b.phone, { time: timeStr }, { tx, locale: b.locale as "en" | "hi" });
+        
+        return msg && "id" in msg ? msg.id : undefined;
       });
-      if (!locked) return undefined;
 
-      const timeFormatter = new Intl.DateTimeFormat(b.locale === "hi" ? "hi-IN" : "en-IN", {
-        timeZone: "Asia/Kolkata",
-        hour: "numeric",
-        minute: "numeric",
-        hour12: true
-      });
-      const timeStr = timeFormatter.format(locked.slotStart);
+      if (msgId) {
+        sendNow(msgId).catch(() => {});
+        return 1;
+      }
+      return 0;
+    })
+  );
 
-      const msg = await notify("BOOKING_REMINDER", locked.phone, { time: timeStr }, { tx, locale: b.locale as "en" | "hi" });
-      await tx.booking.update({
-        where: { id: b.id },
-        data: { reminderSentAt: now }
-      });
-      
-      count++;
-      return msg && "id" in msg ? msg.id : undefined;
-    });
-
-    if (msgId) {
-      sendNow(msgId).catch(() => {});
-    }
-  }
-
+  const count = results.reduce((sum, r) => sum + r, 0);
   return { count };
 }

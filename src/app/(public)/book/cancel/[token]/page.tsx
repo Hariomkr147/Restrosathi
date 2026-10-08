@@ -25,6 +25,10 @@ export default async function CancelBookingPage({ params }: { params: Promise<{ 
         <div className="bg-muted p-6 rounded-lg max-w-md mx-auto border">
           <p className="text-lg">This booking has been cancelled.</p>
         </div>
+      ) : booking.slotStart < new Date() ? (
+        <div className="bg-muted p-6 rounded-lg max-w-md mx-auto border">
+          <p className="text-lg">This booking is in the past and cannot be cancelled.</p>
+        </div>
       ) : (
         <div className="bg-card text-card-foreground p-6 rounded-lg shadow-sm border max-w-md mx-auto">
           <p className="mb-4">

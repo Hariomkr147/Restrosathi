@@ -13,6 +13,7 @@ describe("requestBooking", () => {
     await prisma.optOut.deleteMany();
     await prisma.consentRecord.deleteMany();
     await prisma.customer.deleteMany();
+    await prisma.rateHit.deleteMany();
 
     await prisma.customer.create({
       data: { phone: "+919999900000", name: "Test User", verifiedAt: new Date() }
@@ -131,9 +132,9 @@ describe("requestBooking", () => {
     }, ctx);
     expect(res6).toEqual({ ok: false, error: "RATE_LIMITED" });
 
-    // New phone, same device -> can do 5 more
+    // New phone, same device -> can do 4 more (device limit is 10, and res6 consumed 1)
     await prisma.customer.create({ data: { phone: "+919999900001", verifiedAt: new Date() } });
-    for (let i = 6; i < 11; i++) {
+    for (let i = 6; i < 10; i++) {
       const res = await requestBooking({
         name: "Test", phone: "+919999900001", partySize: 2, slotStart: slots[i]!.toISOString(), note: "",
       }, ctx);
@@ -143,7 +144,7 @@ describe("requestBooking", () => {
     // 11th for device fails
     await prisma.customer.create({ data: { phone: "+919999900002", verifiedAt: new Date() } });
     const res11 = await requestBooking({
-      name: "Test", phone: "+919999900002", partySize: 2, slotStart: slots[11]!.toISOString(), note: "",
+      name: "Test", phone: "+919999900002", partySize: 2, slotStart: slots[10]!.toISOString(), note: "",
     }, ctx);
     expect(res11).toEqual({ ok: false, error: "RATE_LIMITED" });
   });

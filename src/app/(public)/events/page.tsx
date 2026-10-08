@@ -4,11 +4,13 @@ import { getActivePackages } from "@/lib/events/packages";
 import { EnquiryForm } from "./EnquiryForm";
 import { formatINR } from "@/lib/money/format";
 import { NextIntlClientProvider } from "next-intl";
+import { getLocale } from "next-intl/server";
 
 export default async function EventsPage() {
   const t = await getTranslations("events");
   const messages = await getMessages();
   const activePackages = await getActivePackages();
+  const locale = await getLocale();
 
   return (
     <main className="max-w-[var(--width-content)] mx-auto p-[calc(var(--spacing)*4)] space-y-[calc(var(--spacing)*8)]">
@@ -21,10 +23,13 @@ export default async function EventsPage() {
         <section className="space-y-[calc(var(--spacing)*4)]">
           <h2 className="text-2xl font-display">{t("packagesTitle")}</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-[calc(var(--spacing)*4)]">
-            {activePackages.map(pkg => (
+            {activePackages.map(pkg => {
+              const name = (pkg.name as any)?.[locale] || (pkg.name as any)?.en;
+              const desc = (pkg.description as any)?.[locale] || (pkg.description as any)?.en;
+              return (
               <div key={pkg.id} className="border border-[var(--color-border)] rounded-[var(--radius-md)] p-[calc(var(--spacing)*4)] bg-[var(--color-surface-raised)] flex flex-col h-full">
-                <h3 className="font-bold text-lg">{(pkg.name as any).en}</h3>
-                <p className="text-[var(--color-text-muted)] mt-[calc(var(--spacing)*2)] flex-grow whitespace-pre-wrap">{(pkg.description as any).en}</p>
+                <h3 className="font-bold text-lg">{name}</h3>
+                <p className="text-[var(--color-text-muted)] mt-[calc(var(--spacing)*2)] flex-grow whitespace-pre-wrap">{desc}</p>
                 
                 <div className="mt-[calc(var(--spacing)*4)] pt-[calc(var(--spacing)*4)] border-t border-[var(--color-border)] text-sm flex justify-between">
                   <div>
@@ -37,7 +42,8 @@ export default async function EventsPage() {
                   </div>
                 </div>
               </div>
-            ))}
+              );
+            })}
           </div>
         </section>
       )}
@@ -46,7 +52,7 @@ export default async function EventsPage() {
         <h2 className="text-2xl font-display mb-[calc(var(--spacing)*2)]">{t("enquiryFormTitle")}</h2>
         <p className="text-[var(--color-text-muted)] mb-[calc(var(--spacing)*6)]">{t("enquiryFormSubtitle")}</p>
         <NextIntlClientProvider messages={{events: (messages as any).events}}>
-          <EnquiryForm packages={activePackages.map(p => ({ id: p.id, name: (p.name as any)?.en || "Unnamed Package" }))} />
+          <EnquiryForm packages={activePackages.map(p => ({ id: p.id, name: (p.name as any)?.[locale] || (p.name as any)?.en || "Unnamed Package" }))} />
         </NextIntlClientProvider>
       </section>
     </main>

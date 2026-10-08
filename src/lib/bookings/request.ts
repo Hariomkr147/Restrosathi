@@ -5,8 +5,7 @@ import { notify } from "../whatsapp/notify";
 import { bookableSlots } from "./slots";
 import crypto from "crypto";
 
-const deviceRateLimits = new Map<string, { date: string, count: number }>();
-
+import { checkRate } from "../rate-limit";
 export type BookingRequestInput = {
   name: string;
   phone: string;
@@ -65,34 +64,28 @@ export async function requestBooking(input: BookingRequestInput, ctx: BookingReq
   }
 
   // Rate limits: 5 per phone per day, 10 per device per day
-  const todayStr = new Date().toISOString().slice(0, 10);
-  const deviceState = deviceRateLimits.get(ctx.deviceId) || { date: todayStr, count: 0 };
-  if (deviceState.date !== todayStr) { deviceState.date = todayStr; deviceState.count = 0; }
-  if (deviceState.count >= 10) return { ok: false, error: "RATE_LIMITED" };
-
-  const todayStart = new Date();
-  todayStart.setHours(0, 0, 0, 0);
-  const phoneCount = await prisma.booking.count({
-    where: { phone, createdAt: { gte: todayStart } }
-  });
-  if (phoneCount >= 5) return { ok: false, error: "RATE_LIMITED" };
-  
-  // Duplicate request on same phone + slotStart
-  const duplicate = await prisma.booking.findFirst({
-    where: {
-      phone,
-      slotStart: targetDate,
-      status: { in: ["REQUESTED", "CONFIRMED"] }
-    }
-  });
-  if (duplicate) return { ok: false, error: "DUPLICATE_REQUEST" };
-
-  deviceState.count++;
-  deviceRateLimits.set(ctx.deviceId, deviceState);
+  const DAY_MS = 24 * 60 * 60 * 1000;
+  if (!(await checkRate(`req_dev:${ctx.deviceId}`, 10, DAY_MS))) {
+    return { ok: false, error: "RATE_LIMITED" };
+  }
+  if (!(await checkRate(`req_ph:${phone}`, 5, DAY_MS))) {
+    return { ok: false, error: "RATE_LIMITED" };
+  }
 
   const cancelToken = crypto.randomBytes(32).toString("base64url");
 
   const txResult = await prisma.$transaction(async (tx) => {
+    // Serialize same-phone/same-slot request creation
+    await tx.$executeRaw`SELECT pg_advisory_xact_lock(hashtextextended(${'req:' + phone + ':' + targetDate.getTime()}, 0))`;
+
+    const duplicate = await tx.booking.findFirst({
+      where: {
+        phone,
+        slotStart: targetDate,
+        status: { in: ["REQUESTED", "CONFIRMED"] }
+      }
+    });
+    if (duplicate) throw new Error("DUPLICATE_REQUEST");
     const cust = await tx.customer.findUnique({ where: { phone } });
     if (!cust?.verifiedAt) throw new Error("PHONE_NOT_VERIFIED");
 
@@ -123,6 +116,7 @@ export async function requestBooking(input: BookingRequestInput, ctx: BookingReq
     return { bookingId: b.id, msgId: "id" in msgRes ? msgRes.id : undefined };
   }).catch((err: unknown) => {
     if (err instanceof Error && err.message === "PHONE_NOT_VERIFIED") return { ok: false as const, error: "OTP_REQUIRED" as const };
+    if (err instanceof Error && err.message === "DUPLICATE_REQUEST") return { ok: false as const, error: "DUPLICATE_REQUEST" as const };
     throw err;
   });
 

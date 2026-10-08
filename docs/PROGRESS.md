@@ -575,3 +575,20 @@ otify.ts, and outbox.ts.
 - Ran strict typechecking (
 px tsc --noEmit) and integration tests (
 pm run test:int) successfully.
+
+## Task R11: Bookings production-readiness
+
+- Replaced local Date methods with IST offset math in slots calculation.
+- Moved request rate limit and duplicate-check to use pg_advisory_xact_lock and DB-backed shared rate-limits.
+- Updated confirm locking to lock both the booking date and prior date to safely serialize overnight overlap checks.
+- Switched reminders worker to concurrent processing with atomic update locks.
+- Added expired status checks on public cancel token endpoint.
+- Restored staff bookings UI with date grouping, remaining covers, OWNER-only blocked dates link, and a 10s auto-refresh interval.
+
+## Task R12: Complete events, auto-reply, escalation and retention acceptance
+
+- Updated public events page to properly localize package name and description.
+- Added explicit retention for ErrorLog >30 days.
+- Validated auto-reply daily limits, facts grounding, STOP suppression, and webhook deduplication/authentication via integration tests.
+- Restored Phase 4 E2E webhook tests and wrote fresh Phase 4 security evidence.
+

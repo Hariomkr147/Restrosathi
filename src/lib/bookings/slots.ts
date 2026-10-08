@@ -21,37 +21,36 @@ export function bookableSlots(
 ): Date[] {
   if (blockedDates.includes(dateStr)) return [];
 
-  const targetDate = new Date(`${dateStr}T00:00:00.000+05:30`);
+  const targetDateForMath = new Date(`${dateStr}T12:00:00.000+05:30`);
   const now = new Date(nowMs);
   const cutoffTime = nowMs + settings.bookingCutoffMinutes * 60 * 1000;
   
-  // 60 days ahead calculation (midnight to midnight local)
-  const todayStr = new Date(now.getTime() + 5.5 * 60 * 60 * 1000).toISOString().slice(0, 10);
-  const today = new Date(`${todayStr}T00:00:00.000+05:30`);
-  const daysDiff = Math.floor((targetDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
+  // 60 days ahead calculation (midnight to midnight IST)
+  const istNow = new Date(now.getTime() + 5.5 * 60 * 60 * 1000);
+  const todayStr = istNow.toISOString().slice(0, 10);
+  const todayDate = new Date(`${todayStr}T00:00:00.000+05:30`);
+  const targetDateStart = new Date(`${dateStr}T00:00:00.000+05:30`);
+  const daysDiff = Math.round((targetDateStart.getTime() - todayDate.getTime()) / (1000 * 60 * 60 * 24));
   
   if (daysDiff > 60 || daysDiff < 0) return [];
 
   const dayOfWeekNames = ["sun", "mon", "tue", "wed", "thu", "fri", "sat"] as const;
-  const dayName = dayOfWeekNames[targetDate.getDay()];
+  const dayName = dayOfWeekNames[targetDateForMath.getUTCDay()];
   const shifts = hours[dayName];
   if (!shifts || shifts.length === 0) return [];
 
   const slots: Date[] = [];
   
   for (const shift of shifts) {
-    const [openH, openM] = shift.open.split(":").map(Number);
-    const [closeH, closeM] = shift.close.split(":").map(Number);
-    
-    const shiftStart = new Date(targetDate);
-    shiftStart.setHours(openH, openM, 0, 0);
+    const shiftStartStr = `${dateStr}T${shift.open}:00.000+05:30`;
+    const shiftStart = new Date(shiftStartStr);
 
-    const shiftEnd = new Date(targetDate);
-    shiftEnd.setHours(closeH, closeM, 0, 0);
+    const shiftEndStr = `${dateStr}T${shift.close}:00.000+05:30`;
+    const shiftEnd = new Date(shiftEndStr);
 
     // handle overnight shift: if close time is earlier than open time, the close time is on the next day
     if (shiftEnd <= shiftStart) {
-      shiftEnd.setDate(shiftEnd.getDate() + 1);
+      shiftEnd.setTime(shiftEnd.getTime() + 24 * 60 * 60 * 1000);
     }
 
     // A booking occupies 90 min (3 consecutive slots). 

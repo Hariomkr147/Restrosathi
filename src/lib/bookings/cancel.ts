@@ -8,7 +8,7 @@ export async function cancelByToken(cancelToken: string): Promise<{ ok: true } |
   const booking = await prisma.booking.findUnique({ where: { cancelToken } });
   if (!booking) return { ok: false, error: "NOT_FOUND" };
   
-  if (!canBookingTransition(booking.status, "CANCELLED")) {
+  if (!canBookingTransition(booking.status, "CANCELLED") || booking.slotStart < new Date()) {
     return { ok: false, error: "INVALID_STATUS" };
   }
   

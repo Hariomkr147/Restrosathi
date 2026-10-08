@@ -21,11 +21,20 @@ export async function confirmBooking(bookingId: string, actorId: string): Promis
       return { ok: false as const, error: "PAST" as const };
     }
     
-    // Acquire advisory lock per IST date
-    const d = new Date(booking.slotStart.getTime());
-    d.setMinutes(d.getMinutes() + d.getTimezoneOffset() + 330);
-    const dateStr = d.toISOString().slice(0, 10);
+    // Acquire advisory lock per IST date, extending for overnight overlap (lock prior date and target date in sorted order)
+    const istTime = new Date(booking.slotStart.getTime() + 5.5 * 60 * 60 * 1000);
+    const dateStr = istTime.toISOString().slice(0, 10);
+    const priorIstTime = new Date(istTime.getTime() - 24 * 60 * 60 * 1000);
+    const priorDateStr = priorIstTime.toISOString().slice(0, 10);
+    
+    await tx.$executeRaw`SELECT pg_advisory_xact_lock(hashtextextended('booking:' || ${priorDateStr}, 0))`;
     await tx.$executeRaw`SELECT pg_advisory_xact_lock(hashtextextended('booking:' || ${dateStr}, 0))`;
+
+    // Re-read REQUESTED after lock
+    const bookingRefreshed = await tx.booking.findUnique({ where: { id: bookingId } });
+    if (!bookingRefreshed || bookingRefreshed.status !== "REQUESTED") {
+       return { ok: false as const, error: "NOT_REQUESTED" as const };
+    }
     
     const settings = await tx.settings.findFirst();
     const capacity = settings?.bookingCapacityPerSlot || 30;
@@ -37,15 +46,14 @@ export async function confirmBooking(bookingId: string, actorId: string): Promis
       new Date(booking.slotStart.getTime() + 60 * 60000)
     ];
     
-    // Find all confirmed or arrived bookings on that day
-    const dayStart = new Date(dateStr + "T00:00:00Z");
-    dayStart.setHours(dayStart.getHours() - 5, dayStart.getMinutes() - 30); // IST 00:00 is UTC 18:30 prev day
-    const dayEnd = new Date(dayStart.getTime() + 24 * 3600 * 1000);
+    // Query every booking overlapping its occupied slots (start +/- 90 mins is sufficient)
+    const windowStart = new Date(booking.slotStart.getTime() - 90 * 60000);
+    const windowEnd = new Date(booking.slotStart.getTime() + 90 * 60000);
     
     const existing = await tx.booking.findMany({
       where: {
         status: { in: ["CONFIRMED", "ARRIVED"] },
-        slotStart: { gte: dayStart, lt: dayEnd }
+        slotStart: { gte: windowStart, lt: windowEnd }
       }
     });
     
