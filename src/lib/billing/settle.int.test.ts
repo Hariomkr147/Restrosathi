@@ -248,4 +248,50 @@ describe("settleBill", () => {
                   // eslint-disable-next-line @typescript-eslint/no-explicit-any
     expect((r3 as any).number).toBe("2027-28/0001");
   });
+
+  it("concurrent 100-point redemptions with balance 100 yield one settlement and one balance-changed failure with no invoice consumed", async () => {
+    await prisma.settings.update({ where: { id: 1 }, data: { loyaltyEnabled: true, loyaltyEarnPer100Rupees: 10, loyaltyRedeemUnitPoints: 100, loyaltyRedeemUnitValuePaise: 10000 } });
+    const { upsertCustomer } = await import("../customers");
+    const c = await upsertCustomer("9999911111", { verified: true });
+    await prisma.loyaltyTxn.create({ data: { customerId: c.id, kind: "EARN", points: 100 } });
+
+    // Setup 2 sessions
+    const s1 = await prisma.diningSession.create({ data: { kind: "TAKEAWAY", customerPhone: c.phone } });
+    const o1 = await prisma.order.create({ data: { sessionId: s1.id, idempotencyKey: randomUUID(), source: "QR", status: "PREPARING" } });
+    await prisma.orderLine.create({ data: { orderId: o1.id, nameSnapshot: {}, modifiersSnapshot: {}, qty: 1, unitPricePaise: 20000 } }); // 200 rs
+    const b1Res = await generateBill(s1.id, {}, { id: ownerId, role: "OWNER" });
+    const b1 = await prisma.bill.findUniqueOrThrow({ where: { id: b1Res.billId! } });
+    
+    const s2 = await prisma.diningSession.create({ data: { kind: "TAKEAWAY", customerPhone: c.phone } });
+    const o2 = await prisma.order.create({ data: { sessionId: s2.id, idempotencyKey: randomUUID(), source: "QR", status: "PREPARING" } });
+    await prisma.orderLine.create({ data: { orderId: o2.id, nameSnapshot: {}, modifiersSnapshot: {}, qty: 1, unitPricePaise: 20000 } });
+    const b2Res = await generateBill(s2.id, {}, { id: ownerId, role: "OWNER" });
+    const b2 = await prisma.bill.findUniqueOrThrow({ where: { id: b2Res.billId! } });
+
+    // Apply loyalty discount to both drafts
+    const { applyRedemption } = await import("../loyalty");
+    await prisma.bill.update({ where: { id: b1.id }, data: { phoneVerifiedAt: new Date() } });
+    await prisma.bill.update({ where: { id: b2.id }, data: { phoneVerifiedAt: new Date() } });
+    await applyRedemption(b1.id, 100, ownerId);
+    await applyRedemption(b2.id, 100, ownerId);
+
+    const b1Fresh = await prisma.bill.findUniqueOrThrow({ where: { id: b1.id } });
+    const b2Fresh = await prisma.bill.findUniqueOrThrow({ where: { id: b2.id } });
+
+    const p1 = settleBill(b1.id, [{ method: "CASH", amountPaise: b1Fresh.totalPaise }], { id: ownerId }, { expectedTotalPaise: b1Fresh.totalPaise });
+    const p2 = settleBill(b2.id, [{ method: "CASH", amountPaise: b2Fresh.totalPaise }], { id: ownerId }, { expectedTotalPaise: b2Fresh.totalPaise });
+
+    const [r1, r2] = await Promise.all([p1, p2]);
+    const oks = [r1, r2].filter(r => r.ok);
+    const errs = [r1, r2].filter(r => !r.ok);
+    if (oks.length !== 1) console.log("ERRORS:", errs);
+
+    expect(oks).toHaveLength(1);
+    expect(errs).toHaveLength(1);
+                       // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    expect((errs[0] as any).error).toBe("LOYALTY_BALANCE_CHANGED");
+
+    const invoices = await prisma.invoiceCounter.findFirst();
+    expect(invoices?.last).toBe(1); // Should only consume 1 invoice number
+  });
 });

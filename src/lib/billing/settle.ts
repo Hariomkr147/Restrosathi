@@ -141,11 +141,10 @@ export async function settleBill(
           const { getBalance, calculateEarnedPoints } = await import("../loyalty");
           const balance = await getBalance(c.id, tx);
 
-          if (bill.loyaltyPointsRedeemed > balance) {
-            return { ok: false, error: "LOYALTY_BALANCE_CHANGED" } as const;
-          }
-
           if (bill.loyaltyPointsRedeemed > 0) {
+            if (bill.loyaltyPointsRedeemed > balance) {
+              return { ok: false, error: "LOYALTY_BALANCE_CHANGED" } as const;
+            }
             await tx.loyaltyTxn.create({
               data: {
                 customerId: c.id,

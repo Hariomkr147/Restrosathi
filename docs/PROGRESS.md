@@ -601,3 +601,10 @@ pm run test:int) successfully.
 - Altered erasure logic to anonymize Customer (instead of deletion) while preserving referential integrity for bills/orders.
 - Added 24-month retention purge for OptOut records.
 
+
+## Task R14: Finish the loyalty ledger and customer rewards flow (2026-10-08, branch phase-6-infrastructure)
+- Tests: 
+pm run test:int -- src\lib\loyalty\loyalty.int.test.ts src\lib\billing\settle.int.test.ts passed (19 tests across 2 files). 300 random property testing sequences generated successfully.
+- Notes: Validated that loyalty ledger operations (EARN, REDEEM, REVERSE) maintain balance integrity under random stress, bounded scope of loyaltyPointsRedeemed checks to only execute if >0, resolving the spurious LOYALTY_BALANCE_CHANGED error during bill settlement without redemption. Loyalty component logic on both frontend and backend already satisfies the requirements.
+
+

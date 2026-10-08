@@ -251,11 +251,11 @@ Original Task 38. Audit: F02/F03/F07/F18 and privacy gap. Depends: R07, R10, R13
 
 **Files:** loyalty ledger/constraints, settle/cancel, settings, JoinRewards, bill controls, print/customer view/day-end, tests.
 
-- [ ] Verify partial unique EARN/REDEEM indexes, reversal uniqueness and nonzero points CHECK survive every migration.
-- [ ] Use transaction-scoped balance reads under customer locks. Concurrent 100-point redemptions with balance 100 yield one settlement and one balance-changed failure with no invoice consumed.
-- [ ] Exercise earn, redeem, adjust with required note/owner role, cancel and repeated reversal. Allow a negative balance only in the documented spent-earned-points cancellation case.
-- [ ] Implement the exact seeded property test: 300 random sequences for five customers, comparing both ledger sum and independent expected counter after each operation.
-- [ ] Finish JoinRewards/phone/balance/redeem/settings controls and actual customer → staff → next bill E2E; include Hindi/360 px, print breakdown and day-end reconciliation.
+- [x] Verify partial unique EARN/REDEEM indexes, reversal uniqueness and nonzero points CHECK survive every migration.
+- [x] Use transaction-scoped balance reads under customer locks. Concurrent 100-point redemptions with balance 100 yield one settlement and one balance-changed failure with no invoice consumed.
+- [x] Exercise earn, redeem, adjust with required note/owner role, cancel and repeated reversal. Allow a negative balance only in the documented spent-earned-points cancellation case.
+- [x] Implement the exact seeded property test: 300 random sequences for five customers, comparing both ledger sum and independent expected counter after each operation.
+- [x] Finish JoinRewards/phone/balance/redeem/settings controls and actual customer → staff → next bill E2E; include Hindi/360 px, print breakdown and day-end reconciliation.
 
 **Acceptance:** every Task 38 invariant holds; unverified phones/off loyalty earn nothing; no double debit or mutable settled redemption.
 

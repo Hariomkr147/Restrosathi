@@ -180,4 +180,85 @@ describe("loyalty ledger integration", () => {
     expect(auditLog).not.toBeNull();
     expect((auditLog!.data as any).delta).toBe(10);
   });
+  describe("seeded property test", () => {
+    test("300 random sequences for five customers comparing ledger sum and expected counter", async () => {
+      const customers = [];
+      for (let i = 0; i < 5; i++) {
+        const c = await upsertCustomer(`999990000${i}`, { name: `Prop${i}` }, prisma);
+        await prisma.customer.update({ where: { id: c.id }, data: { verifiedAt: new Date() } });
+        customers.push(c);
+      }
+
+      // We maintain an independent expected state
+      const state = new Map(customers.map(c => [c.id, 0]));
+
+      let seed = 12345;
+      function random() {
+        seed = (seed * 9301 + 49297) % 233280;
+        return seed / 233280;
+      }
+      
+      const ops = ["EARN", "REDEEM", "ADJUST", "CANCEL_REDEEM"];
+      for (let i = 0; i < 300; i++) {
+        const c = customers[Math.floor(random() * customers.length)];
+        const op = ops[Math.floor(random() * ops.length)];
+        const amount = Math.floor(random() * 50) + 1; // 1 to 50
+        
+        const currentBalance = state.get(c.id)!;
+        
+        if (op === "EARN") {
+          const bill = await createBill(amount * 100 * 100, c.phone, true); // amount * 100 points
+          const res = await settleBill(bill.id, [{ method: "CASH", amountPaise: bill.totalPaise }], { id: "staff-ravi" }, { expectedTotalPaise: bill.totalPaise });
+          if (res.ok) {
+            state.set(c.id, currentBalance + amount);
+          } else {
+            console.log("settleBill failed!", res);
+          }
+        } else if (op === "REDEEM") {
+          if (currentBalance >= amount) {
+            // we can just ADJUST for property test to simulate direct redemption without bill? 
+            // Or better, simulate redemption via bill. Wait, amount must be multiple of 100 to redeem via bill!
+            // Actually, we can use ADJUST to simulate REDEEM if we just want to test ledger constraints, or we can use applyRedemption.
+            // Let's use ADJUST to keep it simple but test the constraint and ledger.
+            await prisma.loyaltyTxn.create({
+              data: { customerId: c.id, kind: "REDEEM", points: -amount, note: "prop", actorId: "owner-demo" }
+            });
+            state.set(c.id, currentBalance - amount);
+          }
+        } else if (op === "ADJUST") {
+          // adjust can be positive or negative
+          const adj = random() > 0.5 ? amount : -amount;
+          if (currentBalance + adj >= 0) {
+            await adjustPoints(c.id, adj, "prop", { id: "owner-demo", role: "OWNER" });
+            state.set(c.id, currentBalance + adj);
+          }
+        } else if (op === "CANCEL_REDEEM") {
+          // To test cancel, we find a bill that was settled.
+          // In property test we can just randomly cancel a past bill of this customer that hasn't been cancelled.
+          const bills = await prisma.bill.findMany({ where: { customerPhone: c.phone, status: "SETTLED" } });
+          if (bills.length > 0) {
+            const b = bills[Math.floor(random() * bills.length)];
+            // what did this bill earn/redeem?
+            const txns = await prisma.loyaltyTxn.findMany({ where: { billId: b.id } });
+            const earn = txns.find(t => t.kind === "EARN")?.points || 0;
+            const redeem = txns.find(t => t.kind === "REDEEM")?.points || 0; // negative
+            
+            const res = await cancelBill(b.id, "property cancel", { id: "owner-demo", role: "OWNER" });
+            if (res.ok) {
+              state.set(c.id, currentBalance - earn - redeem);
+            }
+          }
+        }
+        
+        // Assert balance matches expected
+        const dbBalance = await getBalance(c.id);
+        if (dbBalance !== state.get(c.id)) {
+          console.log(`Mismatch at iter ${i} op ${op} for ${c.id}: expected ${state.get(c.id)} got ${dbBalance}`);
+          const txns = await prisma.loyaltyTxn.findMany({ where: { customerId: c.id } });
+          console.log("Txns:", txns);
+        }
+        expect(dbBalance).toBe(state.get(c.id));
+      }
+    }, 30000);
+  });
 });
