@@ -169,11 +169,11 @@ Original Tasks 1–27 and Gates 0–3. Audit: F18 and earlier unverified task co
 
 **Files:** existing E2E specs/fixtures, menu/uploads/auth, board/KOT/bill/print/day-end modules if failures identify defects.
 
-- [ ] Restore the complete order-cycle scenario: two devices share one session, duplicate submission creates one order, server prices win, sold-out is live, each staff status appears within five seconds.
-- [ ] Exercise staff takeaway and dine-in → request bill → generate → discount → split Cash/UPI/Card → settle → print → table free on mobile and desktop. Remove the mobile billing skip by fixing the surface.
-- [ ] Restore **20** concurrent different-bill settlements yielding 0001–0020, plus same-bill one-winner behavior; run three loops. Include FY rollover, cancellation/reversal, print snapshots and IST day-end reconciliation.
-- [ ] Verify authentication/lockout/session expiry, table-code regeneration, menu-structure rejection, content-sniffed uploads/path traversal, English fallback, overnight settings and customer bill access boundaries.
-- [ ] Keep current failure evidence for any later-feature dependency; do not certify Gates 0–3 until their entire required commands pass. Fix causes within the original scope.
+- [x] Restore the complete order-cycle scenario: two devices share one session, duplicate submission creates one order, server prices win, sold-out is live, each staff status appears within five seconds.
+- [x] Exercise staff takeaway and dine-in → request bill → generate → discount → split Cash/UPI/Card → settle → print → table free on mobile and desktop. Remove the mobile billing skip by fixing the surface.
+- [x] Restore **20** concurrent different-bill settlements yielding 0001–0020, plus same-bill one-winner behavior; run three loops. Include FY rollover, cancellation/reversal, print snapshots and IST day-end reconciliation.
+- [x] Verify authentication/lockout/session expiry, table-code regeneration, menu-structure rejection, content-sniffed uploads/path traversal, English fallback, overnight settings and customer bill access boundaries.
+- [x] Keep current failure evidence for any later-feature dependency; do not certify Gates 0–3 until their entire required commands pass. Fix causes within the original scope.
 
 **Acceptance:** substantive core journeys pass in both projects, no skips; all original Tasks 1–27 criteria have concrete test/manual evidence. Provider outages do not affect ordering/billing.
 

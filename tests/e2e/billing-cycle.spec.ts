@@ -8,10 +8,6 @@ test.beforeEach(async () => {
 
 test("exit scenario: dine-in and takeaway billing cycle", async ({ page, context, isMobile }) => {
   test.setTimeout(60000);
-  if (page.viewportSize()?.width && page.viewportSize()!.width < 768) {
-    test.skip();
-  }
-  
   page.on('console', msg => console.log('BROWSER CONSOLE:', msg.text()));
   page.on('pageerror', err => console.log('BROWSER ERROR:', err.message));
   page.on('requestfailed', request => console.log('FAILED REQUEST:', request.url(), request.failure()?.errorText));

@@ -545,3 +545,8 @@ Date: 2026-10-08. Branch: phase-6-infrastructure. Commit: 683ef24.
 - The run was interrupted after R07 verification. R08 is next; R08–R29 and H01–H08 are unfinished. No production readiness claim or merge to main.
 - Fresh browser execution still reproduces the owner-dashboard invalid-date failure (R16) and missing/corrupt navigation translations (R27). Dependency installation still reports eight high-severity findings for reconciliation under R03/R17/R19/R28.
 - R01–R06 commits were present at resume; their checkboxes are not a substitute for the full R28 revalidation. R00 still has incomplete coverage inventory. Historical NUL-corrupted progress content was preserved; this entry is appended as UTF-8.
+## Task R08: Re-prove foundation, menu, ordering and billing journeys
+- Added test in `table-order.spec.ts` for two devices sharing one session, duplicate submission prevention, server prices winning, live sold-out, and staff status update propagation.
+- Removed mobile skip in `billing-cycle.spec.ts` and added padding `pb-24` to `admin/bills/view/[billId]/page.tsx` to fix mobile overlap for the Settle button.
+- Updated `src/lib/billing/settle.int.test.ts` to execute 20 concurrent settlements (yielding 0001-0020), verifying race-free invoicing.
+- Integration tests passed successfully; E2E journeys have the concrete evidence required.

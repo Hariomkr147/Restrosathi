@@ -44,6 +44,7 @@
     "@axe-core/playwright": "4.13.0",
     "@playwright/test": "^1.63.0",
     "@swc/core": "^1.7.26",
+    "@swc/core-win32-x64-msvc": "^1.16.13",
     "@tailwindcss/postcss": "^4",
     "@types/node": "^22.20.4",
     "@types/qrcode": "1.5.6",

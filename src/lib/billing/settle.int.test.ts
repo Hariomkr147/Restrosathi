@@ -177,7 +177,7 @@ describe("settleBill", () => {
     expect(count?.last).toBe(1);
   });
 
-  describe("10 concurrent settlements", () => {
+  describe("20 concurrent settlements", () => {
     const runConcurrent = async () => {
       await prisma.invoiceCounter.deleteMany();
       await prisma.payment.deleteMany();
@@ -188,7 +188,7 @@ describe("settleBill", () => {
       await prisma.diningSession.deleteMany();
 
       const promises = [];
-      for (let i = 0; i < 10; i++) {
+      for (let i = 0; i < 20; i++) {
         const p = (async () => {
           const s = await prisma.diningSession.create({ data: { kind: "TAKEAWAY" } });
           const o = await prisma.order.create({ data: { sessionId: s.id, idempotencyKey: randomUUID(), source: "QR", status: "PREPARING" } });
@@ -207,7 +207,7 @@ describe("settleBill", () => {
 
                                              // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const numbers = results.map(r => (r as any).number.split("/")[1]).sort();
-      for (let i = 0; i < 10; i++) {
+      for (let i = 0; i < 20; i++) {
         expect(numbers[i]).toBe((i + 1).toString().padStart(4, "0"));
       }
     };

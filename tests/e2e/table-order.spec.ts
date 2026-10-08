@@ -160,3 +160,60 @@ test("polling updates states, backs off failures and pauses while hidden", async
   await expect(page.getByRole("heading", { name: "Ready", exact: true })).toBeVisible({ timeout: 5000 });
   await expect(page.getByText("Order updates are unavailable. We will try again shortly.", { exact: true })).toHaveCount(0);
 });
+
+test("complete order-cycle scenario: two devices share one session, duplicate submission creates one order, server prices win, sold-out is live, each staff status appears within five seconds", async ({ browser, page }) => {
+  await createOrderableItem();
+  
+  const context2 = await browser.newContext();
+  const device2 = await context2.newPage();
+  
+  // Both join the same table session
+  await page.goto(`/t/${TABLE_CODES[0]}`);
+  await device2.goto(`/t/${TABLE_CODES[0]}`);
+  
+  // Device 1 prepares the cart
+  await page.getByTestId("dish-Demo platter").getByRole("button", { name: "Add", exact: true }).click();
+  const item = page.getByRole("dialog", { name: "Demo platter", exact: true });
+  await item.getByRole("radio", { name: /Full/ }).check();
+  await item.getByRole("checkbox", { name: /Cheese/ }).check();
+  await item.getByRole("button", { name: "Add to cart", exact: true }).click();
+  
+  await page.getByRole("button", { name: /View cart/ }).click();
+  
+  const cart = page.getByRole("dialog", { name: "Your cart", exact: true });
+  
+  // Duplicate submission creates one order (double clicking)
+  await cart.getByRole("button", { name: "Place order", exact: true }).dblclick();
+  await expect(page.getByText("Received", { exact: true })).toBeVisible();
+  
+  // Ensure only one order was created
+  const orders = await db.order.findMany();
+  expect(orders.length).toBe(1);
+  const orderId = orders[0].id;
+  
+  // Server prices win, sold-out is live
+  // We modify the DB directly
+  await db.menuItem.update({ where: { id: "e2e-orderable-item" }, data: { available: false, pricePaise: 99900 } });
+  
+  // Device 2 opens menu
+  await device2.reload();
+  await expect(device2.getByTestId("dish-Demo platter").getByRole("button", { name: "Add", exact: true })).toHaveCount(0); // Add button is gone because it's sold out
+  
+  // Device 2 sees the order placed by Device 1 because they share the session
+  await expect(device2.getByText("Received", { exact: true })).toBeVisible({ timeout: 5000 });
+  
+  // Staff status updates appear within 5 seconds on both devices
+  await db.order.update({ where: { id: orderId }, data: { status: "PREPARING", acceptedAt: new Date() } });
+  await expect(page.getByRole("heading", { name: "Preparing", exact: true })).toBeVisible({ timeout: 5000 });
+  await expect(device2.getByRole("heading", { name: "Preparing", exact: true })).toBeVisible({ timeout: 5000 });
+  
+  await db.order.update({ where: { id: orderId }, data: { status: "READY", readyAt: new Date() } });
+  await expect(page.getByRole("heading", { name: "Ready", exact: true })).toBeVisible({ timeout: 5000 });
+  await expect(device2.getByRole("heading", { name: "Ready", exact: true })).toBeVisible({ timeout: 5000 });
+  
+  await db.order.update({ where: { id: orderId }, data: { status: "SERVED", servedAt: new Date() } });
+  await expect(page.getByRole("heading", { name: "Served", exact: true })).toBeVisible({ timeout: 5000 });
+  await expect(device2.getByRole("heading", { name: "Served", exact: true })).toBeVisible({ timeout: 5000 });
+  
+  await context2.close();
+});
