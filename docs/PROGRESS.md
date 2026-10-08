@@ -568,3 +568,10 @@ Date: 2026-10-08. Branch: phase-6-infrastructure. Commit: 06993e4.
  -   F i x e d   r e q u e s t B o o k i n g   t e s t   t o   p r o v i d e   v e r i f i e d   c u s t o m e r s .  
  -   F i x e d   c a n c e l / c o n f i r m / s t a t u s   b o o k i n g   t e s t s   d e l e t i n g   s e e d e d   U s e r s .  
  
+## Task: Normalize ny types in core lib
+- Audited src/lib/ for loose ny casts.
+- Replaced ny with precise types or unknown in generate.ts, print.ts, cancel.ts, confirm.ts, eminders.ts, session-view.ts, consent.ts, acts.ts, inbound.ts, 
+otify.ts, and outbox.ts.
+- Ran strict typechecking (
+px tsc --noEmit) and integration tests (
+pm run test:int) successfully.
