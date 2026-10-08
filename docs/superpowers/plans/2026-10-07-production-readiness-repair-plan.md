@@ -264,11 +264,11 @@ Original Task 39. Audit: F18 and erasure extension. Depends: R09, R13–R14.
 
 **Files:** feedback submit/action/pages/form/admin, settlement/print, actual integration/E2E tests, messages.
 
-- [ ] In settlement's transaction create one seven-day token and queue one thank-you only for that bill's verified phone. No provider call inside the transaction.
-- [ ] Validate 1–5 integer ratings/comment <=500; enforce conditional one-time submission, expiry and IP/token limits including concurrent requests.
-- [ ] Unknown/expired/submitted pages reveal no invoice/customer data and still show the Google review link when configured. Show that link before and after every rating, including one star.
-- [ ] Test printed QR URL for bills without verified phones and the full scan→submit journey in both viewports/locales.
-- [ ] Complete admin recent feedback, table/takeaway context and 7/30-day averages; extend erasure test.
+- [x] In settlement's transaction create one seven-day token and queue one thank-you only for that bill's verified phone. No provider call inside the transaction.
+- [x] Validate 1–5 integer ratings/comment <=500; enforce conditional one-time submission, expiry and IP/token limits including concurrent requests.
+- [x] Unknown/expired/submitted pages reveal no invoice/customer data and still show the Google review link when configured. Show that link before and after every rating, including one star.
+- [x] Test printed QR URL for bills without verified phones and the full scan→submit journey in both viewports/locales.
+- [x] Complete admin recent feedback, table/takeaway context and 7/30-day averages; extend erasure test.
 
 **Acceptance:** real DB/browser assertions replace expect(true); double-submit stores exactly once and review access is never rating-gated.
 

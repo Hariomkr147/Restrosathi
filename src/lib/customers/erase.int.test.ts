@@ -58,7 +58,6 @@ describe("eraseCustomer", () => {
     const c = await upsertCustomer("9999977777", { name: "Bob" });
     await prisma.consentRecord.create({ data: { customerId: c.id, purpose: "MARKETING", granted: true, textVersion: "1", source: "BILLING" } });
     await prisma.optOut.create({ data: { phone: c.phone } });
-    
     const s = await prisma.diningSession.create({ data: { kind: "TAKEAWAY", customerName: "Bob", customerPhone: c.phone } });
     const b = await prisma.bill.create({
       data: {
@@ -85,6 +84,8 @@ describe("eraseCustomer", () => {
       }
     });
 
+    await prisma.feedback.create({ data: { billId: b.id, customerId: c.id, token: "fbtoken", tokenExpiresAt: new Date(Date.now() + 86400000) } });
+
     const booking = await prisma.booking.create({
       data: { name: "Bob", phone: c.phone, partySize: 2, slotStart: new Date(), cancelToken: "test" }
     });
@@ -97,6 +98,10 @@ describe("eraseCustomer", () => {
     expect(afterC).not.toBeNull();
     expect(afterC!.name).toBe("Anonymous");
     expect(afterC!.phone).toContain("+00deleted");
+
+    // Feedback should be deleted
+    const fb = await prisma.feedback.findUnique({ where: { token: "fbtoken" } });
+    expect(fb).toBeNull();
 
     // Bill should remain but anonymised
     const afterB = await prisma.bill.findUnique({ where: { id: b.id } });
