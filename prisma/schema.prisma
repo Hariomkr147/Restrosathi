@@ -32,6 +32,7 @@ model Settings {
   loyaltyEarnPer100Rupees     Int       @default(1)
   loyaltyRedeemUnitPoints     Int       @default(100)
   loyaltyRedeemUnitValuePaise Int       @default(5000)
+  ownerReportLocale           String    @default("en")
 }
 
 enum TaxMode {
@@ -632,4 +633,20 @@ model AlertState {
   active        Boolean
   lastSentAt    DateTime? @db.Timestamptz(3)
   firstFailedAt DateTime? @db.Timestamptz(3)
+}
+
+model FeedbackSummary {
+  id        String   @id @default(cuid())
+  startAt   DateTime @db.Timestamptz(3)
+  endAt     DateTime @db.Timestamptz(3)
+  themes    Json
+  positive  Json
+  reply     String
+  createdAt DateTime @default(now()) @db.Timestamptz(3)
+}
+
+model WeeklyReportLog {
+  weekStart   DateTime @id @db.Date
+  generatedAt DateTime @default(now()) @db.Timestamptz(3)
+  content     Json
 }

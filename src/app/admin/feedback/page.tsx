@@ -1,7 +1,7 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import { requirePageUser } from "@/lib/auth/session";
 import { prisma } from "@/lib/db";
 import { DraftReplyButton } from "./DraftReplyButton";
+import { generateFeedbackSummary } from "@/lib/feedback/ai";
 
 export default async function AdminFeedbackPage() {
   await requirePageUser();
@@ -54,6 +54,10 @@ export default async function AdminFeedbackPage() {
   const avg7 = count7 > 0 ? (sum7 / count7).toFixed(1) : "-";
   const avg30 = count30 > 0 ? (sum30 / count30).toFixed(1) : "-";
 
+  // Calculate strict weekly window (last Monday to Sunday, or just the last 7 days? The spec says "exact weekly window" - in reporting week it's Mon-Sun. Let's just use last 7 days for the dashboard summary as a rolling 7-day, or compute the window from Monday. R18 mentions Monday owner report. R17 says "Group 7-day 1–3 star feedback vs 4–5 star. Limit input token usage to the exact weekly window.")
+  // I will use last7Days to now() as the rolling weekly window.
+  const summary = await generateFeedbackSummary(last7Days, now);
+
   return (
     <main className="mx-auto w-full max-w-content px-6 py-8 space-y-8">
       <div className="flex items-center justify-between">
@@ -71,6 +75,33 @@ export default async function AdminFeedbackPage() {
           <div className="text-3xl font-bold mt-2">{avg30} <span className="text-lg font-normal text-muted-foreground">/ 5</span></div>
           <div className="text-sm text-muted-foreground mt-1">From {count30} ratings</div>
         </div>
+      </div>
+
+      <div className="rounded-lg border bg-card overflow-hidden">
+        <div className="p-4 bg-muted/50 font-semibold border-b flex justify-between items-center">
+          <span>7-Day AI Summary</span>
+          {!summary && <span className="text-xs font-normal text-orange-600 bg-orange-100 px-2 py-1 rounded">Quota Reached / Provider Error / Insufficient Data</span>}
+        </div>
+        {summary && (
+          <div className="p-4 space-y-4 text-sm">
+            <div>
+              <h3 className="font-bold mb-1 text-green-700">Positive Feedback Areas</h3>
+              <ul className="list-disc pl-5 space-y-1">
+                {(summary.positive as string[]).map((t, i) => <li key={i}>{t}</li>)}
+              </ul>
+            </div>
+            <div>
+              <h3 className="font-bold mb-1 text-red-700">Themes to Improve</h3>
+              <ul className="list-disc pl-5 space-y-1">
+                {(summary.themes as string[]).map((t, i) => <li key={i}>{t}</li>)}
+              </ul>
+            </div>
+            <div className="bg-muted p-3 rounded">
+              <h3 className="font-bold mb-1">Draft Reply (Worst Feedback)</h3>
+              <p className="italic text-muted-foreground">{summary.reply}</p>
+            </div>
+          </div>
+        )}
       </div>
 
       <div className="rounded-lg border bg-card overflow-hidden">

@@ -18,7 +18,7 @@ export type MessagePayloads = {
   EVENT_ENQUIRY_RECEIVED: Record<string, never>;
   ORDER_ESCALATION: { label: string };
   THANK_YOU_FEEDBACK: { name: string; feedbackLink: string };
-  WEEKLY_REPORT: { orderCount: string | number; sales: string };
+  WEEKLY_REPORT: { start: string; end: string; orderCount: string | number; sales: string; insight: string };
   STOP_CONFIRMED: Record<string, never>;
   AUTO_REPLY: { answer: string };
 };

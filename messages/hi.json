@@ -492,7 +492,7 @@
     "EVENT_ENQUIRY_RECEIVED": "हमें आपकी पूछताछ प्राप्त हुई है और हम जल्द ही आपसे संपर्क करेंगे।",
     "ORDER_ESCALATION": "{label} पर ध्यान देने की आवश्यकता है।",
     "THANK_YOU_FEEDBACK": "हमारे यहाँ आने के लिए धन्यवाद{name}! कृपया हमें बताएँ कि आपको कैसा लगा: {feedbackLink}",
-    "WEEKLY_REPORT": "साप्ताहिक रिपोर्ट: {orderCount} ऑर्डर, {sales} बिक्री।",
+    "WEEKLY_REPORT": "साप्ताहिक रिपोर्ट ({start} से {end}):\nऑर्डर: {orderCount}\nबिक्री: {sales}\n\n{insight}",
     "STOP_CONFIRMED": "आपको हमारे संदेशों से अनसब्सक्राइब कर दिया गया है।",
     "AUTO_REPLY": "{answer}"
   },

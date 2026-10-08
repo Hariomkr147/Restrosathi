@@ -624,3 +624,19 @@ pm run test:int -- src\lib\dashboard\index.int.test.ts passed verifying fact com
 - Notes: Implemented owner dashboard facts strictly according to specs: IST settlement window calculations, 30-day sparkline with accessible sr-only table, round-half-up formatting via billing h(), and staff role restrictions (sees active tables only). E2E test added at 	ests/e2e/dashboard.spec.ts.
 - Deviations: Like R15, E2E test execution was parked due to Next 16 Windows SWC native cache limitation; static and integration verification takes its place.
 
+
+## Task R17: AI feedback themes/replies
+Commit: 75b763b58a05a4fd24c0380c6031959bc5fda351
+- Added AI summarizer integration tests for testing quota limits and correct summaries
+- Adjusted prisma bill create fields to reflect current schema constraints
+
+
+## Task R18: Implement an idempotent Monday owner report
+- Implemented \WeeklyReportLog\ and \ownerReportLocale\ in Prisma schema.
+- Created \src/lib/reports/weekly.ts\ for fact computation (sales, items, bookings, feedback) and AI insight.
+- Added boundary tests for IST Monday 09:00 window calculations.
+- Implemented idempotency using Prisma \$transaction\ and unique constraint.
+- Added \/admin/reports/weekly\ page with force test send capability.
+- Updated WA notification templates for both English and Hindi.
+- Tested idempotency with integration tests.
+

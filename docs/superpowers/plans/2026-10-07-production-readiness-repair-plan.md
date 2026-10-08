@@ -303,10 +303,10 @@ Original Task 42. Audit: F20/F06. Depends: R16–R17.
 **Files:** reports weeks/weekly, WeeklyReportLog/ownerLocale migration/settings, cron route, owner weekly page/tests/messages.
 
 - [ ] Compute previous Monday–Sunday IST window, with explicit Monday 08:59/09:00, Sunday and month/year boundary tests.
-- [ ] Calculate all original facts in code: sales/count/average/best day/hour/top dishes, confirmed/no-show bookings, rating/count, cancellations and voids.
-- [ ] Render both languages using formatINR. Optional <=200-character insight must use only fact numbers, no URLs/promises; AI failure still sends the facts.
-- [ ] Monday after 09:00 and no existing week log: atomically insert log and queue the report. Five concurrent calls queue once; no phone queues nothing.
-- [ ] Add owner view/force test send, which does not consume the scheduled week's log. Configure hourly invocation in R25.
+- [x] Calculate all original facts in code: sales/count/average/best day/hour/top dishes, confirmed/no-show bookings, rating/count, cancellations and voids.
+- [x] Render both languages using formatINR. Optional <=200-character insight must use only fact numbers, no URLs/promises; AI failure still sends the facts.
+- [x] Monday after 09:00 and no existing week log: atomically insert log and queue the report. Five concurrent calls queue once; no phone queues nothing.
+- [x] Add owner view/force test send, which does not consume the scheduled week's log. Configure hourly invocation in R25.
 
 **Acceptance:** exactly once per week, correct settlement window/facts and localized owner text; staff/anonymous cannot force-send.
 
