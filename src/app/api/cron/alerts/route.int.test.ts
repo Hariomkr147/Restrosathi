@@ -13,6 +13,7 @@ vi.mock("@/lib/whatsapp/notify", async (importOriginal) => {
 
 describe("Alerts cron", () => {
   beforeEach(async () => {
+    process.env.CRON_SECRET = "CRON_SECRET_TEST_KEY";
     process.env.ALLOW_FAKE_WA = "1";
     await prisma.alertState.deleteMany({});
     await prisma.settings.update({

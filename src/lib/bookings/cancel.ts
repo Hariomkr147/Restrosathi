@@ -13,17 +13,21 @@ export async function cancelByToken(cancelToken: string): Promise<{ ok: true } |
     return { ok: false, error: "INVALID_STATUS" };
   }
   
-  await prisma.booking.update({
-    where: { cancelToken },
-    data: {
-      status: "CANCELLED"
-    }
+  const msgId = await prisma.$transaction(async (tx) => {
+    await tx.booking.update({
+      where: { cancelToken },
+      data: {
+        status: "CANCELLED"
+      }
+    });
+    
+    const msgRes = await notify("BOOKING_CANCELLED", booking.phone, {}, { tx, locale: booking.locale as any });
+    return "id" in msgRes ? msgRes.id : undefined;
   });
-  
-  await notify("BOOKING_CANCELLED", booking.phone, {
-    name: booking.name,
-    time: booking.slotStart.toLocaleTimeString("en-IN", { hour: "numeric", minute: "2-digit", hour12: true, timeZone: "Asia/Kolkata" })
-  }, { locale: booking.locale as any });
+
+  if (msgId) {
+    import("../whatsapp/outbox").then(({ sendNow }) => sendNow(msgId)).catch(() => {});
+  }
   
   return { ok: true };
 }

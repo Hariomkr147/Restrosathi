@@ -8,9 +8,10 @@ export async function recordConsent(
   customerId: string,
   granted: boolean,
   source: ConsentSource,
-  actorId?: string
+  actorId?: string,
+  tx: import("@prisma/client").Prisma.TransactionClient = db
 ) {
-  return await db.consentRecord.create({
+  return await tx.consentRecord.create({
     data: {
       customerId,
       purpose: "MARKETING",

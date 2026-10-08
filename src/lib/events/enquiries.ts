@@ -59,7 +59,7 @@ export async function submitEnquiry(input: any, ctx: { ip: string; now?: Date })
       },
     });
 
-    const res = await notify("EVENT_ENQUIRY_RECEIVED", phone, { name: parsed.name }, { tx });
+    const res = await notify("EVENT_ENQUIRY_RECEIVED", phone, {}, { tx });
     if ("id" in res) logId = res.id;
     return enq;
   });

@@ -24,10 +24,17 @@ export async function POST(req: Request) {
   const orderCount = bills._count.id;
   const sales = `₹${((bills._sum.totalPaise || 0) / 100).toFixed(2)}`;
 
-  await notify("WEEKLY_REPORT", settings.ownerAlertPhone, {
-    orderCount,
-    sales
+  const msgId = await prisma.$transaction(async (tx) => {
+    const msgRes = await notify("WEEKLY_REPORT", settings.ownerAlertPhone!, {
+      orderCount,
+      sales
+    }, { tx });
+    return "id" in msgRes ? msgRes.id : undefined;
   });
+
+  if (msgId) {
+    import("@/lib/whatsapp/outbox").then(({ sendNow }) => sendNow(msgId)).catch(() => {});
+  }
 
   return NextResponse.json({ ok: true });
 }

@@ -54,11 +54,15 @@ export async function handleIncoming(messageId: string): Promise<void> {
 
   // Allergy check
   if (isAllergyQuestion(text)) {
-    await notify("AUTO_REPLY", phone, { text: "Please ask our staff about allergies." });
-    await prisma.messageLog.update({
-      where: { id: msg.id },
-      data: { aiHandled: true, needsHuman: true }
+    const msgId = await prisma.$transaction(async (tx) => {
+      const msgRes = await notify("AUTO_REPLY", phone, { answer: "Please ask our staff about allergies." }, { tx });
+      await tx.messageLog.update({
+        where: { id: msg.id },
+        data: { aiHandled: true, needsHuman: true }
+      });
+      return "id" in msgRes ? msgRes.id : undefined;
     });
+    if (msgId) import("../whatsapp/outbox").then(({ sendNow }) => sendNow(msgId)).catch(() => {});
     return;
   }
 
@@ -143,11 +147,15 @@ ${history}`;
       return;
     }
 
-    await notify("AUTO_REPLY", phone, { text: reply });
-    await prisma.messageLog.update({
-      where: { id: msg.id },
-      data: { aiHandled: true }
+    const msgId = await prisma.$transaction(async (tx) => {
+      const msgRes = await notify("AUTO_REPLY", phone, { answer: reply }, { tx });
+      await tx.messageLog.update({
+        where: { id: msg.id },
+        data: { aiHandled: true }
+      });
+      return "id" in msgRes ? msgRes.id : undefined;
     });
+    if (msgId) import("../whatsapp/outbox").then(({ sendNow }) => sendNow(msgId)).catch(() => {});
 
   } catch (err) {
     await triggerHandover(msg.id, phone);
@@ -155,9 +163,13 @@ ${history}`;
 }
 
 async function triggerHandover(messageId: string, phone: string) {
-  await notify("AUTO_REPLY", phone, { text: "Thanks! Our staff will reply shortly." });
-  await prisma.messageLog.update({
-    where: { id: messageId },
-    data: { needsHuman: true, aiHandled: true }
+  const msgId = await prisma.$transaction(async (tx) => {
+    const msgRes = await notify("AUTO_REPLY", phone, { answer: "Thanks! Our staff will reply shortly." }, { tx });
+    await tx.messageLog.updateMany({
+      where: { id: messageId },
+      data: { needsHuman: true, aiHandled: true }
+    });
+    return "id" in msgRes ? msgRes.id : undefined;
   });
+  if (msgId) import("../whatsapp/outbox").then(({ sendNow }) => sendNow(msgId)).catch(() => {});
 }

@@ -9,7 +9,7 @@ export async function escalateStaleOrders({ now = new Date(), thresholdMs = 120_
   const thresholdDate = new Date(now.getTime() - thresholdMs);
   let escalatedCount = 0;
 
-  await prisma.$transaction(async (tx) => {
+  const msgId = await prisma.$transaction(async (tx) => {
     const orders = await tx.$queryRaw`
       SELECT id, "placedAt", "sessionId"
       FROM "Order"
@@ -41,12 +41,13 @@ export async function escalateStaleOrders({ now = new Date(), thresholdMs = 120_
     });
     
     const text = `${escalatedIds.length} orders waiting: ${msgs.join(", ")}`;
-    await notify("ORDER_ESCALATION", alertPhone, { text }, tx as Parameters<typeof notify>[3]);
+    const msgRes = await notify("ORDER_ESCALATION", alertPhone, { label: text }, { tx: tx as import("@prisma/client").Prisma.TransactionClient });
     escalatedCount = escalatedIds.length;
+    return "id" in msgRes ? msgRes.id : undefined;
   });
 
-  if (escalatedCount > 0) {
-    import("../whatsapp/outbox").then(({ processOutbox }) => processOutbox()).catch(() => {});
+  if (msgId) {
+    import("../whatsapp/outbox").then(({ sendNow }) => sendNow(msgId)).catch(() => {});
   }
 
   return { escalated: escalatedCount };

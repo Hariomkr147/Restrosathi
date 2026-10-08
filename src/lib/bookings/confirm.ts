@@ -8,17 +8,17 @@ import { audit } from "../audit";
 const prisma = new PrismaClient();
 
 export async function confirmBooking(bookingId: string, actorId: string): Promise<{ ok: true } | { ok: false; error: "NOT_FOUND" | "NOT_REQUESTED" | "CAPACITY_EXCEEDED" | "PAST" }> {
-  return prisma.$transaction(async (tx) => {
+  const result = await prisma.$transaction(async (tx) => {
     const booking = await tx.booking.findUnique({ where: { id: bookingId } });
-    if (!booking) return { ok: false, error: "NOT_FOUND" };
+    if (!booking) return { ok: false as const, error: "NOT_FOUND" as const };
     
     if (booking.status !== "REQUESTED") {
-      return { ok: false, error: "NOT_REQUESTED" };
+      return { ok: false as const, error: "NOT_REQUESTED" as const };
     }
     
     const now = new Date();
     if (booking.slotStart < now) {
-      return { ok: false, error: "PAST" };
+      return { ok: false as const, error: "PAST" as const };
     }
     
     // Acquire advisory lock per IST date
@@ -59,7 +59,7 @@ export async function confirmBooking(bookingId: string, actorId: string): Promis
         }
       }
       if (used + booking.partySize > capacity) {
-        return { ok: false, error: "CAPACITY_EXCEEDED" };
+        return { ok: false as const, error: "CAPACITY_EXCEEDED" as const };
       }
     }
     
@@ -73,26 +73,31 @@ export async function confirmBooking(bookingId: string, actorId: string): Promis
       }
     });
     
-    await notify("BOOKING_CONFIRMED", booking.phone, {
-      name: booking.name,
-      partySize: booking.partySize,
+    const msgRes = await notify("BOOKING_CONFIRMED", booking.phone, {
+      date: booking.slotStart.toISOString().slice(0, 10),
+      pax: booking.partySize,
       time: booking.slotStart.toLocaleTimeString("en-IN", { hour: "numeric", minute: "2-digit", hour12: true, timeZone: "Asia/Kolkata" }),
-      cancelToken: booking.cancelToken
     }, { tx, locale: booking.locale as any });
     
     await audit({ action: "booking.confirm", actorId, entity: "booking", entityId: bookingId }, tx);
     
-    return { ok: true };
+    return { ok: true as const, msgId: "id" in msgRes ? msgRes.id : undefined };
   });
+
+  if (result.ok && result.msgId) {
+    const mId = result.msgId;
+    import("../whatsapp/outbox").then(({ sendNow }) => sendNow(mId)).catch(() => {});
+  }
+  return "msgId" in result ? { ok: true } : result;
 }
 
 export async function declineBooking(bookingId: string, reason: string | undefined, actorId: string): Promise<{ ok: true } | { ok: false; error: "NOT_FOUND" | "NOT_REQUESTED" }> {
-  return prisma.$transaction(async (tx) => {
+  const result = await prisma.$transaction(async (tx) => {
     const booking = await tx.booking.findUnique({ where: { id: bookingId } });
-    if (!booking) return { ok: false, error: "NOT_FOUND" };
+    if (!booking) return { ok: false as const, error: "NOT_FOUND" as const };
     
     if (booking.status !== "REQUESTED") {
-      return { ok: false, error: "NOT_REQUESTED" };
+      return { ok: false as const, error: "NOT_REQUESTED" as const };
     }
     
     await tx.booking.update({
@@ -104,20 +109,23 @@ export async function declineBooking(bookingId: string, reason: string | undefin
       }
     });
     
-    await notify("BOOKING_DECLINED", booking.phone, {
-      name: booking.name,
-      reason: reason || "Fully booked"
-    }, { tx, locale: booking.locale as any });
+    const msgRes = await notify("BOOKING_DECLINED", booking.phone, {}, { tx, locale: booking.locale as any });
     
     await audit({ action: "booking.decline", actorId, entity: "booking", entityId: bookingId, data: reason ? { reason } : {} }, tx);
-    return { ok: true };
+    return { ok: true as const, msgId: "id" in msgRes ? msgRes.id : undefined };
   });
+
+  if (result.ok && result.msgId) {
+    const mId = result.msgId;
+    import("../whatsapp/outbox").then(({ sendNow }) => sendNow(mId)).catch(() => {});
+  }
+  return "msgId" in result ? { ok: true } : result;
 }
 
 export async function staffCancelBooking(bookingId: string, actorId: string): Promise<{ ok: true } | { ok: false; error: "NOT_FOUND" | "INVALID_STATUS" }> {
   const booking = await prisma.booking.findUnique({ where: { id: bookingId } });
-  if (!booking) return { ok: false, error: "NOT_FOUND" };
-  if (!canBookingTransition(booking.status, "CANCELLED")) return { ok: false, error: "INVALID_STATUS" };
+  if (!booking) return { ok: false as const, error: "NOT_FOUND" as const };
+  if (!canBookingTransition(booking.status, "CANCELLED")) return { ok: false as const, error: "INVALID_STATUS" as const };
   
   await prisma.booking.update({
     where: { id: bookingId },

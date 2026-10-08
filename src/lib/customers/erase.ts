@@ -14,6 +14,8 @@ export const HANDLED_MODELS = [
   "Order",
   "Bill", // Not all handled entirely, but fields are handled in logic
   "OptOut", // Excluded explicitly to be kept
+  "Feedback",
+  "LoyaltyTxn"
 ];
 
 export async function eraseCustomer(customerId: string, actor: { id: string; role: string }) {
@@ -28,8 +30,12 @@ export async function eraseCustomer(customerId: string, actor: { id: string; rol
   const deletedPhone = `+00deleted${randomBytes(4).toString("hex")}`;
 
   await db.$transaction(async (tx) => {
-    // 1. Delete ConsentRecords
+    // 1. Delete ConsentRecords, Feedback, LoyaltyTxn
     await tx.consentRecord.deleteMany({ where: { customerId } });
+    await tx.feedback.deleteMany({ where: { customerId } });
+    if ("loyaltyTxn" in tx) {
+      await (tx.loyaltyTxn as { deleteMany: (args: any) => Promise<any> }).deleteMany({ where: { customerId } });
+    }
     
     // 2. Delete Customer
     await tx.customer.delete({ where: { id: customerId } });

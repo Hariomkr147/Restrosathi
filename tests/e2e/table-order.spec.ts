@@ -193,7 +193,7 @@ test("complete order-cycle scenario: two devices share one session, duplicate su
   
   // Server prices win, sold-out is live
   // We modify the DB directly
-  await db.menuItem.update({ where: { id: "e2e-orderable-item" }, data: { available: false, pricePaise: 99900 } });
+  await db.menuItem.update({ where: { id: "e2e-orderable-item" }, data: { available: false, basePricePaise: 99900 } });
   
   // Device 2 opens menu
   await device2.reload();

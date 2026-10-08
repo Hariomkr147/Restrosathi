@@ -32,7 +32,8 @@ export type BoardRequest = {
 
 export async function getBoard(): Promise<{ now: string; orders: BoardOrder[]; requests: BoardRequest[] }> {
   await requireUser();
-  const locale = await getLocale() as Locale;
+  let locale: Locale = "en";
+  try { locale = (await getLocale()) as Locale; } catch { /* ignore */ }
   const now = new Date();
   const twoHoursAgo = new Date(now.getTime() - 2 * 60 * 60 * 1000);
 

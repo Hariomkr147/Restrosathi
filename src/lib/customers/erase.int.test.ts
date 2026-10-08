@@ -9,22 +9,28 @@ beforeAll(async () => {
   await prisma.auditLog.deleteMany();
   await prisma.consentRecord.deleteMany();
   await prisma.billLine.deleteMany();
+  await prisma.feedback.deleteMany();
   await prisma.bill.deleteMany();
+  await prisma.orderLine.deleteMany();
+  await prisma.order.deleteMany();
   await prisma.diningSession.deleteMany();
   await prisma.booking.deleteMany();
   await prisma.customer.deleteMany();
-  await prisma.user.deleteMany();
+  await prisma.user.deleteMany({ where: { id: "user1" } });
 });
 
 afterEach(async () => {
   await prisma.auditLog.deleteMany();
   await prisma.consentRecord.deleteMany();
   await prisma.billLine.deleteMany();
+  await prisma.feedback.deleteMany();
   await prisma.bill.deleteMany();
+  await prisma.orderLine.deleteMany();
+  await prisma.order.deleteMany();
   await prisma.diningSession.deleteMany();
   await prisma.booking.deleteMany();
   await prisma.customer.deleteMany();
-  await prisma.user.deleteMany();
+  await prisma.user.deleteMany({ where: { id: "user1" } });
 });
 
 describe("erasure completeness", () => {

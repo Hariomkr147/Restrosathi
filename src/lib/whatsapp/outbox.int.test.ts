@@ -17,7 +17,7 @@ describe("processOutbox()", () => {
         direction: "OUT",
         phone: "+919876543210",
         kind: "OTP",
-        params: { code: "123456", minutes: 5 },
+        params: { otp: "123456", minutes: 5 },
         status: "PENDING",
         nextAttemptAt: new Date(Date.now() - 60000), // 1 min ago
         externalId: crypto.randomUUID(),
@@ -27,7 +27,7 @@ describe("processOutbox()", () => {
   };
 
   it("successful send marks SENT with providerId and scrubs OTP params", async () => {
-    const row = await createPending({ kind: "OTP", params: { code: "111", minutes: 5 } });
+    const row = await createPending({ kind: "OTP", params: { otp: "111", minutes: 5 } });
     const provider = new FakeWhatsAppProvider();
     
     const res = await processOutbox({ provider });
@@ -41,7 +41,7 @@ describe("processOutbox()", () => {
   });
 
   it("failing 5 times follows backoff and ends FAILED, scrubs OTP params", async () => {
-    const row = await createPending({ kind: "OTP", params: { code: "111", minutes: 5 } });
+    const row = await createPending({ kind: "OTP", params: { otp: "111", minutes: 5 } });
     const provider = new FakeWhatsAppProvider();
     // make it fail
     provider.sendText = async () => { throw new Error("Network error"); };

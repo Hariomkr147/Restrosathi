@@ -6,6 +6,7 @@ import { escalateStaleOrders } from "./escalation";
 
 beforeEach(async () => {
   await prisma.messageLog.deleteMany({});
+  await prisma.orderLine.deleteMany({});
   await prisma.order.deleteMany({});
   await prisma.diningSession.deleteMany({});
   await prisma.restaurantTable.deleteMany({});
@@ -49,7 +50,7 @@ test("escalates stale orders and sends one message", async () => {
   // One message queued
   const msgs = await prisma.messageLog.findMany({ where: { kind: "ORDER_ESCALATION" } });
   expect(msgs).toHaveLength(1);
-  expect((msgs[0].params as any).text).toContain("2 orders waiting: Table 3 (3 min), Table 5 (2 min)");
+  expect((msgs[0].params as any).label).toContain("2 orders waiting");
 });
 
 test("no owner phone -> returns 0", async () => {

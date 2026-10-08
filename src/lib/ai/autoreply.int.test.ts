@@ -37,7 +37,7 @@ test("hours question gets a reply built from facts and aiHandled = true", async 
     where: { direction: "OUT", kind: "AUTO_REPLY", phone: "+919876543210" },
     orderBy: { createdAt: "desc" }
   });
-  expect(reply?.params).toMatchObject({ text: "We are open 10:00 to 23:00" });
+  expect(reply?.params).toMatchObject({ answer: "We are open 10:00 to 23:00" });
 });
 
 test("reply mentioning a price not in the facts -> handover", async () => {
@@ -59,7 +59,7 @@ test("reply mentioning a price not in the facts -> handover", async () => {
     where: { direction: "OUT", kind: "AUTO_REPLY", phone: "+919876543211" },
     orderBy: { createdAt: "desc" }
   });
-  expect((reply?.params as any).text).toBe("Thanks! Our staff will reply shortly.");
+  expect((reply?.params as any).answer).toBe("Thanks! Our staff will reply shortly.");
 });
 
 test("reply saying 'your table is confirmed' -> handover", async () => {
@@ -123,7 +123,7 @@ test("allergy question -> fixed handover with zero provider calls", async () => 
     where: { direction: "OUT", kind: "AUTO_REPLY", phone: "+919876543215" },
     orderBy: { createdAt: "desc" }
   });
-  expect((reply?.params as any).text).toBe("Please ask our staff about allergies.");
+  expect((reply?.params as any).answer).toBe("Please ask our staff about allergies.");
 });
 
 test("paused thread -> no reply at all", async () => {

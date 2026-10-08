@@ -92,21 +92,20 @@ export async function requestBooking(input: BookingRequestInput, ctx: BookingReq
 
   const cancelToken = crypto.randomBytes(32).toString("base64url");
 
-  const bookingId = await prisma.$transaction(async (tx) => {
+  const { bookingId, msgId } = await prisma.$transaction(async (tx) => {
     const b = await tx.booking.create({
       data: {
         name, phone, partySize, slotStart: targetDate, note, cancelToken
       }
     });
 
-    await notify(
+    const msgRes = await notify(
       "BOOKING_RECEIVED", 
       phone, 
       { 
-        name, 
-        partySize: String(partySize), 
-        time: targetDate.toISOString(), 
-        cancelLink: `https://saffrontadka.example/cancel/${cancelToken}`
+        date: targetDate.toISOString().slice(0, 10), 
+        time: targetDate.toISOString().slice(11, 16), 
+        pax: String(partySize)
       }, 
       { tx }
     );
@@ -115,16 +114,14 @@ export async function requestBooking(input: BookingRequestInput, ctx: BookingReq
       const { upsertCustomer } = await import("../customers");
       const { recordConsent } = await import("../customers/consent");
       const customer = await upsertCustomer(phone, { name }, tx);
-      await recordConsent(customer.id, true, "BOOKING");
+      await recordConsent(customer.id, true, "BOOKING", undefined, tx);
     }
 
-    return b.id;
+    return { bookingId: b.id, msgId: "id" in msgRes ? msgRes.id : undefined };
   });
 
-  // Call sendNow
-  const outbox = await prisma.messageLog.findFirst({ orderBy: { id: 'desc' } });
-  if (outbox) {
-    sendNow(outbox.id).catch(console.error);
+  if (msgId) {
+    sendNow(msgId).catch(console.error);
   }
 
   return { ok: true, bookingId, cancelToken };

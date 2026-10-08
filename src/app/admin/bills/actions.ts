@@ -54,16 +54,19 @@ export async function cancelBillAction(billId: string, reason: string) {
   return res;
 }
 
-import { verifyOtp } from "@/lib/otp";
+import { verifyOtp, cleanPhone } from "@/lib/otp";
 import { prisma } from "@/lib/db";
 import { upsertCustomer } from "@/lib/customers";
 
-export async function verifyBillPhoneAction(billId: string, phone: string, code: string) {
+export async function verifyBillPhoneAction(billId: string, rawPhone: string, code: string) {
   const user = await requireUser();
-  const res = await verifyOtp(phone, code, {});
+  const res = await verifyOtp(rawPhone, code, {});
   if (!res.ok) return res;
   
+  const phone = cleanPhone(rawPhone);
+  
   await prisma.$transaction(async (tx) => {
+    await tx.$queryRaw`SELECT id FROM "Bill" WHERE id = ${billId} FOR UPDATE`;
     const bill = await tx.bill.findUnique({ where: { id: billId } });
     if (!bill || bill.status !== "OPEN") return;
     if (bill.customerPhone !== phone) return;

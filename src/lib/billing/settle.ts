@@ -13,7 +13,7 @@ export async function settleBill(
   actor: { id: string },
   opts: { expectedTotalPaise: number; now?: Date; marketingConsent?: boolean }
 ) {
-  return await prisma.$transaction(async (tx) => {
+  const result = await prisma.$transaction(async (tx) => {
     // We must lock the session first to prevent concurrent orders/voids.
     const billMeta = await tx.bill.findUnique({
       where: { id: billId },
@@ -230,19 +230,31 @@ export async function settleBill(
       }
     });
 
+    let msgId: string | undefined;
     if (bill.customerPhone && bill.phoneVerifiedAt) {
       const { notify } = await import("../whatsapp/notify");
-      const settings = await tx.settings.findUnique({ where: { id: 1 } });
-      const firstName = bill.customerName ? bill.customerName.split(" ")[0] : "";
       const baseUrl = process.env.APP_URL || "http://localhost:3000";
+      const namePart = bill.customerName ? ` ${bill.customerName.split(" ")[0]}` : "";
       
-      await notify("THANK_YOU_FEEDBACK", bill.customerPhone, {
-        name: firstName,
-        feedbackLink: `${baseUrl}/feedback/${token}`,
-        googleLink: settings?.googleReviewUrl || ""
-      });
+      const msgRes = await notify("THANK_YOU_FEEDBACK", bill.customerPhone, {
+        name: namePart,
+        feedbackLink: `${baseUrl}/feedback/${token}`
+      }, { tx });
+      
+      if ("id" in msgRes) {
+        msgId = msgRes.id;
+      }
     }
 
-    return { ok: true, number } as const;
+    const ret: { ok: true; number: string; msgId?: string } = { ok: true, number };
+    if (msgId) ret.msgId = msgId;
+    return ret;
   }, { maxWait: 20000, timeout: 30000 });
+
+  if (result.ok && "msgId" in result && result.msgId) {
+    const mId = result.msgId;
+    import("../whatsapp/outbox").then(({ sendNow }) => sendNow(mId)).catch(() => {});
+  }
+
+  return result;
 }

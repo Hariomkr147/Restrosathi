@@ -49,28 +49,26 @@ export async function processInboundWebhook(body: any) {
   const normalizedText = text.trim().toUpperCase();
   if (normalizedText === "STOP") {
     // Opt-out logic
-    await prisma.optOut.upsert({
-      where: { phone: e164 },
-      create: { phone: e164 },
-      update: {}
+    const msgId = await prisma.$transaction(async (tx) => {
+      await tx.optOut.upsert({
+        where: { phone: e164 },
+        create: { phone: e164 },
+        update: {}
+      });
+
+      const { upsertCustomer } = await import("../customers");
+      const { recordConsent } = await import("../customers/consent");
+      const customer = await upsertCustomer(e164, {}, tx);
+      await recordConsent(customer.id, false, "WHATSAPP_STOP", undefined, tx);
+
+      const { notify } = await import("./notify");
+      const msgRes = await notify("STOP_CONFIRMED", e164, {}, { tx });
+      return "id" in msgRes ? msgRes.id : undefined;
     });
 
-    const { upsertCustomer } = await import("../customers");
-    const { recordConsent } = await import("../customers/consent");
-    const customer = await upsertCustomer(e164, {});
-    await recordConsent(customer.id, false, "WHATSAPP_STOP");
-
-    // Queue STOP_CONFIRMED message log directly
-    await prisma.messageLog.create({
-      data: {
-        direction: "OUT",
-        phone: e164,
-        kind: "STOP_CONFIRMED",
-        status: "PENDING",
-        externalId: crypto.randomUUID(),
-        params: {}
-      }
-    });
+    if (msgId) {
+      import("./outbox").then(({ sendNow }) => sendNow(msgId)).catch(() => {});
+    }
     return;
   }
 

@@ -35,7 +35,7 @@ export async function cancelBill(
     if (bill.status === "OPEN") return { ok: false, error: "NOT_SETTLED" };
 
     if (billMeta.customerPhone) {
-      const lockedCustomerRes = await tx.$queryRaw<{ id: string }[]>`
+      await tx.$queryRaw`
         SELECT id FROM "Customer" WHERE phone = ${billMeta.customerPhone} FOR UPDATE
       `;
     }

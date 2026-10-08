@@ -33,12 +33,12 @@ export async function sendDueReminders({ now = new Date(), provider }: { now?: D
     }
 
     // Process
-    await prisma.$transaction(async (tx) => {
+    const msgId = await prisma.$transaction(async (tx) => {
       // Re-check lock
       const locked = await tx.booking.findUnique({
         where: { id: b.id, reminderSentAt: null },
       });
-      if (!locked) return;
+      if (!locked) return undefined;
 
       const timeFormatter = new Intl.DateTimeFormat(b.locale === "hi" ? "hi-IN" : "en-IN", {
         timeZone: "Asia/Kolkata",
@@ -55,11 +55,12 @@ export async function sendDueReminders({ now = new Date(), provider }: { now?: D
       });
       
       count++;
-      if (msg && !("skipped" in msg)) {
-        // Best effort
-        sendNow(msg.id).catch(() => {});
-      }
+      return msg && "id" in msg ? msg.id : undefined;
     });
+
+    if (msgId) {
+      sendNow(msgId).catch(() => {});
+    }
   }
 
   return { count };

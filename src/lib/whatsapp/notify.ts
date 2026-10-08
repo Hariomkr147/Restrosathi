@@ -8,10 +8,25 @@ import hiMsgs from "../../../messages/hi.json";
 
 export type MessageKind = "OTP" | "BOOKING_RECEIVED" | "BOOKING_CONFIRMED" | "BOOKING_DECLINED" | "BOOKING_CANCELLED" | "BOOKING_REMINDER" | "EVENT_ENQUIRY_RECEIVED" | "ORDER_ESCALATION" | "THANK_YOU_FEEDBACK" | "WEEKLY_REPORT" | "STOP_CONFIRMED" | "AUTO_REPLY";
 
-export async function notify(
-  kind: MessageKind, 
+export type MessagePayloads = {
+  OTP: { otp: string; minutes: string | number };
+  BOOKING_RECEIVED: { date: string; time: string; pax: string | number };
+  BOOKING_CONFIRMED: { date: string; time: string; pax: string | number };
+  BOOKING_DECLINED: Record<string, never>;
+  BOOKING_CANCELLED: Record<string, never>;
+  BOOKING_REMINDER: { time: string };
+  EVENT_ENQUIRY_RECEIVED: Record<string, never>;
+  ORDER_ESCALATION: { label: string };
+  THANK_YOU_FEEDBACK: { name: string; feedbackLink: string };
+  WEEKLY_REPORT: { orderCount: string | number; sales: string };
+  STOP_CONFIRMED: Record<string, never>;
+  AUTO_REPLY: { answer: string };
+};
+
+export async function notify<K extends MessageKind>(
+  kind: K, 
   to: string, 
-  params: any, 
+  params: MessagePayloads[K], 
   opts?: { tx?: Prisma.TransactionClient; locale?: "en" | "hi" }
 ): Promise<{ id: string } | { skipped: "INVALID_PHONE" }> {
   const e164 = normalizePhone(to);
@@ -35,7 +50,7 @@ export async function notify(
   return { id: row.id };
 }
 
-export function renderMessage(kind: MessageKind, params: any, locale: "en" | "hi" = "en"): string {
+export function renderMessage<K extends MessageKind>(kind: K, params: MessagePayloads[K], locale: "en" | "hi" = "en"): string {
   const msgs = locale === "hi" ? hiMsgs : enMsgs;
   
   let template = (msgs.wa as any)[kind] as string;
@@ -48,10 +63,11 @@ export function renderMessage(kind: MessageKind, params: any, locale: "en" | "hi
 
   // Replace {var} with params[var]
   const rendered = template.replace(/\{([a-zA-Z0-9_]+)\}/g, (match, paramName) => {
-    if (params[paramName] === undefined) {
+    const p = params as any;
+    if (p[paramName] === undefined) {
       throw new Error(`Missing parameter ${paramName} for template ${kind}`);
     }
-    return String(params[paramName]);
+    return String(p[paramName]);
   });
 
   return rendered;

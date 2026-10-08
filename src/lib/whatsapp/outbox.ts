@@ -84,13 +84,12 @@ export async function processOutbox({ now = new Date(), limit = 20, provider }: 
 }
 
 export async function sendNow(id: string): Promise<void> {
-  const row = await prisma.messageLog.findUnique({ where: { id } });
-  if (!row || row.status !== "PENDING") return;
-
-  await prisma.messageLog.update({
-    where: { id },
+  const res = await prisma.messageLog.updateMany({
+    where: { id, status: "PENDING" },
     data: { nextAttemptAt: new Date() }
   });
+
+  if (res.count === 0) return;
 
   try {
     await processOutbox({ limit: 100 });
