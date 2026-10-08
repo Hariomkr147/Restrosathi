@@ -58,6 +58,7 @@ model User {
   auditLogs      AuditLog[]
   bookings       Booking[]
   eventEnquiries EventEnquiry[]
+  campaigns      Campaign[]
 }
 
 model AuthSession {
@@ -369,6 +370,7 @@ model Customer {
   consentRecords ConsentRecord[]
   loyaltyTxns    LoyaltyTxn[]
   feedbacks      Feedback[]
+  campaignSends  CampaignSend[]
 }
 
 enum LoyaltyKind {
@@ -649,4 +651,42 @@ model WeeklyReportLog {
   weekStart   DateTime @id @db.Date
   generatedAt DateTime @default(now()) @db.Timestamptz(3)
   content     Json
+}
+
+enum CampaignSegment {
+  ALL
+  VISITED_30_DAYS
+  INACTIVE_60_DAYS
+  BIRTHDAYS_THIS_MONTH
+}
+
+enum CampaignStatus {
+  DRAFT
+  SENT
+}
+
+model Campaign {
+  id          String          @id @default(cuid())
+  goal        String
+  locale      String          @default("en")
+  segment     CampaignSegment
+  message     String?
+  status      CampaignStatus  @default(DRAFT)
+  createdAt   DateTime        @default(now()) @db.Timestamptz(3)
+  sentAt      DateTime?       @db.Timestamptz(3)
+  createdById String
+  createdBy   User            @relation(fields: [createdById], references: [id], onDelete: Restrict)
+  sends       CampaignSend[]
+}
+
+model CampaignSend {
+  id         String    @id @default(cuid())
+  campaignId String
+  customerId String
+  phone      String
+  status     String    @default("PENDING")
+  error      String?
+  sentAt     DateTime? @db.Timestamptz(3)
+  campaign   Campaign  @relation(fields: [campaignId], references: [id], onDelete: Cascade)
+  customer   Customer  @relation(fields: [customerId], references: [id], onDelete: Restrict)
 }

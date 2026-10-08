@@ -315,12 +315,12 @@ Original Task 43. Audit: F12/F13. Depends: R13, R17–R18.
 
 **Files:** marketing segments/links/campaigns, ai marketing, Campaign/CampaignSend migrations, marketing pages/actions, customer recipient UI, erasure/tests/messages.
 
-- [ ] Every segment begins with getMarketingAudience and only narrows: all consented, visited30, inactive60, birthdays-this-month; exclude any campaign in prior seven days by default.
+- [x] Every segment begins with getMarketingAudience and only narrows: all consented, visited30, inactive60, birthdays-this-month; exclude any campaign in prior seven days by default.
 - [ ] Owner provides goal 10–400 chars and locale. Shared quota/provider returns three validated variants <=300 chars; amounts/numbers must exist in goal, APP_URL-only links, at most one name placeholder and enforced localized STOP line.
 - [ ] Build goal→draft→edit→segment→create→recipient list (100/page)→wa.me→mark-sent flow. Validate edited text at persistence too, not only generated drafts.
-- [ ] Mark sent is idempotent. Recompute audience on every campaign read; STOP after creation removes the recipient. Never send marketing via notify/provider.
-- [ ] Extend erasure for CampaignSend; encode Hindi/emoji/name fallbacks; remove unsafe promo links from the generic customer list.
-- [ ] Remove unused direct-provider dependencies and rerun audit.
+- [x] Mark sent is idempotent. Recompute audience on every campaign read; STOP after creation removes the recipient. Never send marketing via notify/provider.
+- [x] Extend erasure for CampaignSend; encode Hindi/emoji/name fallbacks; remove unsafe promo links from the generic customer list.
+- [x] Remove unused direct-provider dependencies and rerun audit.
 
 **Acceptance:** all original Task 43 tests, owner E2E and no-provider-import check pass; STOP never re-enters a campaign through later consent or saved recipients.
 

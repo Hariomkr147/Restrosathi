@@ -640,3 +640,12 @@ Commit: 75b763b58a05a4fd24c0380c6031959bc5fda351
 - Updated WA notification templates for both English and Hindi.
 - Tested idempotency with integration tests.
 
+
+## Task R19: Complete consent-safe marketing campaigns
+- Created \Campaign\ and \CampaignSend\ Prisma models.
+- Created \src/lib/marketing/segments.ts\ for audience calculation respecting consent and frequency.
+- Created \src/lib/marketing/ai.ts\ for AI campaign variant generation using the monthly quota.
+- Created UI at \/admin/marketing\ for listing, creating and sending campaigns.
+- Extended erasure coverage for \CampaignSend\ in \src/lib/customers/erase.ts\.
+- Removed unsafe promo links from \src/app/admin/customers/page.tsx\.
+

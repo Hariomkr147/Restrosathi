@@ -15,7 +15,9 @@ export const HANDLED_MODELS = [
   "Bill", // Not all handled entirely, but fields are handled in logic
   "OptOut", // Excluded explicitly to be kept
   "Feedback",
-  "LoyaltyTxn"
+  "LoyaltyTxn",
+  "CampaignSend",
+  "Campaign"
 ];
 
 export async function eraseCustomer(customerId: string, actor: { id: string; role: string }) {
@@ -35,6 +37,9 @@ export async function eraseCustomer(customerId: string, actor: { id: string; rol
     await tx.feedback.deleteMany({ where: { customerId } });
     if ("loyaltyTxn" in tx) {
       await (tx.loyaltyTxn as { deleteMany: (args: unknown) => Promise<unknown> }).deleteMany({ where: { customerId } });
+    }
+    if ("campaignSend" in tx) {
+      await (tx.campaignSend as any).deleteMany({ where: { customerId } });
     }
     
     // 2. Anonymize Customer

@@ -4,7 +4,6 @@ import { prisma } from "@/lib/db";
 import Link from "next/link";
 import { Customer } from "@prisma/client";
 import { CampaignUI } from "./CampaignUI";
-import { SendPromoButton } from "./SendPromoButton";
 
 export const metadata = {
   title: "Customers | Admin | RestroSathi"
