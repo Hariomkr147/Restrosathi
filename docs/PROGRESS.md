@@ -525,3 +525,23 @@ Status: Complete.
 - Applied to generateBill, settleBill, cancelBill, applyRedemption, removeRedemption.
 - Wrote DB integration tests verifying concurrency blocks deadlocks.
 - Refactored loyalty code duplication for computeBill as requested.
+
+## Task 38: Preserve loyalty discounts across bill edits — repair R07
+Date: 2026-10-08. Branch: phase-6-infrastructure. Commit: 683ef24.
+- Reproduced regeneration, phone-change, disabled-loyalty, conversion-rate, snapshot and permission failures before fixing them.
+- Shared draft calculation now preserves manual/reward discounts; settlement checks the snapshot and locked balance before allocating an invoice. Customer, staff, print and IST day-end amounts agree to the paisa.
+- Verification: billing/loyalty integration 57 passed (9 files); focused money/loyalty/cron unit 29 passed (5 files); Node 22.23.3/Linux production-server E2E 2 passed (mobile and desktop, English/Hindi, 360px customer/staff and 302px receipt). Lint exited 0 with 24 existing warnings; typecheck and diff check exited 0.
+- Evidence: docs/audits/production-readiness/2026-10-08-R07.md. Hindi customer/staff/receipt screenshots inspected.
+- Ponytail full review retained every financial, validation, permission and transaction safeguard; reused the existing calculation, Prisma and locks.
+
+### Deviations
+- Fixed older fixture cleanup by reusing resetOperationalData, preserving seeded actors and correcting the hours shape; partial cleanup failed Feedback/Loyalty foreign keys when suites ran together.
+- Restored Linux/E2E prerequisites in a28eeb2: removed the required Windows-only binding, loaded existing tsx for fixture imports, fixed recent lint errors without disabling rules, and set isolated server origins. Evidence: 2026-10-08-runner-followup.md.
+
+### Decisions for Hariom
+- Omitted manual discount means preserve; explicit null means remove, with the same permission guard. A blank staff phone retains the original session-phone fallback. A changed reward conversion requires recalculation before settlement; no silent free discount or debit without its discount.
+
+### Execution checkpoint
+- The run was interrupted after R07 verification. R08 is next; R08–R29 and H01–H08 are unfinished. No production readiness claim or merge to main.
+- Fresh browser execution still reproduces the owner-dashboard invalid-date failure (R16) and missing/corrupt navigation translations (R27). Dependency installation still reports eight high-severity findings for reconciliation under R03/R17/R19/R28.
+- R01–R06 commits were present at resume; their checkboxes are not a substitute for the full R28 revalidation. R00 still has incomplete coverage inventory. Historical NUL-corrupted progress content was preserved; this entry is appended as UTF-8.
