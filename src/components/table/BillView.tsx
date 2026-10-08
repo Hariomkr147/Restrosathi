@@ -19,6 +19,7 @@ export function BillView({ view, locale }: { view: SessionView | null; locale: L
       <div className="space-y-2 border-b border-border py-3 text-muted-foreground">
         <div className="flex justify-between gap-4"><span>{text.billSubtotal}</span><span className="tabular-nums">{formatINR(subtotalPaise)}</span></div>
         {discountPaise > 0 && <div className="flex justify-between gap-4"><span>{text.billDiscount}</span><span className="tabular-nums">-{formatINR(discountPaise)}</span></div>}
+        {view.bill.loyaltyDiscountPaise > 0 && <div className="flex justify-between gap-4"><span>{text.billLoyaltyDiscount}</span><span className="tabular-nums">{formatINR(view.bill.loyaltyDiscountPaise)}</span></div>}
         {taxLines.map((tax, i) => <div key={i} className="flex justify-between gap-4"><span>{tax.label}</span><span className="tabular-nums">{formatINR(tax.amountPaise)}</span></div>)}
         {roundOffPaise !== 0 && <div className="flex justify-between gap-4"><span>{text.billRoundOff}</span><span className="tabular-nums">{formatINR(roundOffPaise)}</span></div>}
       </div>

@@ -1,14 +1,15 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { prisma } from "../db";
 import { audit } from "../audit";
-import { LoyaltyKind, Prisma } from "@prisma/client";
+import { LoyaltyKind, Prisma, type Bill } from "@prisma/client";
+import { computeBillDraft } from "../billing/calc";
 
 export function calculateEarnedPoints(totalPaise: number, earnPer100Rupees: number): number {
   return Math.floor(totalPaise / 10000) * earnPer100Rupees;
 }
 
 export function calculateRedemptionValue(points: number, unitPoints: number, unitValuePaise: number): number {
-  if (points <= 0 || points % unitPoints !== 0) {
+  if (!Number.isSafeInteger(points) || points <= 0 || !Number.isSafeInteger(unitPoints) || unitPoints <= 0 || points % unitPoints !== 0) {
     throw new Error("Points must be a multiple of the redemption unit");
   }
   return (points / unitPoints) * unitValuePaise;
@@ -96,21 +97,11 @@ export async function applyRedemption(billId: string, points: number, actorId: s
   });
 }
 
-async function recomputeAndSaveBill(tx: Prisma.TransactionClient, bill: any, points: number, discountPaise: number) {
+async function recomputeAndSaveBill(tx: Prisma.TransactionClient, bill: Bill, points: number, discountPaise: number) {
   const lines = await tx.billLine.findMany({ where: { billId: bill.id } });
-  const { computeBill } = await import("../billing/calc");
-  let draftDiscount = null;
-  if (bill.discountType) {
-    draftDiscount = {
-      type: bill.discountType,
-      valuePaise: bill.discountType === "FLAT" ? (bill.discountValue || 0) : 0,
-      percent: bill.discountType === "PERCENT" ? (bill.discountValue || 0) : 0,
-    };
-  }
-
-  const computed = computeBill({
+  const computed = computeBillDraft({
     lines: lines.map(l => ({ unitPricePaise: l.unitPricePaise, qty: l.qty })),
-    discount: draftDiscount as any,
+    discount: bill.discountType ? { type: bill.discountType, value: bill.discountValue ?? 0 } : null,
     taxMode: bill.taxMode,
     gstRatePercent: bill.gstRatePercent,
     pricesIncludeTax: bill.pricesIncludeTax,

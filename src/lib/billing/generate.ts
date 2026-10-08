@@ -1,9 +1,10 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { prisma } from "../db";
 import { getSettings } from "../settings";
-import { computeBill, type ComputeBillInput } from "./calc";
+import { computeBillDraft } from "./calc";
 import { audit } from "../audit";
 import { z } from "zod";
+import { calculateRedemptionValue } from "../loyalty";
 
 type GenerateResult = 
   | { ok: true; billId: string }
@@ -16,7 +17,7 @@ const discountSchema = z.object({
 });
 
 const generateOptsSchema = z.object({
-  discount: discountSchema.optional(),
+  discount: discountSchema.nullable().optional(),
   customerName: z.string().trim().max(100).optional(),
   customerPhone: z.string().trim().max(20).optional(),
   marketingConsent: z.boolean().optional()
@@ -24,7 +25,7 @@ const generateOptsSchema = z.object({
 
 export async function generateBill(
   sessionId: string,
-  optsInput: { discount?: { type: "FLAT" | "PERCENT"; value: number; reason: string }; customerName?: string; customerPhone?: string; marketingConsent?: boolean },
+  optsInput: { discount?: { type: "FLAT" | "PERCENT"; value: number; reason: string } | null; customerName?: string; customerPhone?: string; marketingConsent?: boolean },
   actor: { id: string; role: string }
 ): Promise<GenerateResult> {
   const parsed = generateOptsSchema.safeParse(optsInput);
@@ -63,9 +64,9 @@ export async function generateBill(
       return { ok: false, error: "BILL_LOCKED" };
     }
 
-    const settings = await getSettings();
+    const settings = await getSettings(tx);
 
-    if (opts.discount) {
+    if (opts.discount !== undefined && (opts.discount || session.bill?.discountType)) {
       if (actor.role === "STAFF" && !settings.staffCanDiscount) {
         return { ok: false, error: "DISCOUNT_FORBIDDEN" };
       }
@@ -90,9 +91,26 @@ export async function generateBill(
     }));
 
     try {
-      const computed = computeBill({
+      // Omitted discount preserves the draft; null explicitly removes it.
+      const discount = opts.discount !== undefined ? opts.discount : session.bill?.discountType
+        ? { type: session.bill.discountType, value: session.bill.discountValue ?? 0, reason: session.bill.discountReason ?? "" }
+        : null;
+      const finalPhone = opts.customerPhone !== undefined
+        ? opts.customerPhone || session.customerPhone || null : session.bill?.customerPhone ?? session.customerPhone;
+      const sameCustomer = !session.bill || session.bill.customerPhone === finalPhone;
+      const finalVerifiedAt = sameCustomer && session.bill?.phoneVerifiedAt
+        ? session.bill.phoneVerifiedAt
+        : sameCustomer && finalPhone === session.customerPhone ? session.customerPhoneVerifiedAt : null;
+      const savedPoints = session.bill?.loyaltyPointsRedeemed ?? 0;
+      const keepRedemption = settings.loyaltyEnabled && sameCustomer && !!finalVerifiedAt
+        && savedPoints > 0 && savedPoints % settings.loyaltyRedeemUnitPoints === 0;
+      const loyaltyPointsRedeemed = keepRedemption ? session.bill?.loyaltyPointsRedeemed ?? 0 : 0;
+      const loyaltyDiscountPaise = keepRedemption
+        ? calculateRedemptionValue(loyaltyPointsRedeemed, settings.loyaltyRedeemUnitPoints, settings.loyaltyRedeemUnitValuePaise) : 0;
+      const computed = computeBillDraft({
         lines: calcLines,
-        discount: opts.discount ? { type: opts.discount.type, valuePaise: opts.discount.type === "FLAT" ? opts.discount.value : 0, percent: opts.discount.type === "PERCENT" ? opts.discount.value : 0 } : undefined,
+        discount,
+        extraDiscountPaise: loyaltyDiscountPaise,
         taxMode: settings.taxMode,
         gstRatePercent: settings.gstRatePercent,
         pricesIncludeTax: settings.pricesIncludeTax
@@ -106,14 +124,6 @@ export async function generateBill(
         fssai: settings.fssai
       };
 
-        const finalPhone = opts.customerPhone || session.customerPhone || null;
-        let finalVerifiedAt: Date | null = null;
-        if (session.bill && session.bill.customerPhone === finalPhone && session.bill.phoneVerifiedAt) {
-          finalVerifiedAt = session.bill.phoneVerifiedAt;
-        } else if (finalPhone && finalPhone === session.customerPhone && session.customerPhoneVerifiedAt) {
-          finalVerifiedAt = session.customerPhoneVerifiedAt;
-        }
-
         const billData = {
           docType: computed.docType,
           taxMode: settings.taxMode,
@@ -122,21 +132,21 @@ export async function generateBill(
                             // eslint-disable-next-line @typescript-eslint/no-explicit-any
           header: header as any,
           subtotalPaise: computed.subtotalPaise,
-          discountType: opts.discount?.type || null,
-          discountValue: opts.discount?.value || null,
+          discountType: discount?.type ?? null,
+          discountValue: discount?.value ?? null,
           discountPaise: computed.discountPaise,
-          discountReason: opts.discount?.reason || null,
+          discountReason: discount?.reason ?? null,
           taxableValuePaise: computed.taxableValuePaise,
           cgstPaise: computed.cgstPaise,
           sgstPaise: computed.sgstPaise,
           roundOffPaise: computed.roundOffPaise,
           totalPaise: computed.totalPaise,
-          loyaltyPointsRedeemed: session.bill?.loyaltyPointsRedeemed || 0,
-          loyaltyDiscountPaise: session.bill?.loyaltyDiscountPaise || 0,
+          loyaltyPointsRedeemed,
+          loyaltyDiscountPaise,
           customerName: opts.customerName || session.customerName || null,
           customerPhone: finalPhone,
           phoneVerifiedAt: finalVerifiedAt,
-          marketingConsent: opts.marketingConsent || session.bill?.marketingConsent || false,
+          marketingConsent: opts.marketingConsent ?? session.bill?.marketingConsent ?? false,
         generatedAt: new Date(),
         generatedById: actor.id
       };

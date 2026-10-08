@@ -1,4 +1,5 @@
 import { prisma } from "../db";
+import type { Prisma } from "@prisma/client";
 import type { L10n } from "../i18n/l10n";
 import { hoursSchema, l10nSchema, settingsInputSchema, type Hours } from "./schema";
 import { requireUser } from "../auth/session";
@@ -30,8 +31,8 @@ export type SettingsView = {
   loyaltyRedeemUnitValuePaise: number;
 };
 
-export async function getSettings(): Promise<SettingsView> {
-  const settings = await prisma.settings.findUnique({ where: { id: 1 } });
+export async function getSettings(tx?: Prisma.TransactionClient): Promise<SettingsView> {
+  const settings = await (tx ?? prisma).settings.findUnique({ where: { id: 1 } });
   if (!settings) throw new Error("Restaurant settings are missing. Run the database seed.");
   return { ...settings, gstRatePercent: Number(settings.gstRatePercent), about: l10nSchema.parse(settings.about), hours: hoursSchema.parse(settings.hours) };
 }

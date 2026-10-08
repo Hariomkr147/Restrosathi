@@ -4,6 +4,8 @@ import { closeSession, lockSession } from "../sessions";
 import { financialYear, formatInvoiceNumber } from "./fy";
 import { audit } from "../audit";
 import { randomBytes } from "crypto";
+import { calculateRedemptionValue } from "../loyalty";
+import { computeBillDraft } from "./calc";
 
 export async function settleBill(
   billId: string,
@@ -25,8 +27,8 @@ export async function settleBill(
     await lockSession(tx, { id: billMeta.sessionId, kind: billMeta.session.kind, tableId: billMeta.session.tableId });
 
     // Now lock the bill itself
-    const res = await tx.$queryRaw<{ id: string; status: string; totalPaise: number; generatedAt: Date; customerPhone: string | null; customerName: string | null; phoneVerifiedAt: Date | null; loyaltyPointsRedeemed: number }[]>`
-      SELECT id, status, "totalPaise", "generatedAt", "customerPhone", "customerName", "phoneVerifiedAt", "loyaltyPointsRedeemed" FROM "Bill" WHERE id = ${billId} FOR UPDATE
+    const res = await tx.$queryRaw<{ id: string; status: string; totalPaise: number; generatedAt: Date; customerPhone: string | null; customerName: string | null; phoneVerifiedAt: Date | null; loyaltyPointsRedeemed: number; loyaltyDiscountPaise: number }[]>`
+      SELECT id, status, "totalPaise", "generatedAt", "customerPhone", "customerName", "phoneVerifiedAt", "loyaltyPointsRedeemed", "loyaltyDiscountPaise" FROM "Bill" WHERE id = ${billId} FOR UPDATE
     `;
 
     if (res.length === 0) {
@@ -45,6 +47,35 @@ export async function settleBill(
 
     if (bill.totalPaise !== opts.expectedTotalPaise) {
       return { ok: false, error: "STALE_BILL" } as const;
+    }
+
+    const settings = await tx.settings.findUniqueOrThrow({ where: { id: 1 } });
+    if (bill.loyaltyPointsRedeemed > 0) {
+      if (!settings.loyaltyEnabled) return { ok: false, error: "LOYALTY_DISABLED" } as const;
+      if (!bill.customerPhone || !bill.phoneVerifiedAt) return { ok: false, error: "PHONE_NOT_VERIFIED" } as const;
+      try {
+        if (calculateRedemptionValue(bill.loyaltyPointsRedeemed, settings.loyaltyRedeemUnitPoints, settings.loyaltyRedeemUnitValuePaise) !== bill.loyaltyDiscountPaise) {
+          return { ok: false, error: "LOYALTY_SETTINGS_CHANGED" } as const;
+        }
+      } catch {
+        return { ok: false, error: "LOYALTY_SETTINGS_CHANGED" } as const;
+      }
+      const draft = await tx.bill.findUniqueOrThrow({ where: { id: billId }, include: { lines: true } });
+      try {
+        const computed = computeBillDraft({
+          lines: draft.lines,
+          discount: draft.discountType ? { type: draft.discountType, value: draft.discountValue ?? 0 } : null,
+          extraDiscountPaise: draft.loyaltyDiscountPaise,
+          taxMode: draft.taxMode, gstRatePercent: draft.gstRatePercent, pricesIncludeTax: draft.pricesIncludeTax,
+        });
+        if (computed.totalPaise !== draft.totalPaise || computed.discountPaise !== draft.discountPaise) {
+          return { ok: false, error: "STALE_BILL" } as const;
+        }
+      } catch {
+        return { ok: false, error: "STALE_BILL" } as const;
+      }
+    } else if (bill.loyaltyDiscountPaise !== 0 || bill.loyaltyPointsRedeemed !== 0) {
+      return { ok: false, error: "LOYALTY_SETTINGS_CHANGED" } as const;
     }
 
     // Check for stale bill (orders placed after generation or lines voided after generation)
@@ -96,8 +127,7 @@ export async function settleBill(
       }
       customerId = c.id;
       
-      const settings = await tx.settings.findUnique({ where: { id: 1 } });
-      if (settings?.loyaltyEnabled && bill.phoneVerifiedAt) {
+      if (settings.loyaltyEnabled && bill.phoneVerifiedAt) {
         // Lock the customer row as per lock order
         const [lockedCustomer] = await tx.$queryRaw<{ id: string }[]>`
           SELECT id FROM "Customer" WHERE id = ${c.id} FOR UPDATE

@@ -9,7 +9,7 @@ export type SessionView = {
     lines: { name: L10n; variant: L10n | null; modifiers: L10n[]; qty: number; linePaise: number; note: string | null; voided: boolean }[] }[];
   openRequests: ServiceKind[]; amountPaise: number;
   customerPhone: string | null; customerPhoneVerifiedAt: string | null;
-  bill: null | { status: "OPEN" | "SETTLED"; title: string; lines: { name: string; qty: number; totalPaise: number }[]; subtotalPaise: number; discountPaise: number; taxLines: { label: string; amountPaise: number }[]; roundOffPaise: number; totalPaise: number };
+  bill: null | { status: "OPEN" | "SETTLED"; title: string; lines: { name: string; qty: number; totalPaise: number }[]; subtotalPaise: number; discountPaise: number; loyaltyDiscountPaise: number; taxLines: { label: string; amountPaise: number }[]; roundOffPaise: number; totalPaise: number };
 };
 // Public: the active code scopes every read to its current, non-closed session.
 export async function getSessionView(code: string): Promise<SessionView | null> {
@@ -45,6 +45,7 @@ export async function getSessionView(code: string): Promise<SessionView | null> 
       lines: dbBill.lines.map((l: any) => ({ name: l.name.en || l.name, qty: l.qty, totalPaise: l.linePaise })),
       subtotalPaise: dbBill.subtotalPaise,
       discountPaise: dbBill.discountPaise,
+      loyaltyDiscountPaise: dbBill.loyaltyDiscountPaise,
       taxLines,
       roundOffPaise: dbBill.roundOffPaise,
       totalPaise: dbBill.totalPaise

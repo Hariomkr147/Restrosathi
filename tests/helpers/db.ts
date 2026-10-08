@@ -42,7 +42,7 @@ export async function resetOperationalData() {
       taxMode: "NONE",
       gstin: null,
       staffCanDiscount: false,
-      hours: { open: "10:00", close: "23:00", days: ["MON", "TUE", "WED", "THU", "FRI", "SAT", "SUN"] },
+      hours: Object.fromEntries(["mon", "tue", "wed", "thu", "fri", "sat", "sun"].map(day => [day, [{ open: "10:00", close: "23:00" }]])),
       bookingCapacityPerSlot: 10,
       maxPartySize: 8,
     }

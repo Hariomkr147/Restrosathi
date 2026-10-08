@@ -1,3 +1,4 @@
+import { resetOperationalData } from "../../../tests/helpers/db";
 import { describe, it, expect, beforeEach, vi, afterEach } from "vitest";
 import { randomUUID } from "crypto";
 import { generateBill } from "./generate";
@@ -15,18 +16,7 @@ describe("Billing Concurrency Regressions", () => {
   let mItemId: string;
 
   beforeEach(async () => {
-    await prisma.invoiceCounter.deleteMany();
-    await prisma.payment.deleteMany();
-    await prisma.billLine.deleteMany();
-    await prisma.feedback.deleteMany();
-    await prisma.loyaltyTxn.deleteMany();
-    await prisma.bill.deleteMany();
-    await prisma.serviceRequest.deleteMany();
-    await prisma.orderLine.deleteMany();
-    await prisma.order.deleteMany();
-    await prisma.diningSession.deleteMany();
-    await prisma.customer.deleteMany();
-
+    await resetOperationalData();
     await prisma.menuItem.deleteMany({ where: { id: "test-item-conc" } });
     await prisma.category.deleteMany({ where: { id: "test-cat-conc" } });
     await prisma.restaurantTable.deleteMany({ where: { code: "1234567890" } });
@@ -77,7 +67,7 @@ describe("Billing Concurrency Regressions", () => {
 
     const [resGen, resPlace] = await Promise.all([pGenerate, pPlace]);
     expect(resGen.ok).toBe(true);
-    if (!resPlace.ok) console.log("placeOrder error:", (resPlace as any).error);
+    if (!resPlace.ok) throw new Error(resPlace.error);
     expect(resPlace.ok).toBe(true);
 
     const bill = await prisma.bill.findFirstOrThrow({ where: { sessionId } });
@@ -102,7 +92,7 @@ describe("Billing Concurrency Regressions", () => {
     const [resSettle, resRegen] = await Promise.all([pSettle, pRegen]);
     expect(resSettle.ok).toBe(true);
     if (!resRegen.ok) {
-      expect(["BILL_LOCKED", "SESSION_CLOSED"]).toContain((resRegen as any).error);
+      expect(["BILL_LOCKED", "SESSION_CLOSED"]).toContain(resRegen.error);
     }
   });
 
@@ -134,7 +124,8 @@ describe("Billing Concurrency Regressions", () => {
 
     expect(r1.ok).toBe(true);
     expect(r2.ok).toBe(true);
-    expect((r1 as any).billId).toBe((r2 as any).billId);
+    if (!r1.ok || !r2.ok) throw new Error("Bill generation failed");
+    expect(r1.billId).toBe(r2.billId);
 
     const bills = await prisma.bill.findMany({ where: { sessionId } });
     expect(bills).toHaveLength(1);
@@ -157,7 +148,7 @@ describe("Billing Concurrency Regressions", () => {
 
     expect(oks).toHaveLength(1);
     expect(errs).toHaveLength(1);
-    expect((errs[0] as any).error).toBe("ALREADY_SETTLED");
+    expect(errs[0].error).toBe("ALREADY_SETTLED");
 
     const bills = await prisma.bill.findMany({ where: { id: billId } });
     expect(bills[0].status).toBe("SETTLED");

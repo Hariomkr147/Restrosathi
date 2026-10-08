@@ -17,6 +17,17 @@ export interface ComputeBillInput {
   extraDiscountPaise?: number;
 }
 
+export function computeBillDraft(input: Omit<ComputeBillInput, "discount"> & {
+  discount?: { type: "FLAT" | "PERCENT"; value: number } | null;
+}) {
+  const { discount, ...rest } = input;
+  return computeBill({ ...rest, discount: discount
+    ? discount.type === "FLAT"
+      ? { type: "FLAT", valuePaise: discount.value }
+      : { type: "PERCENT", percent: discount.value }
+    : undefined });
+}
+
 export function computeBill(input: ComputeBillInput) {
   if (!input.lines || input.lines.length === 0) {
     throw new BillCalcError("EMPTY_BILL");
@@ -24,7 +35,7 @@ export function computeBill(input: ComputeBillInput) {
 
   let subtotal = 0;
   for (const line of input.lines) {
-    if (line.qty <= 0 || !Number.isInteger(line.unitPricePaise)) {
+    if (!Number.isSafeInteger(line.qty) || line.qty <= 0 || !Number.isSafeInteger(line.unitPricePaise) || line.unitPricePaise < 0) {
       throw new BillCalcError("INVALID_LINE");
     }
     subtotal += line.unitPricePaise * line.qty;
@@ -46,9 +57,9 @@ export function computeBill(input: ComputeBillInput) {
     }
   }
 
-  if (input.extraDiscountPaise && input.extraDiscountPaise > 0) {
-    discount += input.extraDiscountPaise;
-  }
+  const extraDiscount = input.extraDiscountPaise ?? 0;
+  if (!Number.isSafeInteger(extraDiscount) || extraDiscount < 0) throw new BillCalcError("INVALID_DISCOUNT");
+  discount += extraDiscount;
 
   if (discount > subtotal) {
     throw new BillCalcError("DISCOUNT_EXCEEDS_SUBTOTAL");

@@ -98,6 +98,7 @@ export default async function ViewBillPage({ params }: { params: Promise<{ billI
           {bill.discountPaise > 0 && (
             <div className="flex justify-between text-green-600"><span>{t("discount")}</span><span>-{formatINR(bill.discountPaise)}</span></div>
           )}
+          {bill.loyaltyDiscountPaise > 0 && <div className="flex justify-between"><span>{t("loyaltyDiscount")}</span><span>{formatINR(bill.loyaltyDiscountPaise)}</span></div>}
           {bill.cgstPaise > 0 && (
             <div className="flex justify-between text-gray-600"><span>{t("cgst")}</span><span>{formatINR(bill.cgstPaise)}</span></div>
           )}

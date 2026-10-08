@@ -1,3 +1,4 @@
+import { resetOperationalData } from "../../../tests/helpers/db";
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { describe, it, expect, beforeEach, vi } from "vitest";
 import { prisma } from "../db";
@@ -14,15 +15,7 @@ describe("history", () => {
   let tableId: string;
 
   beforeEach(async () => {
-    await prisma.invoiceCounter.deleteMany();
-    await prisma.payment.deleteMany();
-    await prisma.billLine.deleteMany();
-    await prisma.bill.deleteMany();
-    await prisma.serviceRequest.deleteMany();
-    await prisma.orderLine.deleteMany();
-    await prisma.order.deleteMany();
-    await prisma.diningSession.deleteMany();
-
+    await resetOperationalData();
     await prisma.menuItem.deleteMany({ where: { id: "test-item-hist" } });
     await prisma.category.deleteMany({ where: { id: "test-cat-hist" } });
     await prisma.restaurantTable.deleteMany({ where: { code: "T1_HIST" } });

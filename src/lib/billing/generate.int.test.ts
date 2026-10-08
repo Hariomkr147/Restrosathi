@@ -1,3 +1,4 @@
+import { resetOperationalData } from "../../../tests/helpers/db";
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { expect, it, describe, beforeEach } from "vitest";
 import { prisma } from "../db";
@@ -10,11 +11,8 @@ const staff = { id: "staff-ravi", role: "STAFF" };
 
 describe("Generate Bill", () => {
   beforeEach(async () => {
-    await prisma.bill.deleteMany();
-    await prisma.orderLine.deleteMany();
-    await prisma.order.deleteMany();
-    await prisma.diningSession.deleteMany();
-  });
+    await resetOperationalData();
+});
 
                                           // eslint-disable-next-line @typescript-eslint/no-explicit-any
   async function updateTestSettings(data: any) {

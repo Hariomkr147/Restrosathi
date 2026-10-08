@@ -1,3 +1,4 @@
+import { resetOperationalData } from "../../../tests/helpers/db";
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { describe, it, expect, beforeEach, vi } from "vitest";
 import { prisma } from "../db";
@@ -13,6 +14,7 @@ describe("getDayEnd", () => {
   let staffId: string;
   
   beforeEach(async () => {
+    await resetOperationalData();
     const owner = await prisma.user.findFirstOrThrow({ where: { role: "OWNER" } });
     ownerId = owner.id;
     const staff = await prisma.user.findFirstOrThrow({ where: { role: "STAFF" } });

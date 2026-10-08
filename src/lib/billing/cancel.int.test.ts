@@ -1,3 +1,4 @@
+import { resetOperationalData } from "../../../tests/helpers/db";
 import { describe, it, expect, beforeEach } from "vitest";
 import { prisma } from "../db";
 import { cancelBill } from "./cancel";
@@ -16,15 +17,7 @@ describe("cancelBill", () => {
   let invoiceNumber: string;
 
   beforeEach(async () => {
-    await prisma.invoiceCounter.deleteMany();
-    await prisma.payment.deleteMany();
-    await prisma.billLine.deleteMany();
-    await prisma.bill.deleteMany();
-    await prisma.serviceRequest.deleteMany();
-    await prisma.orderLine.deleteMany();
-    await prisma.order.deleteMany();
-    await prisma.diningSession.deleteMany();
-
+    await resetOperationalData();
     await prisma.menuItem.deleteMany({ where: { id: "test-item-cancel" } });
     await prisma.category.deleteMany({ where: { id: "test-cat-cancel" } });
     await prisma.restaurantTable.deleteMany({ where: { code: "T1_CANCEL" } });

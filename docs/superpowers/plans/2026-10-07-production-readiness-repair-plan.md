@@ -156,11 +156,11 @@ Original Tasks 21–27, 38. Audit: F03. Depends: R06.
 
 **Files:** billing calculation/generation, loyalty draft functions, settlement, print/customer/day-end readers.
 
-- [ ] Convert the audit example to a regression: 20,000 subtotal − 5,000 loyalty = 15,000 paise after regeneration, with exactly 100 redeemed points at settlement.
-- [ ] Use one internal draft recalculation path for applying/removing redemption and regeneration; preserve manual discounts, tax snapshot rules, integer rounding and reason/role validation.
-- [ ] Changing phone clears verification and its redemption; explicitly handle loyalty settings changing while a draft is open. Never grant a discount without the matching debit or debit without its discount.
-- [ ] Reject non-integer/nonpositive/non-unit points, insufficient balance and excessive combined discounts; revalidate within the transaction at settlement.
-- [ ] Show loyalty breakdown in staff, customer and 80 mm views and prove day-end/payment totals reconcile to the paisa.
+- [x] Convert the audit example to a regression: 20,000 subtotal − 5,000 loyalty = 15,000 paise after regeneration, with exactly 100 redeemed points at settlement.
+- [x] Use one internal draft recalculation path for applying/removing redemption and regeneration; preserve manual discounts, tax snapshot rules, integer rounding and reason/role validation.
+- [x] Changing phone clears verification and its redemption; explicitly handle loyalty settings changing while a draft is open. Never grant a discount without the matching debit or debit without its discount.
+- [x] Reject non-integer/nonpositive/non-unit points, insufficient balance and excessive combined discounts; revalidate within the transaction at settlement.
+- [x] Show loyalty breakdown in staff, customer and 80 mm views and prove day-end/payment totals reconcile to the paisa.
 
 **Acceptance:** generated/settled/printed/customer totals agree; regeneration is stable; disabled/changed-customer paths are deterministic and tested.
 

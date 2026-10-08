@@ -8,7 +8,7 @@ import { revalidatePath } from "next/cache";
 export async function generateBillAction(
   sessionId: string,
   optsInput: {
-    discount?: { type: "FLAT" | "PERCENT"; value: number; reason: string };
+    discount?: { type: "FLAT" | "PERCENT"; value: number; reason: string } | null;
     customerName?: string;
     customerPhone?: string;
     marketingConsent?: boolean;

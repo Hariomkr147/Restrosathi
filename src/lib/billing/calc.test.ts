@@ -3,6 +3,12 @@ import { computeBill, BillCalcError } from "./calc";
 import { TaxMode } from "@prisma/client";
 
 describe("calc", () => {
+  it.each([-1, 0.5, NaN])("rejects an invalid extra discount %s", (extraDiscountPaise) => {
+    expect(() => computeBill({ lines: [{ unitPricePaise: 20000, qty: 1 }], taxMode: "NONE", gstRatePercent: 0, pricesIncludeTax: false, extraDiscountPaise })).toThrow("INVALID_DISCOUNT");
+  });
+  it.each([{ unitPricePaise: -1, qty: 1 }, { unitPricePaise: 100, qty: 1.5 }])("rejects noninteger quantities and negative prices", (line) => {
+    expect(() => computeBill({ lines: [line], taxMode: "NONE", gstRatePercent: 0, pricesIncludeTax: false })).toThrow("INVALID_LINE");
+  });
   it("NONE, one line 12345 x 1 -> subtotal 12345, tax 0, total 12300, roundOff -45, docType BILL", () => {
     const res = computeBill({
       lines: [{ unitPricePaise: 12345, qty: 1 }],

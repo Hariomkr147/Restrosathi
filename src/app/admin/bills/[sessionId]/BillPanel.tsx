@@ -39,7 +39,7 @@ export function BillPanel({ sessionId, bill, lines, computed, settings, userRole
     const dValue = formData.get("discountValue") as string;
     const dReason = formData.get("discountReason") as string;
     
-    let discount = undefined;
+    let discount: { type: "FLAT" | "PERCENT"; value: number; reason: string } | null = null;
     if (dType && dValue && dReason) {
       discount = {
         type: dType as "FLAT" | "PERCENT",
@@ -50,9 +50,9 @@ export function BillPanel({ sessionId, bill, lines, computed, settings, userRole
     
     const res = await generateBillAction(sessionId, {
       customerName: customerName || undefined,
-      customerPhone: customerPhone || undefined,
+      customerPhone,
       marketingConsent,
-      discount
+      discount: canDiscount ? discount : undefined
     });
     
     if (!res.ok) {
@@ -189,13 +189,13 @@ export function BillPanel({ sessionId, bill, lines, computed, settings, userRole
             <div className="space-y-4 rounded-md border bg-accent/20 p-4">
               <h3 className="text-sm font-medium">Apply Discount</h3>
               <div className="grid gap-4 md:grid-cols-3">
-                <select name="discountType" aria-label="Discount Type" className="rounded-md border bg-background px-3 py-2 text-sm">
+                <select name="discountType" aria-label="Discount Type" defaultValue={bill?.discountType ?? ""} className="rounded-md border bg-background px-3 py-2 text-sm">
                   <option value="">None</option>
                   <option value="FLAT">Flat Amount</option>
                   <option value="PERCENT">Percentage</option>
                 </select>
-                <input name="discountValue" aria-label="Discount Value" type="number" min="1" className="rounded-md border bg-background px-3 py-2 text-sm" placeholder="Value" />
-                <input name="discountReason" aria-label="Discount Reason" type="text" className="rounded-md border bg-background px-3 py-2 text-sm" placeholder="Reason (Required)" />
+                <input name="discountValue" aria-label="Discount Value" type="number" min="1" defaultValue={bill?.discountValue ?? ""} className="rounded-md border bg-background px-3 py-2 text-sm" placeholder="Value" />
+                <input name="discountReason" aria-label="Discount Reason" type="text" defaultValue={bill?.discountReason ?? ""} className="rounded-md border bg-background px-3 py-2 text-sm" placeholder="Reason (Required)" />
               </div>
             </div>
           )}

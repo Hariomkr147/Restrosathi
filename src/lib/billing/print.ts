@@ -26,6 +26,7 @@ export type BillPrint = {
   }>;
   subtotal: number;
   discount?: { value: number; type: "FLAT" | "PERCENT"; reason: string };
+  loyaltyDiscountPaise: number;
   taxLines: Array<{ label: string; paise: number }>;
   taxableValue?: number;
   roundOff: number;
@@ -90,7 +91,8 @@ export async function getBillPrint(billId: string, actor: { id: string, role: st
     })),
     subtotal: bill.subtotalPaise,
                                                                                                     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    discount: bill.discountPaise > 0 ? { value: bill.discountValue || 0, type: bill.discountType as any, reason: bill.discountReason || "" } : undefined,
+    discount: bill.discountPaise > 0 ? { value: bill.discountPaise, type: bill.discountType ?? "FLAT", reason: bill.discountReason || "" } : undefined,
+    loyaltyDiscountPaise: bill.loyaltyDiscountPaise,
     taxLines,
     taxableValue: bill.taxMode === "REGULAR" ? bill.taxableValuePaise : undefined,
     roundOff: bill.roundOffPaise,

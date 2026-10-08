@@ -1,6 +1,6 @@
 import { prisma } from "../db";
 import { getSettings } from "../settings";
-import { computeBill } from "./calc";
+import { computeBillDraft } from "./calc";
 
 export async function getBillData(sessionId: string) {
   const session = await prisma.diningSession.findUnique({
@@ -25,13 +25,10 @@ export async function getBillData(sessionId: string) {
     unitPricePaise: l.unitPricePaise
   }));
 
-  const computed = computeBill({
+  const computed = computeBillDraft({
     lines: calcLines,
-    discount: session.bill?.discountType ? { 
-      type: session.bill.discountType as "FLAT" | "PERCENT", 
-      valuePaise: session.bill.discountType === "FLAT" ? session.bill.discountValue! : 0, 
-      percent: session.bill.discountType === "PERCENT" ? session.bill.discountValue! : 0 
-    } : undefined,
+    discount: session.bill?.discountType ? { type: session.bill.discountType, value: session.bill.discountValue ?? 0 } : null,
+    extraDiscountPaise: settings.loyaltyEnabled ? session.bill?.loyaltyDiscountPaise ?? 0 : 0,
     taxMode: settings.taxMode,
     gstRatePercent: settings.gstRatePercent,
     pricesIncludeTax: settings.pricesIncludeTax

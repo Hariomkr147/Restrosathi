@@ -1,3 +1,4 @@
+import { resetOperationalData } from "../../../tests/helpers/db";
 import { describe, it, expect, beforeEach } from "vitest";
 import { randomUUID } from "crypto";
 import { settleBill } from "./settle";
@@ -15,15 +16,7 @@ describe("settleBill", () => {
   let mItemId: string;
 
   beforeEach(async () => {
-    await prisma.invoiceCounter.deleteMany();
-    await prisma.payment.deleteMany();
-    await prisma.billLine.deleteMany();
-    await prisma.bill.deleteMany();
-    await prisma.serviceRequest.deleteMany();
-    await prisma.orderLine.deleteMany();
-    await prisma.order.deleteMany();
-    await prisma.diningSession.deleteMany();
-
+    await resetOperationalData();
     await prisma.menuItem.deleteMany({ where: { id: "test-item-settle" } });
     await prisma.category.deleteMany({ where: { id: "test-cat-settle" } });
     await prisma.restaurantTable.deleteMany({ where: { code: "T1_SETTLE" } });

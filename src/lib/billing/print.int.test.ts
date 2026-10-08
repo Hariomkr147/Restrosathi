@@ -1,3 +1,4 @@
+import { resetOperationalData } from "../../../tests/helpers/db";
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { describe, it, expect, beforeEach } from "vitest";
 import { prisma } from "../db";
@@ -11,6 +12,7 @@ describe("getBillPrint", () => {
   let ownerId: string;
   
   beforeEach(async () => {
+    await resetOperationalData();
     const owner = await prisma.user.findFirstOrThrow({ where: { role: "OWNER" } });
     ownerId = owner.id;
   });

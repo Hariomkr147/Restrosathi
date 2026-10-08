@@ -10,6 +10,7 @@ import "./print.css";
 export default async function PrintBillPage({ params }: { params: Promise<{ billId: string }> }) {
   const user = await requireUser(); // Auth
   const { billId } = await params;
+  const t = await getTranslations("Admin.Bills.View");
   
   const print = await getBillPrint(billId, user);
   if (!print) notFound();
@@ -80,6 +81,7 @@ export default async function PrintBillPage({ params }: { params: Promise<{ bill
             <span>{formatINR(print.taxableValue)}</span>
           </div>
         )}
+        {print.loyaltyDiscountPaise > 0 && <div className="flex justify-between"><span>{t("loyaltyDiscount")}</span><span>{formatINR(print.loyaltyDiscountPaise)}</span></div>}
 
         {print.taxLines.map((tax, i) => (
           <div key={i} className="flex justify-between">
