@@ -61,6 +61,6 @@ export async function sendDueReminders({ now = new Date() }: { now?: Date } = {}
     })
   );
 
-  const count = results.reduce((sum, r) => sum + r, 0);
+  const count = results.reduce((sum: number, r) => sum + r, 0);
   return { count };
 }

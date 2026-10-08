@@ -277,10 +277,10 @@ Original Task 40. Audit: F14. Depends: R11, R13–R15.
 
 **Files:** `src/lib/dashboard/`, admin page/Dashboard component, tests/messages.
 
-- [ ] Build owner-only facts over IST settlement windows, not generation times; cancelled bills excluded; average money rounded using the billing integer helper.
-- [ ] Add today sales/count/average/open sessions, today/7-day top dishes, 24 busy-hour buckets over fourteen days, today/tomorrow/next-five bookings, needs-human count, AI warning and WhatsApp state.
-- [ ] Use existing Prisma models and UTC boundaries; cover midnight, month change, empty data and long names.
-- [ ] Render simple CSS/SVG bars with equivalent accessible table. Staff gets the planned board shortcuts rather than owner financial data.
+- [x] Build owner-only facts over IST settlement windows, not generation times; cancelled bills excluded; average money rounded using the billing integer helper.
+- [x] Add today sales/count/average/open sessions, today/7-day top dishes, 24 busy-hour buckets over fourteen days, today/tomorrow/next-five bookings, needs-human count, AI warning and WhatsApp state.
+- [x] Use existing Prisma models and UTC boundaries; cover midnight, month change, empty data and long names.
+- [x] Render simple CSS/SVG bars with equivalent accessible table. Staff gets the planned board shortcuts rather than owner financial data.
 
 **Acceptance:** fixture-calculated values match to the paisa; no nonexistent relation/query, invalid-date parse or fractional-paisee formatter crash; owner/staff separation and dashboard E2E pass.
 

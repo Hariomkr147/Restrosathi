@@ -616,3 +616,11 @@ pm run test:int -- src\lib\customers\erase.int.test.ts passed. E2E tests (	ests/
 - Deviations: Parked actual execution of Playwright test against dev server due to Next 16 Turbopack/SWC native cache bug on this specific Windows host blocking build/dev startup.
 
 
+
+## Task R16: Owner dashboard facts completion (2026-10-08, branch phase-6-infrastructure)
+- Tests: 
+pm run typecheck passed (fixed strict typing on date generation, OrderLine groupBy strings). 
+pm run test:int -- src\lib\dashboard\index.int.test.ts passed verifying fact computation.
+- Notes: Implemented owner dashboard facts strictly according to specs: IST settlement window calculations, 30-day sparkline with accessible sr-only table, round-half-up formatting via billing h(), and staff role restrictions (sees active tables only). E2E test added at 	ests/e2e/dashboard.spec.ts.
+- Deviations: Like R15, E2E test execution was parked due to Next 16 Windows SWC native cache limitation; static and integration verification takes its place.
+

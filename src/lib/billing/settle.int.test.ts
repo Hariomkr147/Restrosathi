@@ -260,13 +260,15 @@ describe("settleBill", () => {
     const o1 = await prisma.order.create({ data: { sessionId: s1.id, idempotencyKey: randomUUID(), source: "QR", status: "PREPARING" } });
     await prisma.orderLine.create({ data: { orderId: o1.id, nameSnapshot: {}, modifiersSnapshot: {}, qty: 1, unitPricePaise: 20000 } }); // 200 rs
     const b1Res = await generateBill(s1.id, {}, { id: ownerId, role: "OWNER" });
-    const b1 = await prisma.bill.findUniqueOrThrow({ where: { id: b1Res.billId! } });
+    if (!b1Res.ok) throw new Error("b1 gen failed");
+    const b1 = await prisma.bill.findUniqueOrThrow({ where: { id: b1Res.billId } });
     
     const s2 = await prisma.diningSession.create({ data: { kind: "TAKEAWAY", customerPhone: c.phone } });
     const o2 = await prisma.order.create({ data: { sessionId: s2.id, idempotencyKey: randomUUID(), source: "QR", status: "PREPARING" } });
     await prisma.orderLine.create({ data: { orderId: o2.id, nameSnapshot: {}, modifiersSnapshot: {}, qty: 1, unitPricePaise: 20000 } });
     const b2Res = await generateBill(s2.id, {}, { id: ownerId, role: "OWNER" });
-    const b2 = await prisma.bill.findUniqueOrThrow({ where: { id: b2Res.billId! } });
+    if (!b2Res.ok) throw new Error("b2 gen failed");
+    const b2 = await prisma.bill.findUniqueOrThrow({ where: { id: b2Res.billId } });
 
     // Apply loyalty discount to both drafts
     const { applyRedemption } = await import("../loyalty");

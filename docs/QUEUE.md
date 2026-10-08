@@ -43,7 +43,7 @@ How to read it: a **Task** row is done when `docs/PROGRESS.md` has an entry head
 | 35 | Task 37 | Customers, consent, erasure | `2026-10-02-phase-5-growth-plan.md` | `phase-5-growth` | [x] |
 | 36 | Task 38 | Loyalty ledger | same | `phase-5-growth` | [x] |
 | 37 | Task 39 | Feedback, Google review link | same | `phase-5-growth` | [x] |
-| 38 | Task 40 | Owner dashboard | same | `phase-5-growth` | [ ] |
+| 38 | Task 40 | Owner dashboard | same | `phase-5-growth` | [x] |
 | 39 | Task 41 | AI feedback themes, reply drafts | same | `phase-5-growth` | [ ] |
 | 40 | Task 42 | Weekly report | same | `phase-5-growth` | [ ] |
 | 41 | Task 43 | Marketing drafts, wa.me links | same | `phase-5-growth` | [ ] |
