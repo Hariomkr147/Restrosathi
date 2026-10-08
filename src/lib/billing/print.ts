@@ -1,4 +1,5 @@
 import { prisma } from "../db";
+import { Prisma } from "@prisma/client";
 
 export type BillPrint = {
   header: {
@@ -14,12 +15,9 @@ export type BillPrint = {
   dateTime: string;
   where: string;
   lines: Array<{
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    name: any;
-              // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    variant?: any;
-               // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    modifiers: any;
+    name: Prisma.JsonValue;
+    variant?: Prisma.JsonValue;
+    modifiers: Prisma.JsonValue;
     qty: number;
     unitPricePaise: number;
     linePaise: number;

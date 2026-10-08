@@ -33,8 +33,9 @@ export async function buildFacts() {
   });
 
   const menuText = menuItems.map(item => {
-    const nameEn = (item.name as any)?.en || "Unknown";
-    const nameHi = (item.name as any)?.hi || "";
+    const nameObj = item.name as Record<string, string> | null;
+    const nameEn = nameObj?.en || "Unknown";
+    const nameHi = nameObj?.hi || "";
     const price = item.basePricePaise ? formatINR(item.basePricePaise) : "Variable";
     const vegStr = item.isVeg ? "(Veg)" : "(Non-veg)";
     return `- ${nameEn} ${nameHi ? `(${nameHi})` : ""} ${vegStr}: ${price}`;

@@ -1,10 +1,9 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { prisma } from "../db";
 import { getWhatsApp } from "./index";
 import { WhatsAppProvider } from "./provider";
 import { renderMessage } from "./notify";
-import type { MessageKind } from "./notify";
+import type { MessageKind, MessagePayloads } from "./notify";
+import type { MessageLog } from "@prisma/client";
 
 const BACKOFF = [1 * 60, 5 * 60, 15 * 60, 60 * 60, 3 * 60 * 60];
 
@@ -12,7 +11,7 @@ export async function processOutbox({ now = new Date(), limit = 20, provider }: 
   const actualProvider = provider || getWhatsApp();
   
   // Claim rows
-  const claimed: any[] = await prisma.$queryRaw`
+  const claimed: MessageLog[] = await prisma.$queryRaw`
     UPDATE "MessageLog"
     SET "nextAttemptAt" = ${new Date(now.getTime() + 2 * 60 * 1000)}
     WHERE id IN (
@@ -35,7 +34,8 @@ export async function processOutbox({ now = new Date(), limit = 20, provider }: 
 
   for (const row of claimed) {
     try {
-      const text = renderMessage(row.kind as MessageKind, row.params, row.locale);
+      const params = (row.params && typeof row.params === "object" ? row.params : {}) as MessagePayloads[MessageKind];
+      const text = renderMessage(row.kind as MessageKind, params, row.locale as "en" | "hi");
       const res = await actualProvider.sendText(row.phone, text);
       
       const isOTP = row.kind === "OTP";
@@ -49,7 +49,7 @@ export async function processOutbox({ now = new Date(), limit = 20, provider }: 
         }
       });
       sent++;
-    } catch (err: any) {
+    } catch (err: unknown) {
       const attempts = row.attempts + 1;
       const isOTP = row.kind === "OTP";
       

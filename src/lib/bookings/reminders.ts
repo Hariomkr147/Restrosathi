@@ -1,12 +1,10 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { PrismaClient } from "@prisma/client";
 import { notify } from "../whatsapp/notify";
 import { sendNow } from "../whatsapp/outbox";
 
 const prisma = new PrismaClient();
 
-export async function sendDueReminders({ now = new Date(), provider }: { now?: Date, provider?: any } = {}) {
+export async function sendDueReminders({ now = new Date() }: { now?: Date } = {}) {
   // CONFIRMED bookings with reminderSentAt null,
   // slotStart > now, slotStart - now <= 3 h,
   // and createdAt <= slotStart - 3 h

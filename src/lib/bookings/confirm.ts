@@ -77,7 +77,7 @@ export async function confirmBooking(bookingId: string, actorId: string): Promis
       date: booking.slotStart.toISOString().slice(0, 10),
       pax: booking.partySize,
       time: booking.slotStart.toLocaleTimeString("en-IN", { hour: "numeric", minute: "2-digit", hour12: true, timeZone: "Asia/Kolkata" }),
-    }, { tx, locale: booking.locale as any });
+    }, { tx, locale: booking.locale as "en" | "hi" });
     
     await audit({ action: "booking.confirm", actorId, entity: "booking", entityId: bookingId }, tx);
     
@@ -109,7 +109,7 @@ export async function declineBooking(bookingId: string, reason: string | undefin
       }
     });
     
-    const msgRes = await notify("BOOKING_DECLINED", booking.phone, {}, { tx, locale: booking.locale as any });
+    const msgRes = await notify("BOOKING_DECLINED", booking.phone, {}, { tx, locale: booking.locale as "en" | "hi" });
     
     await audit({ action: "booking.decline", actorId, entity: "booking", entityId: bookingId, data: reason ? { reason } : {} }, tx);
     return { ok: true as const, msgId: "id" in msgRes ? msgRes.id : undefined };

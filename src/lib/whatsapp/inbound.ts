@@ -1,10 +1,21 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { prisma } from "../db";
 import crypto from "node:crypto";
 import { normalizePhone } from "../phone";
 
-export async function processInboundWebhook(body: any) {
-  const { event, data } = body;
+interface WebhookPayload {
+  event?: string;
+  data?: {
+    key?: { remoteJid?: string; id?: string; fromMe?: boolean };
+    from?: string;
+    isGroup?: boolean;
+    content?: string | { text?: string; conversation?: string };
+    message?: { conversation?: string; extendedTextMessage?: { text?: string } };
+  };
+  timestamp?: string | number;
+}
+
+export async function processInboundWebhook(body: unknown) {
+  const { event, data, timestamp } = (body as WebhookPayload) || {};
   
   if (!data || !data.key) return;
 
@@ -18,7 +29,7 @@ export async function processInboundWebhook(body: any) {
   const phoneStr = remoteJid.split("@")[0];
   const e164 = normalizePhone(phoneStr) || `+${phoneStr}`; // fallback if unparseable
 
-  const messageId = data.key.id || crypto.createHash("sha256").update(`${remoteJid}-${body.timestamp}-${JSON.stringify(data.content)}`).digest("hex");
+  const messageId = data.key.id || crypto.createHash("sha256").update(`${remoteJid}-${timestamp}-${JSON.stringify(data.content)}`).digest("hex");
   const isFromMe = data.key.fromMe || event === "message.sent";
   
   // Dedupe logic via Prisma unique constraint on externalId

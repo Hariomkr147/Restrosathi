@@ -1,5 +1,5 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import { prisma } from "../db";
+import { Prisma } from "@prisma/client";
 import { getSettings } from "../settings";
 import { computeBillDraft } from "./calc";
 import { audit } from "../audit";
@@ -129,8 +129,7 @@ export async function generateBill(
           taxMode: settings.taxMode,
           gstRatePercent: settings.gstRatePercent,
           pricesIncludeTax: settings.pricesIncludeTax,
-                            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          header: header as any,
+          header: header as Prisma.InputJsonValue,
           subtotalPaise: computed.subtotalPaise,
           discountType: discount?.type ?? null,
           discountValue: discount?.value ?? null,
@@ -173,12 +172,9 @@ export async function generateBill(
       await tx.billLine.createMany({
         data: validLines.map(l => ({
           billId,
-                                  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          name: l.nameSnapshot as any,
-                                        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          variant: l.variantSnapshot as any,
-                                            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          modifiers: l.modifiersSnapshot as any,
+          name: l.nameSnapshot as Prisma.InputJsonValue,
+          variant: l.variantSnapshot as Prisma.InputJsonValue,
+          modifiers: l.modifiersSnapshot as Prisma.InputJsonValue,
           qty: l.qty,
           unitPricePaise: l.unitPricePaise,
           linePaise: l.qty * l.unitPricePaise
@@ -191,11 +187,11 @@ export async function generateBill(
       }
 
       return { ok: true, billId };
-                // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    } catch (e: any) {
-      if (e.code === "EMPTY_BILL" || e.code === "DISCOUNT_EXCEEDS_SUBTOTAL" || e.code === "INVALID_DISCOUNT") {
-                                             // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        return { ok: false, error: e.code as any };
+    } catch (e: unknown) {
+      if (typeof e === "object" && e !== null && "code" in e) {
+        const code = (e as { code: string }).code;
+        if (code === "EMPTY_BILL") return { ok: false, error: "EMPTY_BILL" };
+        if (code === "DISCOUNT_EXCEEDS_SUBTOTAL" || code === "INVALID_DISCOUNT") return { ok: false, error: "DISCOUNT_INVALID" };
       }
       throw e;
     }

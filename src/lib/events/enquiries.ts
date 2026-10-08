@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { prisma } from "../db";
 import { requireUser } from "../auth/session";
 import { eventEnquiryInputSchema } from "./schemas";
@@ -7,7 +6,7 @@ import { checkRate } from "../rate-limit";
 import { notify } from "../whatsapp/notify";
 import { sendNow } from "../whatsapp/outbox";
 
-export async function submitEnquiry(input: any, ctx: { ip: string; now?: Date }) {
+export async function submitEnquiry(input: unknown, ctx: { ip: string; now?: Date }) {
   const parsed = eventEnquiryInputSchema.parse(input);
   
   if (parsed.honeypot) {

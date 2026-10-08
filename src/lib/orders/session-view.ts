@@ -41,8 +41,10 @@ export async function getSessionView(code: string): Promise<SessionView | null> 
     bill = {
       status: dbBill.status as "OPEN" | "SETTLED",
       title: dbBill.taxMode === "REGULAR" ? "Tax Invoice" : "Bill",
-                                  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      lines: dbBill.lines.map((l: any) => ({ name: l.name.en || l.name, qty: l.qty, totalPaise: l.linePaise })),
+      lines: dbBill.lines.map((l) => {
+        const nameObj = l.name as Record<string, string>;
+        return { name: nameObj.en || nameObj.hi || "Item", qty: l.qty, totalPaise: l.linePaise };
+      }),
       subtotalPaise: dbBill.subtotalPaise,
       discountPaise: dbBill.discountPaise,
       loyaltyDiscountPaise: dbBill.loyaltyDiscountPaise,

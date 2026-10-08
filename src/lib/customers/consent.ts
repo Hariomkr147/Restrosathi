@@ -1,6 +1,5 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { prisma as db } from "../db";
-import { ConsentSource } from "@prisma/client";
+import { ConsentSource, Customer } from "@prisma/client";
 
 export const MARKETING_CONSENT_TEXT_VERSION = "marketing-v1";
 
@@ -61,5 +60,5 @@ export async function getMarketingAudience() {
       ) = true
   `;
 
-  return await db.$queryRawUnsafe<any[]>(query);
+  return await db.$queryRawUnsafe<Customer[]>(query);
 }

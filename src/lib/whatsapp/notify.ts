@@ -53,17 +53,17 @@ export async function notify<K extends MessageKind>(
 export function renderMessage<K extends MessageKind>(kind: K, params: MessagePayloads[K], locale: "en" | "hi" = "en"): string {
   const msgs = locale === "hi" ? hiMsgs : enMsgs;
   
-  let template = (msgs.wa as any)[kind] as string;
+  let template = (msgs.wa as Record<string, string>)[kind];
   if (!template) {
     // fallback to en if missing in hi (but spec says every key exists in both)
-    template = (enMsgs.wa as any)[kind] as string;
+    template = (enMsgs.wa as Record<string, string>)[kind];
   }
   
   if (!template) throw new Error(`Missing template for ${kind}`);
 
   // Replace {var} with params[var]
   const rendered = template.replace(/\{([a-zA-Z0-9_]+)\}/g, (match, paramName) => {
-    const p = params as any;
+    const p = params as Record<string, unknown>;
     if (p[paramName] === undefined) {
       throw new Error(`Missing parameter ${paramName} for template ${kind}`);
     }

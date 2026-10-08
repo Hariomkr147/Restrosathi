@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { PrismaClient } from "@prisma/client";
 import { canBookingTransition } from "./status";
 import { notify } from "../whatsapp/notify";
@@ -21,7 +20,7 @@ export async function cancelByToken(cancelToken: string): Promise<{ ok: true } |
       }
     });
     
-    const msgRes = await notify("BOOKING_CANCELLED", booking.phone, {}, { tx, locale: booking.locale as any });
+    const msgRes = await notify("BOOKING_CANCELLED", booking.phone, {}, { tx, locale: booking.locale as "en" | "hi" });
     return "id" in msgRes ? msgRes.id : undefined;
   });
 
