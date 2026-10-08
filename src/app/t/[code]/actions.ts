@@ -5,7 +5,8 @@ import { headers } from "next/headers";
 import { getDeviceId } from "@/lib/device";
 import { placeOrder } from "@/lib/orders/place";
 import { createServiceRequest } from "@/lib/orders/service-requests";
-import { verifyOtp, cleanPhone } from "@/lib/otp";
+import { verifyOtp } from "@/lib/otp";
+import { normalizePhone } from "@/lib/phone";
 import { prisma } from "@/lib/db";
 import { getBalance } from "@/lib/loyalty";
 import { isPhoneVerified } from "@/lib/otp/verified-cookie";
@@ -24,8 +25,12 @@ export async function linkPhoneToSessionAction(code: string, rawPhone: string, o
   const verifyRes = await verifyOtp(rawPhone, otp, {});
   if (!verifyRes.ok) return verifyRes;
   
-  const phone = cleanPhone(rawPhone);
+  const phone = normalizePhone(rawPhone);
+  if (!phone) return { ok: false, error: "INVALID_PHONE" };
   return prisma.$transaction(async (tx) => {
+    const cust = await tx.customer.findUnique({ where: { phone } });
+    if (!cust?.verifiedAt) return { ok: false, error: "OTP_REQUIRED" };
+
     const table = await tx.restaurantTable.findFirst({ where: { code, active: true } });
     if (!table) return { ok: false, error: "INVALID_TABLE" };
     
@@ -41,9 +46,15 @@ export async function linkPhoneToSessionAction(code: string, rawPhone: string, o
   });
 }
 
-export async function getSessionLoyaltyBalanceAction(customerPhone: string) {
-  const phone = cleanPhone(customerPhone);
-  if (!(await isPhoneVerified(phone))) return 0;
+export async function getSessionLoyaltyBalanceAction(code: string) {
+  const table = await prisma.restaurantTable.findFirst({ where: { code, active: true } });
+  if (!table) return 0;
+  
+  const session = await prisma.diningSession.findFirst({ where: { tableId: table.id, status: { not: "CLOSED" } } });
+  if (!session || !session.customerPhone) return 0;
+
+  const phone = normalizePhone(session.customerPhone);
+  if (!phone || !(await isPhoneVerified(phone))) return 0;
 
   const customer = await prisma.customer.findUnique({ where: { phone } });
   if (!customer) return 0;

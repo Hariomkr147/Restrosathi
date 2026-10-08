@@ -15,9 +15,9 @@ export function JoinRewards({ code, customerPhone, onJoined }: Props) {
   
   useEffect(() => {
     if (customerPhone) {
-      getSessionLoyaltyBalanceAction(customerPhone).then(setBalance);
+      getSessionLoyaltyBalanceAction(code).then(setBalance);
     }
-  }, [customerPhone]);
+  }, [customerPhone, code]);
 
   if (customerPhone) {
     return (

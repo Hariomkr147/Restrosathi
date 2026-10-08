@@ -15,21 +15,14 @@ function hashOtp(phone: string, code: string): string {
   return createHmac("sha256", getSecret()).update(`${phone}:${code}`).digest("hex");
 }
 
-export function cleanPhone(rawPhone: string): string {
-  let cleaned = rawPhone.replace(/\D/g, "");
-  if (!cleaned.startsWith("91") && cleaned.length === 10) {
-    cleaned = "91" + cleaned;
-  }
-  return "+" + cleaned;
-}
-
+import { normalizePhone } from "../phone";
 function isValidE164(phone: string): boolean {
   return /^\+[1-9]\d{10,14}$/.test(phone);
 }
 
 export async function requestOtp(rawPhone: string, ctx: { ip: string; now?: Date }): Promise<{ ok: true } | { ok: false; error: "INVALID_PHONE" | "RATE_LIMITED" }> {
-  const phone = cleanPhone(rawPhone);
-  if (!isValidE164(phone)) return { ok: false, error: "INVALID_PHONE" };
+  const phone = normalizePhone(rawPhone);
+  if (!phone || !isValidE164(phone)) return { ok: false, error: "INVALID_PHONE" };
 
   const now = ctx.now ?? new Date();
   const code = randomInt(0, 1000000).toString().padStart(6, "0");
@@ -65,8 +58,8 @@ export async function requestOtp(rawPhone: string, ctx: { ip: string; now?: Date
 }
 
 export async function verifyOtp(rawPhone: string, code: string, ctx: { now?: Date }): Promise<{ ok: true } | { ok: false; error: "INVALID" | "EXPIRED" | "TOO_MANY_ATTEMPTS" | "INVALID_PHONE" }> {
-  const phone = cleanPhone(rawPhone);
-  if (!isValidE164(phone)) return { ok: false, error: "INVALID_PHONE" };
+  const phone = normalizePhone(rawPhone);
+  if (!phone || !isValidE164(phone)) return { ok: false, error: "INVALID_PHONE" };
   const now = ctx.now ?? new Date();
 
   return await prisma.$transaction(async (tx) => {

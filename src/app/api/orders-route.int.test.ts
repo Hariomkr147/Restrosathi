@@ -21,6 +21,7 @@ describe("Thin routes for loadtest", () => {
   beforeEach(async () => {
     await prisma.orderLine.deleteMany();
     await prisma.order.deleteMany();
+    await prisma.bill.deleteMany();
     await prisma.diningSession.deleteMany();
     await prisma.restaurantTable.deleteMany();
   });

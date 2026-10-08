@@ -182,11 +182,11 @@ Original Tasks 28–29, 31–35, 39, 42, 45. Audit: F04, F06. Depends: R04.
 
 **Files:** whatsapp notify/outbox/provider/webhook, message templates, all notify callers, current cron Compose entries.
 
-- [ ] Inventory each MessageKind, producer parameters and both locale placeholders. Prefer a small typed per-kind parameter map over an untyped catch-all.
-- [ ] Align OTP, booking receipt/confirmation/reminder/cancel, event acknowledgement, auto-reply, escalation, feedback, weekly and system-alert payloads. Build links from APP_URL and display dates/times in IST.
-- [ ] Queue each business event in its own DB transaction via `{tx}`; send only after commit. Use the returned message ID, never “latest message globally.”
-- [ ] Exercise real producer → real render → fake provider paths in both languages. Preserve five-retry/backoff, OTP scrubbing, provider dedupe, concurrent worker claims and disconnected banner behavior.
-- [ ] Correct outbox cron to POST immediately and prove a local fake message drains. Final scheduling/package checks remain R25.
+- [x] Inventory each MessageKind, producer parameters and both locale placeholders. Prefer a small typed per-kind parameter map over an untyped catch-all.
+- [x] Align OTP, booking receipt/confirmation/reminder/cancel, event acknowledgement, auto-reply, escalation, feedback, weekly and system-alert payloads. Build links from APP_URL and display dates/times in IST.
+- [x] Queue each business event in its own DB transaction via `{tx}`; send only after commit. Use the returned message ID, never “latest message globally.”
+- [x] Exercise real producer → real render → fake provider paths in both languages. Preserve five-retry/backoff, OTP scrubbing, provider dedupe, concurrent worker claims and disconnected banner behavior.
+- [x] Correct outbox cron to POST immediately and prove a local fake message drains. Final scheduling/package checks remain R25.
 
 **Acceptance:** no missing-template parameters; messages reference the right booking/bill; a failed provider leaves durable pending work and never rolls back a successful order/bill/booking.
 

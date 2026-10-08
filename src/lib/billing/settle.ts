@@ -53,6 +53,7 @@ export async function settleBill(
     if (bill.loyaltyPointsRedeemed > 0) {
       if (!settings.loyaltyEnabled) return { ok: false, error: "LOYALTY_DISABLED" } as const;
       if (!bill.customerPhone || !bill.phoneVerifiedAt) return { ok: false, error: "PHONE_NOT_VERIFIED" } as const;
+
       try {
         if (calculateRedemptionValue(bill.loyaltyPointsRedeemed, settings.loyaltyRedeemUnitPoints, settings.loyaltyRedeemUnitValuePaise) !== bill.loyaltyDiscountPaise) {
           return { ok: false, error: "LOYALTY_SETTINGS_CHANGED" } as const;
@@ -129,9 +130,12 @@ export async function settleBill(
       
       if (settings.loyaltyEnabled && bill.phoneVerifiedAt) {
         // Lock the customer row as per lock order
-        const [lockedCustomer] = await tx.$queryRaw<{ id: string }[]>`
-          SELECT id FROM "Customer" WHERE id = ${c.id} FOR UPDATE
+        const [lockedCustomer] = await tx.$queryRaw<{ id: string; verifiedAt: Date | null }[]>`
+          SELECT id, "verifiedAt" FROM "Customer" WHERE id = ${c.id} FOR UPDATE
         `;
+        if (bill.loyaltyPointsRedeemed > 0 && !lockedCustomer?.verifiedAt) {
+          return { ok: false, error: "PHONE_NOT_VERIFIED" } as const;
+        }
 
         if (lockedCustomer) {
           const { getBalance, calculateEarnedPoints } = await import("../loyalty");

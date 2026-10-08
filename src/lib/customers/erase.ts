@@ -34,7 +34,7 @@ export async function eraseCustomer(customerId: string, actor: { id: string; rol
     await tx.consentRecord.deleteMany({ where: { customerId } });
     await tx.feedback.deleteMany({ where: { customerId } });
     if ("loyaltyTxn" in tx) {
-      await (tx.loyaltyTxn as { deleteMany: (args: any) => Promise<any> }).deleteMany({ where: { customerId } });
+      await (tx.loyaltyTxn as { deleteMany: (args: unknown) => Promise<unknown> }).deleteMany({ where: { customerId } });
     }
     
     // 2. Delete Customer

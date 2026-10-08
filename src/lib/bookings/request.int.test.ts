@@ -10,6 +10,13 @@ describe("requestBooking", () => {
   beforeEach(async () => {
     await prisma.messageLog.deleteMany();
     await prisma.booking.deleteMany();
+    await prisma.optOut.deleteMany();
+    await prisma.consentRecord.deleteMany();
+    await prisma.customer.deleteMany();
+
+    await prisma.customer.create({
+      data: { phone: "+919999900000", name: "Test User", verifiedAt: new Date() }
+    });
   });
 
   const getValidSlot = async () => {
@@ -125,6 +132,7 @@ describe("requestBooking", () => {
     expect(res6).toEqual({ ok: false, error: "RATE_LIMITED" });
 
     // New phone, same device -> can do 5 more
+    await prisma.customer.create({ data: { phone: "+919999900001", verifiedAt: new Date() } });
     for (let i = 6; i < 11; i++) {
       const res = await requestBooking({
         name: "Test", phone: "+919999900001", partySize: 2, slotStart: slots[i]!.toISOString(), note: "",
@@ -133,6 +141,7 @@ describe("requestBooking", () => {
     }
 
     // 11th for device fails
+    await prisma.customer.create({ data: { phone: "+919999900002", verifiedAt: new Date() } });
     const res11 = await requestBooking({
       name: "Test", phone: "+919999900002", partySize: 2, slotStart: slots[11]!.toISOString(), note: "",
     }, ctx);

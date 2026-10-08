@@ -7,7 +7,7 @@ const prisma = new PrismaClient();
 describe("markBookingStatus", () => {
   beforeEach(async () => {
     await prisma.booking.deleteMany();
-    await prisma.user.deleteMany();
+    await prisma.user.deleteMany({ where: { name: "U1" } });
   });
 
   it("updates booking status", async () => {

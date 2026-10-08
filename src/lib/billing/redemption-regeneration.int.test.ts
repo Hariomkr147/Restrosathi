@@ -24,7 +24,7 @@ describe("redeemed bill regeneration", () => {
       taxMode: "NONE", pricesIncludeTax: false, loyaltyEnabled: true,
       loyaltyEarnPer100Rupees: 1, loyaltyRedeemUnitPoints: 100, loyaltyRedeemUnitValuePaise: 5000,
     } });
-    const customer = await prisma.customer.create({ data: { phone } });
+    const customer = await prisma.customer.create({ data: { phone, verifiedAt: new Date() } });
     customerId = customer.id;
     await prisma.loyaltyTxn.create({ data: { customerId, kind: "ADJUST", points: 200, note: "Opening balance" } });
     const table = await prisma.restaurantTable.findFirstOrThrow({ where: { active: true } });

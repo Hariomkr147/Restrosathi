@@ -8,7 +8,7 @@ describe("confirmBooking", () => {
   beforeEach(async () => {
     await prisma.messageLog.deleteMany();
     await prisma.booking.deleteMany();
-    await prisma.user.deleteMany();
+    await prisma.user.deleteMany({ where: { name: "U1" } });
   });
 
   it("confirms a requested booking and sends a message", async () => {

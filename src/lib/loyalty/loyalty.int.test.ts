@@ -34,6 +34,14 @@ await prisma.settings.update({
 });
 
 async function createBill(totalPaise: number, customerPhone: string | null, verified: boolean) {
+  if (customerPhone && verified) {
+    await prisma.customer.upsert({
+      where: { phone: `+91${customerPhone.replace(/\D/g, "")}` },
+      create: { phone: `+91${customerPhone.replace(/\D/g, "")}`, verifiedAt: new Date() },
+      update: { verifiedAt: new Date() }
+    });
+  }
+
   const session = await prisma.diningSession.create({
     data: { kind: "TAKEAWAY" }
   });
@@ -104,6 +112,7 @@ describe("loyalty ledger integration", () => {
 
   test("redemption of 100 points with balance 150 applies discount and after settlement ledger is +earned -100", async () => {
     const c = await upsertCustomer("9999922222", { name: "Test" }, prisma);
+    await prisma.customer.update({ where: { id: c.id }, data: { verifiedAt: new Date() } });
     await prisma.loyaltyTxn.create({
       data: { customerId: c.id, kind: "ADJUST", points: 150, note: "init", actorId: "owner-demo" }
     });
@@ -140,6 +149,7 @@ describe("loyalty ledger integration", () => {
   
   test("cancelling a settled bill reverses its EARN and REDEEM exactly once", async () => {
     const c = await upsertCustomer("9999944444", { name: "Test" }, prisma);
+    await prisma.customer.update({ where: { id: c.id }, data: { verifiedAt: new Date() } });
     await prisma.loyaltyTxn.create({
       data: { customerId: c.id, kind: "ADJUST", points: 100, note: "init", actorId: "owner-demo" }
     });

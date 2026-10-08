@@ -563,4 +563,8 @@ Date: 2026-10-08. Branch: phase-6-infrastructure. Commit: 06993e4.
 - Mapped all notify() payloads to typed structs.
 - Placed all notify() actions in Prisma transactions so that they commit with the business logic.
 - Updated integration tests and the outbox processor to properly flush messages after successful transactions.
-- Tested successfully with npm run test:int and fixed linting errors.
+- Tested successfully with npm run test:int and fixed linting errors.# #   T a s k   R 1 0 :   I n t e g r a t i o n   t e s t   r e p a i r s  
+ -   F i x e d   t e s t s / h e l p e r s / d b . t s   c o n f l i c t   b y   a v o i d i n g   c o n c u r r e n t   t e s t   r u n s .  
+ -   F i x e d   r e q u e s t B o o k i n g   t e s t   t o   p r o v i d e   v e r i f i e d   c u s t o m e r s .  
+ -   F i x e d   c a n c e l / c o n f i r m / s t a t u s   b o o k i n g   t e s t s   d e l e t i n g   s e e d e d   U s e r s .  
+ 

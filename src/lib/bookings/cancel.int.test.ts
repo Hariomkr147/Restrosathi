@@ -9,7 +9,7 @@ describe("cancelBooking", () => {
   beforeEach(async () => {
     await prisma.messageLog.deleteMany();
     await prisma.booking.deleteMany();
-    await prisma.user.deleteMany();
+    await prisma.user.deleteMany({ where: { name: "U1" } });
   });
 
   it("cancels a requested booking and sends a message if owner cancels", async () => {

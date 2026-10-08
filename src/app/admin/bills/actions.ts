@@ -54,7 +54,8 @@ export async function cancelBillAction(billId: string, reason: string) {
   return res;
 }
 
-import { verifyOtp, cleanPhone } from "@/lib/otp";
+import { verifyOtp } from "@/lib/otp";
+import { normalizePhone } from "@/lib/phone";
 import { prisma } from "@/lib/db";
 import { upsertCustomer } from "@/lib/customers";
 
@@ -63,7 +64,8 @@ export async function verifyBillPhoneAction(billId: string, rawPhone: string, co
   const res = await verifyOtp(rawPhone, code, {});
   if (!res.ok) return res;
   
-  const phone = cleanPhone(rawPhone);
+  const phone = normalizePhone(rawPhone);
+  if (!phone) return { ok: false as const, error: "INVALID_PHONE" };
   
   await prisma.$transaction(async (tx) => {
     await tx.$queryRaw`SELECT id FROM "Bill" WHERE id = ${billId} FOR UPDATE`;

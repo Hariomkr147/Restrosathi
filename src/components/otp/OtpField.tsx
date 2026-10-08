@@ -34,29 +34,41 @@ export function OtpField({ onSuccess, defaultPhone = "", onVerify }: Props) {
     setLoading(true);
     setError("");
 
-    const res = await requestOtpAction(phone);
-    setLoading(false);
-    
-    if (res.ok) {
-      setStep("OTP");
-      setResendTimer(30);
-      setCode(["", "", "", "", "", ""]);
-      setTimeout(() => inputsRef.current[0]?.focus(), 100);
-    } else {
-      setError(res.error);
+    try {
+      const res = await requestOtpAction(phone);
+      setLoading(false);
+      
+      if (res.ok) {
+        setStep("OTP");
+        setResendTimer(30);
+        setCode(["", "", "", "", "", ""]);
+        setTimeout(() => inputsRef.current[0]?.focus(), 100);
+      } else {
+        setError(res.error);
+      }
+    } catch (err) {
+      setLoading(false);
+      setError("Network error. Please try again.");
     }
   }
 
   async function handleVerify(fullCode: string) {
     setLoading(true);
     setError("");
-    const res = onVerify ? await onVerify(phone, fullCode) : await verifyOtpAction(phone, fullCode);
-    setLoading(false);
-    
-    if (res.ok) {
-      onSuccess(phone);
-    } else {
-      setError(res.error);
+    try {
+      const res = onVerify ? await onVerify(phone, fullCode) : await verifyOtpAction(phone, fullCode);
+      setLoading(false);
+      
+      if (res.ok) {
+        onSuccess(phone);
+      } else {
+        setError(res.error);
+        setCode(["", "", "", "", "", ""]);
+        inputsRef.current[0]?.focus();
+      }
+    } catch (err) {
+      setLoading(false);
+      setError("Network error. Please try again.");
       setCode(["", "", "", "", "", ""]);
       inputsRef.current[0]?.focus();
     }

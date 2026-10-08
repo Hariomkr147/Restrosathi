@@ -92,7 +92,10 @@ export async function requestBooking(input: BookingRequestInput, ctx: BookingReq
 
   const cancelToken = crypto.randomBytes(32).toString("base64url");
 
-  const { bookingId, msgId } = await prisma.$transaction(async (tx) => {
+  const txResult = await prisma.$transaction(async (tx) => {
+    const cust = await tx.customer.findUnique({ where: { phone } });
+    if (!cust?.verifiedAt) throw new Error("PHONE_NOT_VERIFIED");
+
     const b = await tx.booking.create({
       data: {
         name, phone, partySize, slotStart: targetDate, note, cancelToken
@@ -118,11 +121,16 @@ export async function requestBooking(input: BookingRequestInput, ctx: BookingReq
     }
 
     return { bookingId: b.id, msgId: "id" in msgRes ? msgRes.id : undefined };
+  }).catch((err: unknown) => {
+    if (err instanceof Error && err.message === "PHONE_NOT_VERIFIED") return { ok: false as const, error: "OTP_REQUIRED" as const };
+    throw err;
   });
 
-  if (msgId) {
-    sendNow(msgId).catch(console.error);
+  if ("error" in txResult) return txResult;
+
+  if (txResult.msgId) {
+    sendNow(txResult.msgId).catch(console.error);
   }
 
-  return { ok: true, bookingId, cancelToken };
+  return { ok: true, bookingId: txResult.bookingId, cancelToken };
 }
