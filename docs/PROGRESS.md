@@ -592,3 +592,12 @@ pm run test:int) successfully.
 - Validated auto-reply daily limits, facts grounding, STOP suppression, and webhook deduplication/authentication via integration tests.
 - Restored Phase 4 E2E webhook tests and wrote fresh Phase 4 security evidence.
 
+
+## Task R13: Complete customer records, consent and erasure
+
+- Added tests for concurrent consent appends and transactional rollbacks.
+- Fixed settlement to record explicit false for marketing consent (clearing earlier draft choice without inventing consent).
+- Updated Customer detail page to show the specific consent purpose for all historical records.
+- Altered erasure logic to anonymize Customer (instead of deletion) while preserving referential integrity for bills/orders.
+- Added 24-month retention purge for OptOut records.
+

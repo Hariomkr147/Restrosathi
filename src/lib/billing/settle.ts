@@ -123,8 +123,8 @@ export async function settleBill(
       const { upsertCustomer } = await import("../customers");
       const { recordConsent } = await import("../customers/consent");
       const c = await upsertCustomer(bill.customerPhone, { name: bill.customerName }, tx);
-      if (opts.marketingConsent) {
-        await recordConsent(c.id, true, "BILLING", actor.id);
+      if (typeof opts.marketingConsent === "boolean") {
+        await recordConsent(c.id, opts.marketingConsent, "BILLING", actor.id);
       }
       customerId = c.id;
       

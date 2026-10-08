@@ -53,6 +53,8 @@ describe("runRetention", () => {
       authSessions: 1,
       messageLogs: 1,
       aiDeviceUsage: 1,
+      errorLogs: 0,
+      optOuts: 0,
     });
 
     // Check what is left

@@ -37,8 +37,17 @@ export async function eraseCustomer(customerId: string, actor: { id: string; rol
       await (tx.loyaltyTxn as { deleteMany: (args: unknown) => Promise<unknown> }).deleteMany({ where: { customerId } });
     }
     
-    // 2. Delete Customer
-    await tx.customer.delete({ where: { id: customerId } });
+    // 2. Anonymize Customer
+    await tx.customer.update({ 
+      where: { id: customerId },
+      data: {
+        name: "Anonymous",
+        phone: deletedPhone,
+        birthday: null,
+        anniversary: null,
+        verifiedAt: null
+      }
+    });
 
     // 3. Delete ThreadState
     await tx.threadState.deleteMany({ where: { phone } });

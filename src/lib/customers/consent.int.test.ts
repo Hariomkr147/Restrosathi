@@ -56,4 +56,32 @@ describe("consent", () => {
     expect(audience).toHaveLength(1);
     expect(audience[0].id).toBe(cGranted.id);
   });
+
+  test("transaction rollback preserves previous consent state", async () => {
+    const c = await upsertCustomer("9999977777");
+    await recordConsent(c.id, true, "BILLING");
+    
+    try {
+      await prisma.$transaction(async (tx) => {
+        await recordConsent(c.id, false, "ADMIN", undefined, tx);
+        throw new Error("ROLLBACK");
+      });
+    } catch {}
+
+    expect(await hasMarketingConsent(c.id)).toBe(true);
+    const records = await prisma.consentRecord.findMany({ where: { customerId: c.id } });
+    expect(records).toHaveLength(1);
+  });
+
+  test("concurrent appends record all entries", async () => {
+    const c = await upsertCustomer("9999988888");
+    await Promise.all([
+      recordConsent(c.id, true, "BILLING"),
+      recordConsent(c.id, false, "WHATSAPP_STOP"),
+      recordConsent(c.id, true, "BOOKING")
+    ]);
+
+    const records = await prisma.consentRecord.findMany({ where: { customerId: c.id } });
+    expect(records).toHaveLength(3);
+  });
 });

@@ -92,9 +92,11 @@ describe("eraseCustomer", () => {
     await prisma.user.create({ data: { id: "user1", phone: "+919999900000", passwordHash: "x", role: "OWNER", name: "Owner" } });
     await eraseCustomer(c.id, { id: "user1", role: "OWNER" });
 
-    // Customer should be gone
+    // Customer should be anonymized
     const afterC = await prisma.customer.findUnique({ where: { id: c.id } });
-    expect(afterC).toBeNull();
+    expect(afterC).not.toBeNull();
+    expect(afterC!.name).toBe("Anonymous");
+    expect(afterC!.phone).toContain("+00deleted");
 
     // Bill should remain but anonymised
     const afterB = await prisma.bill.findUnique({ where: { id: b.id } });

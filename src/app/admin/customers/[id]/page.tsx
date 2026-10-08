@@ -72,7 +72,9 @@ export default async function CustomerDetailPage({ params }: { params: Promise<{
                 <h3 className="text-sm font-medium text-muted-foreground mb-2">History</h3>
                 {customer.consentRecords.map(cr => (
                   <div key={cr.id} className="text-xs space-y-1">
-                    <p className="font-medium">{cr.granted ? "✅ Granted" : "❌ Denied"}</p>
+                    <p className="font-medium">
+                      {cr.purpose}: {cr.granted ? "✅ Granted" : "❌ Denied"}
+                    </p>
                     <p className="text-muted-foreground">Via {cr.source} on {cr.at.toLocaleString("en-IN")}</p>
                     {cr.textVersion && <p className="text-muted-foreground italic text-[10px]">v: {cr.textVersion}</p>}
                   </div>
