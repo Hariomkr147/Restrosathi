@@ -110,4 +110,25 @@ describe("OTP verification", () => {
     expect(await verifyOtp("9999900000", code1, { now })).toEqual({ ok: false, error: "INVALID" });
     expect(await verifyOtp("9999900000", code2, { now })).toMatchObject({ ok: true });
   });
+
+  it("handles concurrent consumption correctly", async () => {
+    const now = new Date("2026-10-06T10:00:00Z");
+    await requestOtp("9999900000", { ip: "127.0.0.1", now });
+
+    const msg = await prisma.messageLog.findFirst({ orderBy: { createdAt: "desc" } });
+    const code = (msg?.params as { otp: string }).otp;
+
+    // Simulate concurrent attempts with the correct code
+    const results = await Promise.all([
+      verifyOtp("9999900000", code, { now }),
+      verifyOtp("9999900000", code, { now }),
+      verifyOtp("9999900000", code, { now })
+    ]);
+
+    const successes = results.filter((r) => r.ok).length;
+    expect(successes).toBe(1); // Only one should succeed
+    
+    const failures = results.filter((r) => !r.ok).length;
+    expect(failures).toBe(2);
+  });
 });

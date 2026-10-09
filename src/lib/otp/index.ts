@@ -63,12 +63,16 @@ export async function verifyOtp(rawPhone: string, code: string, ctx: { now?: Dat
   const now = ctx.now ?? new Date();
 
   return await prisma.$transaction(async (tx) => {
-    await tx.$executeRaw`SELECT pg_advisory_xact_lock(hashtextextended(${'otp:' + phone}, 0))`;
-
-    const otp = await tx.otpCode.findFirst({
-      where: { phone, consumedAt: null },
-      orderBy: { createdAt: "desc" }
-    });
+    // Row-level lock on the OTP row to prevent concurrent consumption
+    const otps = await tx.$queryRaw<{ id: string; attempts: number; codeHash: string; expiresAt: Date }[]>`
+      SELECT id, attempts, "codeHash", "expiresAt" 
+      FROM "OtpCode" 
+      WHERE phone = ${phone} AND "consumedAt" IS NULL 
+      ORDER BY "createdAt" DESC 
+      LIMIT 1 
+      FOR UPDATE
+    `;
+    const otp = otps[0];
 
     if (!otp) return { ok: false, error: "INVALID" } as const;
     if (otp.attempts >= 5) return { ok: false, error: "TOO_MANY_ATTEMPTS" } as const;
@@ -101,12 +105,12 @@ export async function verifyOtp(rawPhone: string, code: string, ctx: { now?: Dat
       data: { consumedAt: now }
     });
 
-    return { ok: true, phone } as const;
+    return { ok: true } as const;
   }).then(async (res) => {
     if (res.ok) {
       const { upsertCustomer } = await import("../customers");
-      await upsertCustomer(res.phone, { verified: true });
-      await setPhoneVerifiedCookie(res.phone, now.getTime());
+      await upsertCustomer(phone, { verified: true });
+      await setPhoneVerifiedCookie(phone, now.getTime());
       return { ok: true };
     }
     return res;
