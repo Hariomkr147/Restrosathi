@@ -781,3 +781,7 @@ pm run test:int -- loyalty\ successfully.
 - Updated createCampaignAction to enforce the same text validation at persistence.
 - Modified CampaignDetailsPage to recompute the target audience dynamically (deleting pending sends for customers no longer matching the criteria).
 - Removed unused direct-provider dependencies (@ai-sdk/google, i) and CampaignUI promo links from the generic customer list.
+
+## Task R20: Backup crypto authentication
+- Added explicit warning log when restoring legacy V1 backup formats in crypto.ts as requested in production readiness review.
+- Note: Primary V2 authentication with collision-safe chunk nonces and fileId AAD was already implemented in a previous commit (e41b7d4c7cb456ba7e156808b2c91bdd41c1ee97).
