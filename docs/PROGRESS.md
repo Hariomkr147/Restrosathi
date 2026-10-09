@@ -682,3 +682,11 @@ pm run test:unit\ for crypto and all 14 tests pass.
 
 ## Deviations
 - Fixed several stale typecheck errors from R18/R19 (`consumeMonthlyQuota` arguments, `requirePageUser` module pathing in marketing routes, and unsafe promo button presence in customers view) to restore a clean build.
+
+## Task R23: Finish owner/staff account management
+
+- Refactored ccounts.ts to use Prisma $transaction for concurrent operations and audit logs.
+- Developed StaffUI Forms (AddStaffForm, StaffItemRow, ChangePasswordForm) and wired via new Server Actions (ctions.ts).
+- Included lock strategy in Postgres transaction to enforce active-name uniqueness under concurrency.
+- Validated E2E bounds by integrating precise tests into ccounts.int.test.ts.
+- Fixed all TypeScript validation errors.

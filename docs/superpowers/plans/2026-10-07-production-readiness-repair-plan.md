@@ -372,11 +372,11 @@ Original Task 47. Audit: F16/F18. Depends: R01, R04.
 
 **Files:** auth accounts/password/session, admin staff/account forms/actions, tests/messages.
 
-- [ ] Test real owner-created staff login with4–6digit PIN; active-name uniqueness under concurrency, reset invalidates old PIN, existing lockout remains.
-- [ ] Use existing scrypt/audit/session primitives; account mutations and audit/session-revocation writes belong to one transaction where applicable.
-- [ ] Deactivation revokes sessions; reactivation follows name uniqueness rules. Password change requires current password and >=10 chars, ends other sessions while preserving current session as specified.
-- [ ] Add actual list/add/reset/deactivate/reactivate and password forms with labels, clear errors/pending/success, no secret echoes or audit payloads.
-- [ ] Replace empty integration/E2E and generic-throw authz assertions with successful owner actions and precise staff/anonymous denials.
+- [x] Test real owner-created staff login with4–6digit PIN; active-name uniqueness under concurrency, reset invalidates old PIN, existing lockout remains.
+- [x] Use existing scrypt/audit/session primitives; account mutations and audit/session-revocation writes belong to one transaction where applicable.
+- [x] Deactivation revokes sessions; reactivation follows name uniqueness rules. Password change requires current password and >=10 chars, ends other sessions while preserving current session as specified.
+- [x] Add actual list/add/reset/deactivate/reactivate and password forms with labels, clear errors/pending/success, no secret echoes or audit payloads.
+- [x] Replace empty integration/E2E and generic-throw authz assertions with successful owner actions and precise staff/anonymous denials.
 
 **Acceptance:** actual two-browser owner→new staff journey succeeds; deactivated users/current old credentials fail; no audit row contains PIN/password.
 

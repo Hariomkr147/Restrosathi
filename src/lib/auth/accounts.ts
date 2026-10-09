@@ -1,8 +1,8 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import { prisma } from "../db";
 import { requireUser } from "./session";
 import { hashSecret, verifySecret } from "./password";
-import { randomBytes } from "node:crypto";
+import crypto from "node:crypto";
+import { cookies } from "next/headers";
 
 export async function createStaff({ name, pin }: { name: string; pin: string }) {
   const me = await requireUser("OWNER");
@@ -11,32 +11,42 @@ export async function createStaff({ name, pin }: { name: string; pin: string }) 
     throw new Error("PIN must be 4 to 6 digits");
   }
 
-  const existing = await prisma.user.findFirst({ where: { name, active: true } });
-  if (existing) {
-    throw new Error("Staff name already exists");
-  }
+  const cleanName = name.trim();
 
-  const pinHash = await hashSecret(pin);
-  const user = await prisma.user.create({
-    data: {
-      name,
-      role: "STAFF",
-      pinHash,
-      active: true,
+  return prisma.$transaction(async (tx) => {
+    const hash = crypto.createHash('md5').update(cleanName).digest();
+    const lockKey = hash.readInt32BE(0);
+    await tx.$executeRaw`SELECT pg_advisory_xact_lock(506, ${lockKey})`;
+    
+    const existing = await tx.user.findFirst({
+      where: { name: cleanName, active: true, role: "STAFF" }
+    });
+    if (existing) {
+      throw new Error("An active staff member with this name already exists");
     }
-  });
 
-  await prisma.auditLog.create({
-    data: {
-      actorId: me.id,
-      action: "account.create",
-      entity: "User",
-      entityId: user.id,
-      data: { name }
-    }
-  });
+    const pinHash = await hashSecret(pin);
+    const user = await tx.user.create({
+      data: {
+        name: cleanName,
+        role: "STAFF",
+        pinHash,
+        active: true,
+      }
+    });
 
-  return user;
+    await tx.auditLog.create({
+      data: {
+        actorId: me.id,
+        action: "account.create",
+        entity: "User",
+        entityId: user.id,
+        data: { name: cleanName }
+      }
+    });
+    
+    return user;
+  });
 }
 
 export async function resetStaffPin(userId: string, pin: string) {
@@ -46,43 +56,67 @@ export async function resetStaffPin(userId: string, pin: string) {
     throw new Error("PIN must be 4 to 6 digits");
   }
 
-  const pinHash = await hashSecret(pin);
-  await prisma.user.update({
-    where: { id: userId, role: "STAFF" },
-    data: { pinHash }
-  });
+  await prisma.$transaction(async (tx) => {
+    const pinHash = await hashSecret(pin);
+    const user = await tx.user.findUnique({ where: { id: userId } });
+    if (!user || user.role !== "STAFF") throw new Error("Staff not found");
 
-  await prisma.auditLog.create({
-    data: {
-      actorId: me.id,
-      action: "account.pin_reset",
-      entity: "User",
-      entityId: userId,
-      data: {}
-    }
+    await tx.user.update({
+      where: { id: userId },
+      data: { pinHash }
+    });
+
+    await tx.auditLog.create({
+      data: {
+        actorId: me.id,
+        action: "account.pin_reset",
+        entity: "User",
+        entityId: userId,
+        data: {}
+      }
+    });
   });
 }
 
 export async function setStaffActive(userId: string, active: boolean) {
   const me = await requireUser("OWNER");
   
-  await prisma.user.update({
-    where: { id: userId, role: "STAFF" },
-    data: { active }
-  });
-  
-  if (!active) {
-    await prisma.authSession.deleteMany({ where: { userId } });
-  }
+  await prisma.$transaction(async (tx) => {
+    const user = await tx.user.findUnique({ where: { id: userId } });
+    if (!user || user.role !== "STAFF") throw new Error("Staff not found");
 
-  await prisma.auditLog.create({
-    data: {
-      actorId: me.id,
-      action: "account.active",
-      entity: "User",
-      entityId: userId,
-      data: { active }
+    if (active) {
+      const hash = crypto.createHash('md5').update(user.name).digest();
+      const lockKey = hash.readInt32BE(0);
+      await tx.$executeRaw`SELECT pg_advisory_xact_lock(506, ${lockKey})`;
+      
+      const existing = await tx.user.findFirst({
+        where: { name: user.name, active: true, role: "STAFF" }
+      });
+      
+      if (existing && existing.id !== userId) {
+        throw new Error("Another active staff member has this name. Please rename them first.");
+      }
     }
+
+    await tx.user.update({
+      where: { id: userId },
+      data: { active }
+    });
+    
+    if (!active) {
+      await tx.authSession.deleteMany({ where: { userId } });
+    }
+
+    await tx.auditLog.create({
+      data: {
+        actorId: me.id,
+        action: "account.active",
+        entity: "User",
+        entityId: userId,
+        data: { active }
+      }
+    });
   });
 }
 
@@ -93,43 +127,44 @@ export async function changeOwnerPassword(current: string, next: string) {
     throw new Error("Password must be at least 10 characters");
   }
 
-  const userRecord = await prisma.user.findUnique({ where: { id: user.id } });
-  if (!userRecord?.passwordHash) throw new Error("Current password not set");
-  const isValid = await verifySecret(current, userRecord.passwordHash);
-  if (!isValid) {
-    throw new Error("Current password incorrect");
-  }
-
-  const passwordHash = await hashSecret(next);
-  await prisma.user.update({
-    where: { id: user.id },
-    data: { passwordHash }
-  });
-
-  const { cookies } = await import("next/headers");
-  const store = await cookies();
-  const token = store.get("rs_session")?.value;
-  const { createHash } = await import("node:crypto");
-  
-  if (token) {
-    const hash = createHash("sha256").update(token).digest("hex");
-    await prisma.authSession.deleteMany({ 
-      where: { 
-        userId: user.id,
-        tokenHash: { not: hash }
-      } 
-    });
-  } else {
-    await prisma.authSession.deleteMany({ where: { userId: user.id } });
-  }
-
-  await prisma.auditLog.create({
-    data: {
-      actorId: user.id,
-      action: "account.password",
-      entity: "User",
-      entityId: user.id,
-      data: {}
+  await prisma.$transaction(async (tx) => {
+    const userRecord = await tx.user.findUnique({ where: { id: user.id } });
+    if (!userRecord?.passwordHash) throw new Error("Current password not set");
+    
+    const isValid = await verifySecret(current, userRecord.passwordHash);
+    if (!isValid) {
+      throw new Error("Current password incorrect");
     }
+
+    const passwordHash = await hashSecret(next);
+    await tx.user.update({
+      where: { id: user.id },
+      data: { passwordHash }
+    });
+
+    const store = await cookies();
+    const token = store.get("rs_session")?.value;
+    
+    if (token) {
+      const hash = crypto.createHash("sha256").update(token).digest("hex");
+      await tx.authSession.deleteMany({ 
+        where: { 
+          userId: user.id,
+          tokenHash: { not: hash }
+        } 
+      });
+    } else {
+      await tx.authSession.deleteMany({ where: { userId: user.id } });
+    }
+
+    await tx.auditLog.create({
+      data: {
+        actorId: user.id,
+        action: "account.password",
+        entity: "User",
+        entityId: user.id,
+        data: {}
+      }
+    });
   });
 }
