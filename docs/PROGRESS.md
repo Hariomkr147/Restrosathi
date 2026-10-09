@@ -671,3 +671,14 @@ pm run test:unit\ for crypto and all 14 tests pass.
 - Updated \docker-compose.prod.yml\ with safe environment properties for backup.
 - **PARKED**: Docker Desktop is down on the host environment and \pg_dump\ is missing from PATH, meaning the Floci drill and the integration tests (\ackup.int.test.ts\) fail immediately at startup due to connection refused.
 - To unblock: Start Docker Desktop and ensure Postgres/pg_dump tools are available on the host to run the Floci container tests.
+
+## Task R22: Implement authenticated monitoring and transactional alerts
+- Rewrote `alerts/route.ts` to execute `runChecks()` and enqueue `SYSTEM_ALERT` notifications serially via `notify()` using advisory locking.
+- Re-architected alert state to maintain per-check tracking (DB, disk, backup, outbox, WhatsApp, AI, errors) rather than aggregating into one state, enabling per-issue debouncing (first failure, repeat after 6h, one recovery message).
+- Removed direct provider usage in favor of Outbox pattern (`notify()` for `SYSTEM_ALERT`) and added bilingual translations.
+- Updated `/admin/system/page.tsx` to strictly require `OWNER` authorization.
+- Added `/api/health/deep` for comprehensive authenticated monitoring and documented external monitoring dependencies in `docs/MONITORING.md`.
+- Integration tests (`checks.int.test.ts`) require Docker (currently parked due to host limitations).
+
+## Deviations
+- Fixed several stale typecheck errors from R18/R19 (`consumeMonthlyQuota` arguments, `requirePageUser` module pathing in marketing routes, and unsafe promo button presence in customers view) to restore a clean build.
