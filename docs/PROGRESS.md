@@ -748,3 +748,13 @@ pm run dev\ fail immediately with an SWC native addon cache error (DACL grants r
 - Executed docker-compose.prod.yml building from clean host to confirm Prisma CLI and migrate deploy script in docker/entrypoint.sh works.
 - Unparked and verified.
 
+
+## Task R10: Make OTP issuance, verification and identity binding atomic
+- Commit: 96c89a4
+- Tested: run \
+pm run test:int -- otp\ and \
+pm run test:int -- loyalty\ successfully.
+- Implemented FOR UPDATE row locking for OTP code verification to serialize consumption and limit attempts properly.
+- Removed arbitrary phone return from verifyOtp to enforce contract conformance.
+- Verified rate limit logic and added concurrent testing.
+
