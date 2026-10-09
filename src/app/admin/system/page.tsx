@@ -1,9 +1,9 @@
 import { runChecks } from "@/lib/monitoring/checks";
 import { prisma } from "@/lib/db";
-import { requireUser } from "@/lib/auth/session";
+import { requirePageUser } from "@/lib/auth/session";
 
 export default async function SystemPage() {
-  await requireUser();
+  await requirePageUser("OWNER");
 
   const checks = await runChecks();
   const errors = await prisma.errorLog.findMany({

@@ -494,7 +494,8 @@
     "THANK_YOU_FEEDBACK": "Thank you for visiting{name}! Tell us how we did: {feedbackLink}",
     "WEEKLY_REPORT": "Weekly Report ({start} - {end}):\nOrders: {orderCount}\nSales: {sales}\n\n{insight}",
     "STOP_CONFIRMED": "You have been unsubscribed from our messages.",
-    "AUTO_REPLY": "{answer}"
+    "AUTO_REPLY": "{answer}",
+    "SYSTEM_ALERT": "{message}"
   },
   "consent": {
     "marketing": {

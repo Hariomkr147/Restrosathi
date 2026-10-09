@@ -6,7 +6,7 @@ import crypto from "node:crypto";
 import enMsgs from "../../../messages/en.json";
 import hiMsgs from "../../../messages/hi.json";
 
-export type MessageKind = "OTP" | "BOOKING_RECEIVED" | "BOOKING_CONFIRMED" | "BOOKING_DECLINED" | "BOOKING_CANCELLED" | "BOOKING_REMINDER" | "EVENT_ENQUIRY_RECEIVED" | "ORDER_ESCALATION" | "THANK_YOU_FEEDBACK" | "WEEKLY_REPORT" | "STOP_CONFIRMED" | "AUTO_REPLY";
+export type MessageKind = "OTP" | "BOOKING_RECEIVED" | "BOOKING_CONFIRMED" | "BOOKING_DECLINED" | "BOOKING_CANCELLED" | "BOOKING_REMINDER" | "EVENT_ENQUIRY_RECEIVED" | "ORDER_ESCALATION" | "THANK_YOU_FEEDBACK" | "WEEKLY_REPORT" | "STOP_CONFIRMED" | "AUTO_REPLY" | "SYSTEM_ALERT";
 
 export type MessagePayloads = {
   OTP: { otp: string; minutes: string | number };
@@ -21,6 +21,7 @@ export type MessagePayloads = {
   WEEKLY_REPORT: { start: string; end: string; orderCount: string | number; sales: string; insight: string };
   STOP_CONFIRMED: Record<string, never>;
   AUTO_REPLY: { answer: string };
+  SYSTEM_ALERT: { message: string };
 };
 
 export async function notify<K extends MessageKind>(
