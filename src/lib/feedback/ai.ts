@@ -4,9 +4,12 @@ import { getProvider } from "../ai";
 import { z } from "zod";
 
 const aiResponseSchema = z.object({
-  themes: z.array(z.string()).max(3),
+  themes: z.array(z.object({
+    theme: z.string(),
+    refs: z.array(z.number())
+  })).max(3),
   positive: z.array(z.string()).max(2),
-  reply: z.string()
+  reply: z.string().max(400).refine(s => !/(refund|free|discount|\d+%|\d+rs|http|www\.)/i.test(s), "Unsafe content in reply")
 });
 
 function stripPii(text: string): string {
@@ -18,7 +21,6 @@ function stripPii(text: string): string {
 }
 
 export async function generateFeedbackSummary(startAt: Date, endAt: Date) {
-  // Check if we already have one
   const existing = await prisma.feedbackSummary.findFirst({
     where: { startAt, endAt }
   });
@@ -27,34 +29,47 @@ export async function generateFeedbackSummary(startAt: Date, endAt: Date) {
   const feedbacks = await prisma.feedback.findMany({
     where: {
       submittedAt: { gte: startAt, lt: endAt },
-      comment: { not: null }
-    }
+      comment: { not: null, notIn: [""] }
+    },
+    take: 100,
+    orderBy: { submittedAt: 'desc' }
   });
 
-  if (feedbacks.length === 0) {
-    return null;
+  const fallback = {
+    themes: [],
+    positive: [],
+    reply: "Thank you for your feedback. We are always looking to improve and appreciate your input."
+  };
+
+  if (feedbacks.length < 5) {
+    return await prisma.feedbackSummary.create({
+      data: { startAt, endAt, ...fallback }
+    });
   }
 
-  // Quota check
   const allowed = await consumeMonthlyQuota();
   if (!allowed) {
-    return null;
+    return await prisma.feedbackSummary.create({
+      data: { startAt, endAt, ...fallback }
+    });
   }
 
-  const bad = feedbacks.filter(f => f.comment && f.comment.trim() !== "" && f.rating && f.rating <= 3).map(f => stripPii(f.comment!));
-  const good = feedbacks.filter(f => f.comment && f.comment.trim() !== "" && f.rating && f.rating > 3).map(f => stripPii(f.comment!));
+  const bad = feedbacks.filter(f => f.rating && f.rating <= 3).map(f => stripPii(f.comment!));
+  const good = feedbacks.filter(f => f.rating && f.rating > 3).map(f => stripPii(f.comment!));
 
   const prompt = `You are a restaurant manager's assistant. Analyze the following 7-day feedback.
 Good feedback:
-${good.join("\n- ")}
+${good.map((f, i) => `[${i}] ${f}`).join("\n")}
 
 Bad feedback:
-${bad.join("\n- ")}
+${bad.map((f, i) => `[${i}] ${f}`).join("\n")}
 
 Return exactly a JSON object with:
-- "themes": array of exactly 3 negative or improvement themes (strings)
+- "themes": array of up to 3 objects, each with:
+    "theme": string
+    "refs": array of integer indices from the bad feedback matching this theme
 - "positive": array of exactly 2 positive areas (strings)
-- "reply": a drafted owner reply to the worst piece of feedback (string)
+- "reply": a drafted owner reply to the worst piece of feedback (string, max 400 chars, NO URLs, NO discounts/refunds)
 
 Return ONLY valid JSON.`;
 
@@ -67,20 +82,28 @@ Return ONLY valid JSON.`;
 
     const parsed = aiResponseSchema.parse(JSON.parse(res.text));
 
-    // Persist atomically
-    const summary = await prisma.feedbackSummary.create({
+    // Calculate counts in code, dropping invalid references
+    const structuredThemes = parsed.themes.map(t => {
+      const validRefs = new Set(t.refs.filter(r => r >= 0 && r < bad.length));
+      return {
+        theme: t.theme,
+        count: validRefs.size
+      };
+    }).filter(t => t.count > 0);
+
+    return await prisma.feedbackSummary.create({
       data: {
         startAt,
         endAt,
-        themes: parsed.themes,
+        themes: structuredThemes,
         positive: parsed.positive,
         reply: parsed.reply
       }
     });
-    
-    return summary;
   } catch (err) {
     console.error("Feedback AI failure", err);
-    return null;
+    return await prisma.feedbackSummary.create({
+      data: { startAt, endAt, ...fallback }
+    });
   }
 }

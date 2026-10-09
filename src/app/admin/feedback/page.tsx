@@ -93,7 +93,9 @@ export default async function AdminFeedbackPage() {
             <div>
               <h3 className="font-bold mb-1 text-red-700">Themes to Improve</h3>
               <ul className="list-disc pl-5 space-y-1">
-                {(summary.themes as string[]).map((t, i) => <li key={i}>{t}</li>)}
+                {(summary.themes as { theme: string, count: number }[]).map((t, i) => (
+                  <li key={i}>{t.theme} <span className="text-muted-foreground text-xs ml-1">({t.count} mentions)</span></li>
+                ))}
               </ul>
             </div>
             <div className="bg-muted p-3 rounded">

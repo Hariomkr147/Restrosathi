@@ -17,7 +17,11 @@ vi.mock("../ai", () => ({
       }
       return {
         text: JSON.stringify({
-          themes: ["Service slow", "Food cold", "No parking"],
+          themes: [
+            { theme: "Service slow", refs: [0] },
+            { theme: "Food cold", refs: [1, 2] },
+            { theme: "No parking", refs: [3] }
+          ],
           positive: ["Nice ambiance", "Clean"],
           reply: "We are sorry."
         })
@@ -38,38 +42,41 @@ describe("AI Feedback Summary", () => {
     const end = new Date("2026-10-08T00:00:00Z");
 
     const user = await prisma.user.create({ data: { phone: "999888777" + Math.random().toString().slice(2, 6), role: "OWNER", name: "test" } });
-    const bill = await prisma.bill.create({
-      data: {
-        totalPaise: 1000,
-        gstRatePercent: 0,
-        pricesIncludeTax: true,
-        header: {},
-        subtotalPaise: 1000,
-        discountPaise: 0,
-        taxableValuePaise: 1000,
-        cgstPaise: 0,
-        sgstPaise: 0,
-        roundOffPaise: 0,
-        status: "SETTLED",
-        docType: "BILL",
-        taxMode: "NONE",
-        generatedById: user.id,
-        session: {
-          create: { kind: "TAKEAWAY" }
+    
+    for (let i = 0; i < 5; i++) {
+      const bill = await prisma.bill.create({
+        data: {
+          totalPaise: 1000,
+          gstRatePercent: 0,
+          pricesIncludeTax: true,
+          header: {},
+          subtotalPaise: 1000,
+          discountPaise: 0,
+          taxableValuePaise: 1000,
+          cgstPaise: 0,
+          sgstPaise: 0,
+          roundOffPaise: 0,
+          status: "SETTLED",
+          docType: "BILL",
+          taxMode: "NONE",
+          generatedById: user.id,
+          session: {
+            create: { kind: "TAKEAWAY" }
+          }
         }
-      }
-    });
+      });
 
-    await prisma.feedback.create({
-      data: {
-        billId: bill.id,
-        token: "token1",
-        tokenExpiresAt: new Date(Date.now() + 100000),
-        rating: 2,
-        comment: "Horrible 1234567890 and test@example.com @twitter_user",
-        submittedAt: new Date("2026-10-05T00:00:00Z")
-      }
-    });
+      await prisma.feedback.create({
+        data: {
+          billId: bill.id,
+          token: "token" + i,
+          tokenExpiresAt: new Date(Date.now() + 100000),
+          rating: 2,
+          comment: "Horrible 1234567890 and test@example.com @twitter_user " + i,
+          submittedAt: new Date("2026-10-05T00:00:00Z")
+        }
+      });
+    }
 
     const summary = await generateFeedbackSummary(start, end);
     expect(summary).toBeDefined();
@@ -80,47 +87,52 @@ describe("AI Feedback Summary", () => {
     expect(summary2?.id).toBe(summary?.id);
   });
 
-  it("returns null gracefully if quota exceeded", async () => {
+  it("returns fallback gracefully if quota exceeded", async () => {
     (consumeMonthlyQuota as any).mockResolvedValueOnce(false);
     
     const start = new Date("2026-10-01T00:00:00Z");
     const end = new Date("2026-10-08T00:00:00Z");
 
     const user = await prisma.user.create({ data: { phone: "999888777" + Math.random().toString().slice(2, 6), role: "OWNER", name: "test" } });
-    const bill = await prisma.bill.create({
-      data: {
-        totalPaise: 1000,
-        gstRatePercent: 0,
-        pricesIncludeTax: true,
-        header: {},
-        subtotalPaise: 1000,
-        discountPaise: 0,
-        taxableValuePaise: 1000,
-        cgstPaise: 0,
-        sgstPaise: 0,
-        roundOffPaise: 0,
-        status: "SETTLED",
-        docType: "BILL",
-        taxMode: "NONE",
-        generatedById: user.id,
-        session: {
-          create: { kind: "TAKEAWAY" }
+    
+    for (let i = 0; i < 6; i++) {
+      const bill = await prisma.bill.create({
+        data: {
+          totalPaise: 1000,
+          gstRatePercent: 0,
+          pricesIncludeTax: true,
+          header: {},
+          subtotalPaise: 1000,
+          discountPaise: 0,
+          taxableValuePaise: 1000,
+          cgstPaise: 0,
+          sgstPaise: 0,
+          roundOffPaise: 0,
+          status: "SETTLED",
+          docType: "BILL",
+          taxMode: "NONE",
+          generatedById: user.id,
+          session: {
+            create: { kind: "TAKEAWAY" }
+          }
         }
-      }
-    });
+      });
 
-    await prisma.feedback.create({
-      data: {
-        billId: bill.id,
-        token: "token2",
-        tokenExpiresAt: new Date(Date.now() + 100000),
-        rating: 2,
-        comment: "Bad",
-        submittedAt: new Date("2026-10-05T00:00:00Z")
-      }
-    });
+      await prisma.feedback.create({
+        data: {
+          billId: bill.id,
+          token: "token_b" + i,
+          tokenExpiresAt: new Date(Date.now() + 100000),
+          rating: 2,
+          comment: "Bad",
+          submittedAt: new Date("2026-10-05T00:00:00Z")
+        }
+      });
+    }
 
     const summary = await generateFeedbackSummary(start, end);
-    expect(summary).toBeNull();
+    expect(summary).toBeDefined();
+    expect(summary?.themes).toEqual([]);
+    expect(summary?.reply).toContain("Thank you");
   });
 });
