@@ -98,6 +98,7 @@ export class DecryptStream extends Transform {
       const magic = this.buffer.subarray(0, 10);
       if (magic.equals(MAGIC_V1)) {
         this.version = 1;
+        console.warn("WARNING: Decrypting legacy V1 backup. Integrity is not fully authenticated.");
         this.buffer = this.buffer.subarray(10);
         this.headerRead = true;
       } else if (magic.equals(MAGIC_V2)) {
