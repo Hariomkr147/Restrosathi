@@ -664,3 +664,10 @@ Commit: 75b763b58a05a4fd24c0380c6031959bc5fda351
 - Updated \RESTORE.md\ to document the versioning and integrity claims.
 - Ran \
 pm run test:unit\ for crypto and all 14 tests pass.
+
+## Task R21: Complete backup upload, restore and verified recovery [PARKED]
+- Modified \un.ts\ to use WA_AKG_DATABASE_URL and pg_dump instead of raw data dir backup.
+- Updated \estore.ts\ for ESM detection, URL parsed identities, checksum files-dir verification, and WA target support.
+- Updated \docker-compose.prod.yml\ with safe environment properties for backup.
+- **PARKED**: Docker Desktop is down on the host environment and \pg_dump\ is missing from PATH, meaning the Floci drill and the integration tests (\ackup.int.test.ts\) fail immediately at startup due to connection refused.
+- To unblock: Start Docker Desktop and ensure Postgres/pg_dump tools are available on the host to run the Floci container tests.
