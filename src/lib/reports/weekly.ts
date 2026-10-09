@@ -165,7 +165,7 @@ export async function generateWeeklyReport(now: Date = new Date(), options: { sa
     // 3. AI Insight
     let insight = "";
     try {
-      const allowed = await consumeMonthlyQuota("reports", 1);
+      const allowed = await consumeMonthlyQuota();
       if (allowed) {
         const prompt = `Write a short insight (under 200 chars) for this week's restaurant performance. No URLs, no promises.
 Revenue: ${formatINR(revenuePaise)}

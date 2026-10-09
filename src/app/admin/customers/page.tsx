@@ -110,9 +110,6 @@ export default async function CustomersPage({ searchParams }: { searchParams: Pr
                   {/* <td className="px-4 py-3">-</td> */}
                   <td className="px-4 py-3 text-right">
                     <Link href={`/admin/customers/${c.id}`} className="text-primary hover:underline font-medium">View</Link>
-                    {consentStatus === "Yes" && user.role === "OWNER" && (
-                      <SendPromoButton phone={c.phone} />
-                    )}
                   </td>
                 </tr>
               );

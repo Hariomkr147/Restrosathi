@@ -1,7 +1,7 @@
 "use server";
 
 import { prisma } from "@/lib/db";
-import { requireUser } from "@/lib/auth/require";
+import { requireUser } from "@/lib/auth/session";
 import { CampaignSegment } from "@prisma/client";
 import { generateMarketingVariants } from "@/lib/marketing/ai";
 import { getMarketingAudience } from "@/lib/marketing/segments";

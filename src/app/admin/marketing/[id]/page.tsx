@@ -1,5 +1,5 @@
 import { prisma } from "@/lib/db";
-import { requireUser } from "@/lib/auth/require";
+import { requireUser } from "@/lib/auth/session";
 import { notFound } from "next/navigation";
 import { markCampaignSentAction } from "../actions";
 

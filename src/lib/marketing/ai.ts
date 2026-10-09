@@ -14,7 +14,7 @@ export async function generateMarketingVariants(goal: string, locale: "en" | "hi
     throw new Error("Goal must be between 10 and 400 characters.");
   }
 
-  const allowed = await consumeMonthlyQuota("marketing", 1);
+  const allowed = await consumeMonthlyQuota();
   if (!allowed) {
     throw new Error("AI monthly quota exceeded.");
   }
