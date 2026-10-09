@@ -77,9 +77,9 @@ services:
           const h = { 'Authorization': 'Bearer ' + process.env.CRON_SECRET };
           Promise.allSettled([
             fetch('http://app:3000/api/cron/outbox', { headers: h }),
-            fetch('http://app:3000/api/cron/health', { headers: h }),
             fetch('http://app:3000/api/cron/reminders', { headers: h }),
-            fetch('http://app:3000/api/cron/escalations', { method: 'POST', headers: h })
+            fetch('http://app:3000/api/cron/escalations', { method: 'POST', headers: h }),
+            fetch('http://app:3000/api/cron/alerts', { headers: h })
           ]).catch(() => {});
         \";
         sleep 10;

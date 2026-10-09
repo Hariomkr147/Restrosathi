@@ -399,13 +399,13 @@ Original Tasks 19,29,32,35–36,42,44–45,47. Audit: F06/F24. Depends: R09–R2
 
 **Files:** Dockerfiles/entrypoint/Caddy/Compose/.dockerignore, env examples, deployment/hand-over docs, smoke checks.
 
-- [ ] Build app and backup images from clean lockfile; run nonroot app with writable uploads, complete standalone dependencies/Prisma CLI and migrate-deploy startup. Do not seed/reset on every boot.
-- [ ] Validate blank-install **and** upgrade-from-baseline scratch databases. Preserve invoice/active-session/loyalty constraints; review SQL before migrations; no destructive down migration.
-- [ ] Only Caddy exposes public80/443; Postgres/WA stay internal, Floci test-only loopback. Exclude env/secrets/test artifacts from image context/layers; inspect required headers/cookies on the production server.
-- [ ] Define one documented authenticated POST schedule: outbox at its planned interval, reminders at Task32 frequency, escalation every minute, alerts every5min, weekly report hourly with internal due guard, retention daily. Use backoff/logged failure; a failed call must not silently look healthy.
-- [ ] Backup runs about03:00 IST regardless of container timezone; verify local14-file and offsite35-day retention responsibilities, sizes and health timestamps.
-- [ ] Exercise the actual cron container against fake services: queue→send, reminder, escalation, alert, weekly due/no-duplicate and retention. Remove calls to nonexistent routes.
-- [ ] Keep the exact env contract below consistent with code, examples, deployment and preflight. Real secrets remain outside the repo.
+- [x] Build app and backup images from clean lockfile; run nonroot app with writable uploads, complete standalone dependencies/Prisma CLI and migrate-deploy startup. Do not seed/reset on every boot.
+- [x] Validate blank-install **and** upgrade-from-baseline scratch databases. Preserve invoice/active-session/loyalty constraints; review SQL before migrations; no destructive down migration.
+- [x] Only Caddy exposes public80/443; Postgres/WA stay internal, Floci test-only loopback. Exclude env/secrets/test artifacts from image context/layers; inspect required headers/cookies on the production server.
+- [x] Define one documented authenticated POST schedule: outbox at its planned interval, reminders at Task32 frequency, escalation every minute, alerts every5min, weekly report hourly with internal due guard, retention daily. Use backoff/logged failure; a failed call must not silently look healthy.
+- [x] Backup runs about03:00 IST regardless of container timezone; verify local14-file and offsite35-day retention responsibilities, sizes and health timestamps.
+- [x] Exercise the actual cron container against fake services: queue→send, reminder, escalation, alert, weekly due/no-duplicate and retention. Remove calls to nonexistent routes.
+- [x] Keep the exact env contract below consistent with code, examples, deployment and preflight. Real secrets remain outside the repo.
 
 **Acceptance:** clean Docker image starts, migrations run once safely, restart preserves data/uploads, health returns200, workers reach the correct methods/paths and failures are visible. No deployment to a real server in this unit.
 

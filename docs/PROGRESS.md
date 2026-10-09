@@ -738,3 +738,13 @@ pm run dev\ fail immediately with an SWC native addon cache error (DACL grants r
 - Resolved files-dir mapping for restore.
 - Test passes inside compatible docker container (barring platform lockfile conflicts).
 
+
+## Task R25: Validate the real production image, migrations and job schedule
+
+- Fixed Next.js build SWC/lockfile issues on Docker container by removing package-lock.json from build context.
+- Adjusted cron images from curl to node:22-alpine in docker-compose.prod.yml to enforce matching process context.
+- Cron now runs fetch authenticated with CRON_SECRET under the node user.
+- Updated cron loop to use /api/cron/alerts instead of /health matching the actual codebase routes.
+- Executed docker-compose.prod.yml building from clean host to confirm Prisma CLI and migrate deploy script in docker/entrypoint.sh works.
+- Unparked and verified.
+
