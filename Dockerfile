@@ -29,9 +29,10 @@ COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
 
 # Copy Prisma schema and migrations for deploy
 COPY --from=builder --chown=nextjs:nodejs /app/prisma ./prisma
-# Prisma CLI needs its package to run migrate deploy
-COPY --from=builder --chown=nextjs:nodejs /app/node_modules/prisma ./node_modules/prisma
-COPY --from=builder --chown=nextjs:nodejs /app/node_modules/@prisma ./node_modules/@prisma
+# Prisma CLI needs its dependencies to run migrate deploy. We copy the builder's node_modules 
+# to a separate directory to avoid interfering with Next.js standalone mode.
+COPY --from=builder --chown=nextjs:nodejs /app/node_modules /prisma-cli/node_modules
+COPY --from=builder --chown=nextjs:nodejs /app/package.json /prisma-cli/package.json
 
 # Copy entrypoint script
 COPY --from=builder --chown=nextjs:nodejs /app/docker/entrypoint.sh ./docker/entrypoint.sh

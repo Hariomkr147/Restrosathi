@@ -156,7 +156,7 @@ export async function runRestore() {
               // Wait, the tar could have absolute paths. 
               const rel = path.relative(baseDir, full);
               // prevent traversing out
-              if (!rel.startsWith("..")) {
+              if (filesDir && !rel.startsWith("..")) {
                 const targetPath = path.join(filesDir, entry.name); // Flat copy, or recreate structure?
                 await fs.mkdir(path.dirname(targetPath), { recursive: true });
                 await fs.copyFile(full, targetPath);
