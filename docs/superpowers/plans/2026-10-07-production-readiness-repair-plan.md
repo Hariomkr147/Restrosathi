@@ -385,12 +385,12 @@ Original Task 47. Audit: F17. Depends: R18, R21–R23.
 
 **Files:** preflight script/checks/tests, settings/menu queries, env examples.
 
-- [ ] Snapshot actual active users, available items, active tables, settings and latest successful backup; verify demo credentials against stored hashes with existing async helper. Pass derived credential-verification results into pure checks.
-- [ ] Enforce production, HTTPS URL, non-example32+char secrets,32-byte decoded backup key, nonnull credentials, demo-name rule, valid address/phone/owner phone/hours, confirmed tax and GSTIN validation, no ALLOW_FAKE_WA, real selected WA provider, >=1table, >=5available items and backup<26h.
-- [ ] Emit required FSSAI and enabled-AI/fake warnings distinctly; warnings cannot masquerade as mandatory passes. Check required cron configuration.
-- [ ] Missing/invalid provider must fail, not just literal “fake.” Validate exact supported configuration against R25's env contract.
-- [ ] Exit nonzero for any FAIL **and** unexpected DB/config errors; disconnect cleanly. Test every failure independently plus the audit's previously false-positive snapshot.
-- [ ] Run development preflight and record the expected failures; prove a realistic valid synthetic snapshot passes without contacting real services.
+- [x] Snapshot actual active users, available items, active tables, settings and latest successful backup; verify demo credentials against stored hashes with existing async helper. Pass derived credential-verification results into pure checks.
+- [x] Enforce production, HTTPS URL, non-example32+char secrets,32-byte decoded backup key, nonnull credentials, demo-name rule, valid address/phone/owner phone/hours, confirmed tax and GSTIN validation, no ALLOW_FAKE_WA, real selected WA provider, >=1table, >=5available items and backup<26h.
+- [x] Emit required FSSAI and enabled-AI/fake warnings distinctly; warnings cannot masquerade as mandatory passes. Check required cron configuration.
+- [x] Missing/invalid provider must fail, not just literal “fake.” Validate exact supported configuration against R25's env contract.
+- [x] Exit nonzero for any FAIL **and** unexpected DB/config errors; disconnect cleanly. Test every failure independently plus the audit's previously false-positive snapshot.
+- [x] Run development preflight and record the expected failures; prove a realistic valid synthetic snapshot passes without contacting real services.
 
 **Acceptance:** no demo credential, fake override, invalid contact configuration or stale backup can receive a production PASS.
 

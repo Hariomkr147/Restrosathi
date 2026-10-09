@@ -690,3 +690,12 @@ pm run test:unit\ for crypto and all 14 tests pass.
 - Included lock strategy in Postgres transaction to enforce active-name uniqueness under concurrency.
 - Validated E2E bounds by integrating precise tests into ccounts.int.test.ts.
 - Fixed all TypeScript validation errors.
+
+## Task R24: Make preflight enforce every production prerequisite
+
+- Hooked checkPreflight to query actual db/table/user states via prisma snapshot in scripts/preflight.ts.
+- Validated demo credentials explicitly by passing derived credential verification results into checks (comparing against SEED_OWNER_PASSWORD).
+- Enforced strictly NODE_ENV=production, HTTPS, securely generated long secrets, real WhatsApp provider (akg), table counts, menu item counts, non-demo settings, and confirmed tax modes/hours in preflight-checks.ts.
+- Separated WARNING level from hard failures in preflight script allowing AI/FSSAI to warn rather than block.
+- Updated tests in preflight-checks.test.ts to assert warning states, failures, and passing conditions for the new stringent requirements.
+- Added explicit comments on openssl rand -base64 32 for secrets in .env.example.
