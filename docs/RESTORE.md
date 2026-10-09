@@ -42,6 +42,7 @@ Run the restore script targeting the local database:
 ```bash
 npx tsx scripts/backup/restore.ts "restrosathi/2026/10/restrosathi-2026-10-07T03-00-00-000Z.tar.gz.enc" \
   --target-db "postgresql://postgres:postgres@127.0.0.1:5432/restrosathi" \
+  --target-wa-db "postgresql://waakg:waakg_password@127.0.0.1:5432/waakg" \
   --files-dir "./uploads" \
   --confirm
 ```
@@ -65,3 +66,25 @@ docker-compose -f docker-compose.prod.yml up -d
 **Date:** ___________
 **Performed by:** ___________
 **Result:** [ ] PASS [ ] FAIL
+
+## Backup Format
+
+The backup is a compressed tarball (`.tar.gz`) encrypted in 1 MiB chunks.
+The format has been updated for improved cryptographic integrity:
+
+### Version 2 (Current)
+- **Header**: 10-byte magic string `RS_BACKUP\x02`, followed by a 32-byte per-file random ID.
+- **Chunks**: Each chunk is authenticated via AES-256-GCM Additional Authenticated Data (AAD). The AAD contains the file ID, chunk index, chunk length, and a final-marker flag.
+- **Final Marker**: A 0-length chunk indicates the authenticated end of the stream, preventing truncation attacks.
+
+### Version 1 (Legacy)
+- **Header**: 10-byte magic string `RS_BACKUP\x01`.
+- **Chunks**: Encrypted with AES-256-GCM but lacks cross-chunk and file-level authentication binding (no AAD binding).
+- **Warning**: Legacy Version 1 backups are accepted by the restore script for backward compatibility but are processed *without* a verified-integrity claim against reordering or cross-file splicing attacks.
+
+## Key-Loss & Recovery Responsibilities
+
+- **Owner Responsibility**: The `BACKUP_ENCRYPTION_KEY` is a 32-byte base64 string. It is NOT stored anywhere in the codebase or the S3 bucket. If you lose this key, **all backups are cryptographically destroyed**. You must store this key securely in a password manager or physical vault.
+- **Provider Responsibility**: S3 handles the physical availability of the encrypted blobs, but cannot assist in decryption if the key is lost.
+- **Verification**: Run this Restore Drill monthly to ensure you still have the correct key and the data is consistent.
+

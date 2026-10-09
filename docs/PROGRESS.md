@@ -649,3 +649,18 @@ Commit: 75b763b58a05a4fd24c0380c6031959bc5fda351
 - Extended erasure coverage for \CampaignSend\ in \src/lib/customers/erase.ts\.
 - Removed unsafe promo links from \src/app/admin/customers/page.tsx\.
 
+
+## Milestone 3 summary
+- Re-ran tests, confirming R13-R19 logic runs cleanly.
+- Milestone 3 is complete.
+
+
+## Task 44: Encrypted off-site backups/restore — repair R20
+- Repaired format to Version 2: Added AES-256-GCM authenticated header with 32-byte file ID.
+- Incorporated file ID, chunk index, chunk length, and final marker in AAD for authentication.
+- Maintained legacy Version 1 support (fallback for RS_BACKUP\x01).
+- Updated tests in \crypto.test.ts\ to cover reordering, cross-file splice, duplication, early final marker, and truncation rejection.
+- Ensured decryption stream handles 0, 1, 1MiB-1, 1MiB and 50MiB round-trips effectively.
+- Updated \RESTORE.md\ to document the versioning and integrity claims.
+- Ran \
+pm run test:unit\ for crypto and all 14 tests pass.
