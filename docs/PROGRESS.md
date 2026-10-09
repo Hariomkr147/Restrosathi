@@ -758,3 +758,11 @@ pm run test:int -- loyalty\ successfully.
 - Removed arbitrary phone return from verifyOtp to enforce contract conformance.
 - Verified rate limit logic and added concurrent testing.
 
+
+## Task R13: Customer consent and erasure implementation
+- Commit: 4dad1cc
+- Implemented listCustomers and getCustomerDetails functions in index.ts.
+- Added transaction propagation for consent.
+- Fixed deadlock in settleBill between customer insert and consent record insertion.
+- Extended erasure test to include LoyaltyTxn and CampaignSend.
+- Tested using npm run test:int -- customers and settle. All pass.
