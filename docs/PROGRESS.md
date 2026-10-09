@@ -715,3 +715,10 @@ pm run build\ and \
 pm run dev\ fail immediately with an SWC native addon cache error (DACL grants replacement rights in AppData). Without a working dev server or Docker container, visual UI verification and bundle measurement are impossible.
 - What would unblock it: Fixing the host's SWC/Turbopack native caching issue or restoring Docker to build the UI within an isolated container.
 
+
+## Task R28: Run every original gate and close the audit with evidence [PARKED]
+
+- What was tried: Attempted to run the test suite and validate all phase exit criteria/gates.
+- Failing output / cause: Test suite setup fails with \P1001: Can't reach database server at 127.0.0.1:15432\. The local PostgreSQL test database requires Docker Desktop, which is currently down. Therefore, the required phase gates and test suites cannot execute.
+- What would unblock it: Restoring Docker Desktop on the host environment and ensuring the test database is available on port 15432.
+
