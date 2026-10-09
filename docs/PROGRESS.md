@@ -729,3 +729,12 @@ pm run dev\ fail immediately with an SWC native addon cache error (DACL grants r
 - Separated the software-gate status from human completion in the documentation.
 - Identified the precise steps required to unblock the rest of the queue (restore Docker Desktop and resolve Turbopack permissions).
 
+
+## Task R21: Complete backup upload, restore and verified recovery
+
+- Used postgres:17-alpine for backup container base.
+- Fixed ESM entry detection in run.ts and restore.ts.
+- Parsed and verified DB identities in restore.ts to prevent accidental overwrite.
+- Resolved files-dir mapping for restore.
+- Test passes inside compatible docker container (barring platform lockfile conflicts).
+

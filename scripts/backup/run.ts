@@ -100,6 +100,8 @@ export async function runBackup() {
         if (code === 0) resolve();
         else reject(new Error(`tar exited with code ${code}`));
       });
+      tarProc.on("error", reject);
+      encryptStream.on("error", reject);
     });
 
     // 5. Retention
@@ -107,16 +109,10 @@ export async function runBackup() {
     await runRetention(s3, bucket, retentionDays);
 
     ok = true;
-    
-    // Attempt to get bytes of the encrypted file by sending a HEAD request, but we can also just leave bytes empty or query it.
-    // For simplicity, we just won't populate bytes, or we can fetch it.
   } catch (err: any) {
     console.error("Backup failed:", err);
     ok = false;
     errorMsg = String(err.message || err).substring(0, 300);
-    if (!objectKey) {
-       // if we failed before setting objectKey, we don't have it
-    }
   } finally {
     try {
       await fs.rm(tmpDir, { recursive: true, force: true });
@@ -129,13 +125,22 @@ export async function runBackup() {
         objectKey
       }
     });
+
+    if (!ok) {
+      process.exitCode = 1;
+    }
   }
 }
 
-if (require.main === module) {
+// ESM-compatible entry detection for TSX/Node
+const isMain = typeof require !== 'undefined' 
+  ? require.main === module 
+  : process.argv[1] && import.meta.url.endsWith(process.argv[1].replace(/\\/g, '/').split('/').pop() || '');
+
+if (isMain || process.argv[1]?.endsWith("run.ts")) {
   runBackup().then(() => {
     console.log("Backup complete.");
-    process.exit(0);
+    process.exit(process.exitCode || 0);
   }).catch((err) => {
     console.error(err);
     process.exit(1);

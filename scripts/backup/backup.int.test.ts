@@ -26,10 +26,12 @@ describe.skipIf(!hasPgDump)("Backup Integration", () => {
   beforeAll(async () => {
     if (!hasPgDump) return;
 
-    try {
-      execSync("docker-compose -f docker-compose.floci.yml up -d floci", { stdio: "ignore" });
-    } catch (e) {
-      throw new Error("Could not start floci via docker-compose. Docker is required to run backup tests.");
+    if (!process.env.SKIP_FLOCI_START) {
+      try {
+        execSync("docker-compose -f docker-compose.floci.yml up -d floci", { stdio: "ignore" });
+      } catch (e) {
+        throw new Error("Could not start floci via docker-compose. Docker is required to run backup tests.");
+      }
     }
 
     process.env.S3_ENDPOINT = "http://127.0.0.1:4566";

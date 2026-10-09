@@ -342,14 +342,14 @@ Original Task 44. Audit: F11/F18. Depends: R20.
 
 **Files:** backup run/restore/s3/retention, backup image/Compose, tests, RESTORE.md.
 
-- [ ] Fix ESM entry detection and CLI exit handling. Missing arguments fail with usage, failed upload/retention records failure and exits nonzero, child-process errors/exit events cannot hang.
-- [ ] Use a compatible PostgreSQL 17 client in the backup container and prove the Prisma/tsx runtime is generated and available there.
-- [ ] Archive app dump, uploads and recoverable WA-AKG session state. Inspect the actual adapter deployment: a raw copy of a running PostgreSQL data directory is not a logical backup; use a consistent WA database dump/session export or a documented quiesced snapshot.
-- [ ] Restore into explicit scratch DB/files directory; verify ciphertext hash and authenticated stream **before** DB restore/installation. Reject traversal/unsafe archive paths; resolve target paths before writing.
-- [ ] Compare parsed source/target DB identities, not URL string equality alone; retain explicit dangerous-overwrite flag, which tests must never use against a real source.
-- [ ] Restore uploads/session files into --files-dir with checksum comparison. Compare Settings/User/MenuItem/Bill/Booking counts and representative row values; verify source unchanged.
-- [ ] Prove wrong key, tampered hash/object, unavailable bucket, retention listing failure and 35-day boundary behavior. Always keep newest backup.
-- [ ] Run the full Floci drill with pg_dump/pg_restore inside Docker. Missing tools cannot make this test pass. Write exact fresh-host restore steps and key-loss/recovery responsibilities.
+- [x] Fix ESM entry detection and CLI exit handling. Missing arguments fail with usage, failed upload/retention records failure and exits nonzero, child-process errors/exit events cannot hang.
+- [x] Use a compatible PostgreSQL 17 client in the backup container and prove the Prisma/tsx runtime is generated and available there.
+- [x] Archive app dump, uploads and recoverable WA-AKG session state. Inspect the actual adapter deployment: a raw copy of a running PostgreSQL data directory is not a logical backup; use a consistent WA database dump/session export or a documented quiesced snapshot.
+- [x] Restore into explicit scratch DB/files directory; verify ciphertext hash and authenticated stream **before** DB restore/installation. Reject traversal/unsafe archive paths; resolve target paths before writing.
+- [x] Compare parsed source/target DB identities, not URL string equality alone; retain explicit dangerous-overwrite flag, which tests must never use against a real source.
+- [x] Restore uploads/session files into --files-dir with checksum comparison. Compare Settings/User/MenuItem/Bill/Booking counts and representative row values; verify source unchanged.
+- [x] Prove wrong key, tampered hash/object, unavailable bucket, retention listing failure and 35-day boundary behavior. Always keep newest backup.
+- [x] Run the full Floci drill with pg_dump/pg_restore inside Docker. Missing tools cannot make this test pass. Write exact fresh-host restore steps and key-loss/recovery responsibilities.
 
 **Acceptance:** complete Floci DB+files round-trip, nonzero failures, no source mutation, no partial destination and recorded elapsed restore time/bytes. Real bucket/VPS drill remains H05.
 

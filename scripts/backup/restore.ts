@@ -59,122 +59,152 @@ export async function runRestore() {
     process.exit(1);
   }
 
-  if (targetDb === process.env.DATABASE_URL && !values["i-know-this-overwrites"]) {
-    console.error("Target DB matches DATABASE_URL. Must pass --i-know-this-overwrites to proceed.");
-    process.exit(1);
-  }
-
-  const s3 = getS3Client();
-  const bucket = getBucketName();
-  const encryptionKey = process.env.BACKUP_ENCRYPTION_KEY;
-  if (!encryptionKey) throw new Error("Missing BACKUP_ENCRYPTION_KEY");
-
-  // Fetch hash
-  const hashObj = await s3.send(new GetObjectCommand({
-    Bucket: bucket,
-    Key: objectKey.replace(".enc", ".sha256")
-  }));
-  const expectedHash = await hashObj.Body?.transformToString();
-  if (!expectedHash) throw new Error("Could not read hash from S3");
-
-  const tmpDir = await fs.mkdtemp("restrosathi-restore-");
-  console.log(`Working in ${tmpDir}`);
-
-  try {
-    const encFile = path.join(tmpDir, "encrypted.tar.gz.enc");
-    
-    // Download and hash
-    const dataObj = await s3.send(new GetObjectCommand({ Bucket: bucket, Key: objectKey }));
-    if (!dataObj.Body) throw new Error("Could not read data from S3");
-
-    console.log("Downloading...");
-    const hash = crypto.createHash("sha256");
-    const writeStream = (await import("fs")).createWriteStream(encFile);
-
-    const bodyStream = dataObj.Body as Readable;
-    bodyStream.on("data", (chunk) => hash.update(chunk));
-    
-    await pipeline(bodyStream, writeStream);
-
-    const actualHash = hash.digest("hex");
-    if (actualHash !== expectedHash) {
-      throw new Error(`Hash mismatch. Expected ${expectedHash}, got ${actualHash}`);
-    }
-    console.log("Hash verified.");
-
-    console.log("Decrypting and extracting...");
-    const readStream = (await import("fs")).createReadStream(encFile);
-    const decryptStream = new DecryptStream(encryptionKey);
-    
-    const tarProc = spawn("tar", ["-xz", "-C", tmpDir], { stdio: ["pipe", "inherit", "inherit"] });
-    
-    const tarPromise = new Promise<void>((resolve, reject) => {
-      tarProc.on("close", (code) => {
-        if (code === 0) resolve();
-        else reject(new Error(`tar exited with code ${code}`));
-      });
-      tarProc.on("error", reject);
-    });
-
-    await Promise.all([
-      pipeline(readStream, decryptStream, tarProc.stdin),
-      tarPromise
-    ]);
-
-    console.log("Decrypted and extracted.");
-
-    // Find db.dump inside tmpDir
-    let dbDumpPath = "";
-    async function findDump(dir: string) {
-      const entries = await fs.readdir(dir, { withFileTypes: true });
-      for (const entry of entries) {
-        const full = path.join(dir, entry.name);
-        if (entry.isDirectory()) {
-          await findDump(full);
-        } else if (entry.name === "db.dump") {
-          dbDumpPath = full;
-        }
+    // 1. Check if source matches target by parsing URL
+    try {
+      const targetUrl = new URL(targetDb);
+      const sourceUrl = new URL(process.env.DATABASE_URL || "");
+      if (
+        targetUrl.host === sourceUrl.host && 
+        targetUrl.pathname === sourceUrl.pathname &&
+        targetUrl.port === sourceUrl.port &&
+        !values["i-know-this-overwrites"]
+      ) {
+        console.error("Target DB is the same as DATABASE_URL (host, port, dbname). Must pass --i-know-this-overwrites to proceed.");
+        process.exit(1);
+      }
+    } catch {
+      // Ignore URL parsing errors, fallback to string match
+      if (targetDb === process.env.DATABASE_URL && !values["i-know-this-overwrites"]) {
+        console.error("Target DB matches DATABASE_URL. Must pass --i-know-this-overwrites to proceed.");
+        process.exit(1);
       }
     }
-    await findDump(tmpDir);
 
-    if (!dbDumpPath) throw new Error("Could not find db.dump in archive");
+    const s3 = getS3Client();
+    const bucket = getBucketName();
+    const encryptionKey = process.env.BACKUP_ENCRYPTION_KEY;
+    if (!encryptionKey) throw new Error("Missing BACKUP_ENCRYPTION_KEY");
 
-    console.log("Restoring DB...");
-    // -O ignores ownership
-    // -x ignores privileges
-    // --clean drops before create
-    // we use a spawn instead of exec to handle stderr
-    await new Promise<void>((resolve, reject) => {
-      const proc = spawn("pg_restore", ["-d", targetDb, "--clean", "-O", "-x", dbDumpPath], { stdio: "ignore" });
-      proc.on("close", (code) => {
-        if (code === 0) resolve();
-        else reject(new Error(`pg_restore failed with code ${code}`));
-      });
-      proc.on("error", reject);
-    });
+    // Fetch hash
+    const hashObj = await s3.send(new GetObjectCommand({
+      Bucket: bucket,
+      Key: objectKey.replace(".enc", ".sha256")
+    }));
+    const expectedHash = await hashObj.Body?.transformToString();
+    if (!expectedHash) throw new Error("Could not read hash from S3");
 
-    // Output row counts
-    const countsCmd = `
-      SELECT 'User' as table, count(*) FROM "User"
-      UNION ALL SELECT 'Settings', count(*) FROM "Settings"
-      UNION ALL SELECT 'MenuItem', count(*) FROM "MenuItem"
-      UNION ALL SELECT 'Bill', count(*) FROM "Bill"
-      UNION ALL SELECT 'Booking', count(*) FROM "Booking";
-    `;
-    const result = await execCommand("psql", [targetDb, "-t", "-c", countsCmd]);
-    console.log("Row counts:");
-    console.log(result.trim());
+    const tmpDir = await fs.mkdtemp("restrosathi-restore-");
+    console.log(`Working in ${tmpDir}`);
 
-    console.log("Restore complete.");
-  } finally {
     try {
-      await fs.rm(tmpDir, { recursive: true, force: true });
-    } catch {}
-  }
+      const encFile = path.join(tmpDir, "encrypted.tar.gz.enc");
+      
+      // Download and hash
+      const dataObj = await s3.send(new GetObjectCommand({ Bucket: bucket, Key: objectKey }));
+      if (!dataObj.Body) throw new Error("Could not read data from S3");
+
+      console.log("Downloading...");
+      const hash = crypto.createHash("sha256");
+      const writeStream = (await import("fs")).createWriteStream(encFile);
+
+      const bodyStream = dataObj.Body as Readable;
+      bodyStream.on("data", (chunk) => hash.update(chunk));
+      
+      await pipeline(bodyStream, writeStream);
+
+      const actualHash = hash.digest("hex");
+      if (actualHash !== expectedHash) {
+        throw new Error(`Hash mismatch. Expected ${expectedHash}, got ${actualHash}`);
+      }
+      console.log("Hash verified.");
+
+      console.log("Decrypting and extracting...");
+      const readStream = (await import("fs")).createReadStream(encFile);
+      const decryptStream = new DecryptStream(encryptionKey);
+      
+      const tarProc = spawn("tar", ["-xz", "-C", tmpDir], { stdio: ["pipe", "inherit", "inherit"] });
+      
+      const tarPromise = new Promise<void>((resolve, reject) => {
+        tarProc.on("close", (code) => {
+          if (code === 0) resolve();
+          else reject(new Error(`tar exited with code ${code}`));
+        });
+        tarProc.on("error", reject);
+      });
+
+      await Promise.all([
+        pipeline(readStream, decryptStream, tarProc.stdin),
+        tarPromise
+      ]);
+
+      console.log("Decrypted and extracted.");
+
+      // Find db.dump inside tmpDir and copy other files to files-dir
+      let dbDumpPath = "";
+      async function findDumpAndRestoreFiles(dir: string, baseDir: string) {
+        const entries = await fs.readdir(dir, { withFileTypes: true });
+        for (const entry of entries) {
+          const full = path.join(dir, entry.name);
+          if (entry.isDirectory()) {
+            await findDumpAndRestoreFiles(full, baseDir);
+          } else {
+            if (entry.name === "db.dump") {
+              dbDumpPath = full;
+            } else if (!full.endsWith("encrypted.tar.gz.enc")) {
+              // Copy non-dump files to --files-dir maintaining some structure or directly
+              // For safety against traversal, ensure baseDir logic is sound, but here we just copy flat for simplicity
+              // Wait, the tar could have absolute paths. 
+              const rel = path.relative(baseDir, full);
+              // prevent traversing out
+              if (!rel.startsWith("..")) {
+                const targetPath = path.join(filesDir, entry.name); // Flat copy, or recreate structure?
+                await fs.mkdir(path.dirname(targetPath), { recursive: true });
+                await fs.copyFile(full, targetPath);
+              }
+            }
+          }
+        }
+      }
+      await findDumpAndRestoreFiles(tmpDir, tmpDir);
+
+      if (!dbDumpPath) throw new Error("Could not find db.dump in archive");
+
+      console.log("Restoring DB...");
+      await new Promise<void>((resolve, reject) => {
+        const proc = spawn("pg_restore", ["-d", targetDb, "--clean", "-O", "-x", dbDumpPath], { stdio: "ignore" });
+        proc.on("close", (code) => {
+          if (code === 0) resolve();
+          else reject(new Error(`pg_restore failed with code ${code}`));
+        });
+        proc.on("error", reject);
+      });
+
+      // Output row counts
+      const countsCmd = `
+        SELECT 'User' as table, count(*) FROM "User"
+        UNION ALL SELECT 'Settings', count(*) FROM "Settings"
+        UNION ALL SELECT 'MenuItem', count(*) FROM "MenuItem"
+        UNION ALL SELECT 'Bill', count(*) FROM "Bill"
+        UNION ALL SELECT 'Booking', count(*) FROM "Booking";
+      `;
+      const result = await execCommand("psql", [targetDb, "-t", "-c", countsCmd]);
+      console.log("Row counts:");
+      console.log(result.trim());
+
+      console.log("Restore complete.");
+    } finally {
+      try {
+        await fs.rm(tmpDir, { recursive: true, force: true });
+      } catch {}
+    }
 }
 
-if (require.main === module) {
+// ESM-compatible entry detection for TSX/Node
+const isMain = typeof require !== 'undefined' 
+  ? require.main === module 
+  : process.argv[1] && import.meta.url.endsWith(process.argv[1].replace(/\\/g, '/').split('/').pop() || '');
+
+if (isMain || process.argv[1]?.endsWith("restore.ts")) {
   runRestore().catch(err => {
     console.error(err);
     process.exit(1);

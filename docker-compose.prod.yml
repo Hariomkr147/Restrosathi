@@ -66,29 +66,36 @@ services:
         condition: service_started
 
   cron:
-    image: curlimages/curl
+    image: node:22-alpine
     restart: always
+    user: "node"
     env_file:
       - .env.production
     entrypoint: >
       /bin/sh -c "while true; do
-        curl -sf http://app:3000/api/cron/outbox -H \"Authorization: Bearer $${CRON_SECRET}\" || true;
-        curl -sf http://app:3000/api/cron/health -H \"Authorization: Bearer $${CRON_SECRET}\" || true;
-        curl -sf http://app:3000/api/cron/reminders -H \"Authorization: Bearer $${CRON_SECRET}\" || true;
-        curl -X POST -sf http://app:3000/api/cron/escalations -H \"Authorization: Bearer $${CRON_SECRET}\" || true;
+        node -e \"
+          const h = { 'Authorization': 'Bearer ' + process.env.CRON_SECRET };
+          Promise.allSettled([
+            fetch('http://app:3000/api/cron/outbox', { headers: h }),
+            fetch('http://app:3000/api/cron/health', { headers: h }),
+            fetch('http://app:3000/api/cron/reminders', { headers: h }),
+            fetch('http://app:3000/api/cron/escalations', { method: 'POST', headers: h })
+          ]).catch(() => {});
+        \";
         sleep 10;
       done"
     depends_on:
       - app
 
   cron-daily:
-    image: curlimages/curl
+    image: node:22-alpine
     restart: always
+    user: "node"
     env_file:
       - .env.production
     entrypoint: >
       /bin/sh -c "while true; do
-        curl -X POST -sf http://app:3000/api/cron/retention -H \"Authorization: Bearer $${CRON_SECRET}\" || true;
+        node -e \"fetch('http://app:3000/api/cron/retention', { method: 'POST', headers: { 'Authorization': 'Bearer ' + process.env.CRON_SECRET } }).catch(()=>{})\";
         sleep 86400;
       done"
     depends_on:
