@@ -699,3 +699,10 @@ pm run test:unit\ for crypto and all 14 tests pass.
 - Separated WARNING level from hard failures in preflight script allowing AI/FSSAI to warn rather than block.
 - Updated tests in preflight-checks.test.ts to assert warning states, failures, and passing conditions for the new stringent requirements.
 - Added explicit comments on openssl rand -base64 32 for secrets in .env.example.
+
+## Task R25: Validate the real production image, migrations and job schedule [PARKED]
+
+- What was tried: Attempted to run Next.js build locally and verify docker-compose.prod.yml, Dockerfile and cron tasks.
+- Failing output / cause: npm run build failed due to SWC Native Bindings cache issue (Turbopack permissions error on Windows). Furthermore, Docker Desktop is down on the host environment, preventing the testing of the production image, migration scripts, or the cron configuration entirely.
+- What would unblock it: Restoring Docker Desktop on the host environment so containers can be built and run. Fixing the local Next.js build environment (or doing the production build inside the container, which also requires Docker).
+
