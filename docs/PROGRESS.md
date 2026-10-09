@@ -774,3 +774,10 @@ pm run test:int -- loyalty\ successfully.
 - Validated reply content against unsafe keywords.
 - Updated UI to display theme counts.
 - Fixed tests to create multiple bills.
+
+## Task R19: Marketing campaigns and opt-out logic
+- Commit: 3717199
+- Updated generateMarketingVariants to validate invented numbers, unauthorized links, and placeholders against the exact goal and constraints.
+- Updated createCampaignAction to enforce the same text validation at persistence.
+- Modified CampaignDetailsPage to recompute the target audience dynamically (deleting pending sends for customers no longer matching the criteria).
+- Removed unused direct-provider dependencies (@ai-sdk/google, i) and CampaignUI promo links from the generic customer list.
