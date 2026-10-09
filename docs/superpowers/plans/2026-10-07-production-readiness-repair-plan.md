@@ -195,12 +195,12 @@ Original Tasks 30, 37–38. Audit: F07 and public loyalty-read gap. Depends: R06
 
 **Files:** otp, verified cookie, phone/rate-limit helpers, booking/table/billing actions and OtpField/JoinRewards tests.
 
-- [ ] Reuse normalizePhone; equivalent Indian formats identify one phone, invalid/international input follows the original contract.
-- [ ] Enforce three sends/phone/hour and twenty/IP/hour through the shared durable rate-limit mechanism, atomically. No process-local counters.
-- [ ] Serialize attempts/consumption with conditional update/row locking; correct code succeeds once, five wrong attempts consume it, expiry and replacement reject old codes. Never log/raw-store OTP beyond the required scrubbed outbox lifecycle.
-- [ ] Preserve the public `verifyOtp` contract where possible: normalize in the action and use that verified canonical phone, rather than inventing a phone property on `{ok:true}`. Provide the required context.
-- [ ] Bind table phone/balance to the verified device and active session; remove arbitrary-phone balance lookup. Billing must match the bill's current phone under its lock before setting verifiedAt.
-- [ ] Test signed cookie tampering/expiry, enumeration-resistant responses, concurrent issuance/attempts/consumption, cross-phone and cross-table balance access.
+- [x] Reuse normalizePhone; equivalent Indian formats identify one phone, invalid/international input follows the original contract.
+- [x] Enforce three sends/phone/hour and twenty/IP/hour through the shared durable rate-limit mechanism, atomically. No process-local counters.
+- [x] Serialize attempts/consumption with conditional update/row locking; correct code succeeds once, five wrong attempts consume it, expiry and replacement reject old codes. Never log/raw-store OTP beyond the required scrubbed outbox lifecycle.
+- [x] Preserve the public `verifyOtp` contract where possible: normalize in the action and use that verified canonical phone, rather than inventing a phone property on `{ok:true}`. Provide the required context.
+- [x] Bind table phone/balance to the verified device and active session; remove arbitrary-phone balance lookup. Billing must match the bill's current phone under its lock before setting verifiedAt.
+- [x] Test signed cookie tampering/expiry, enumeration-resistant responses, concurrent issuance/attempts/consumption, cross-phone and cross-table balance access.
 
 **Acceptance:** delivered fake OTP works through actual forms; no double use, lost attempt counts or unauthenticated balance disclosure; changing phone invalidates its verification.
 
