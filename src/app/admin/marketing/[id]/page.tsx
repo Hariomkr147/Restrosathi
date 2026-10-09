@@ -13,6 +13,24 @@ export default async function CampaignDetailsPage({ params, searchParams }: { pa
   const pageSize = 100;
 
   const campaign = await prisma.campaign.findUnique({
+    where: { id: params.id }
+  });
+
+  if (!campaign) notFound();
+
+  // Recompute audience: if pending send is no longer in audience, delete it
+  const audience = await getMarketingAudience(campaign.segment as any);
+  const audienceIds = new Set(audience.map(c => c.id));
+  
+  await prisma.campaignSend.deleteMany({
+    where: {
+      campaignId: campaign.id,
+      status: "PENDING",
+      customerId: { notIn: Array.from(audienceIds) }
+    }
+  });
+
+  const campaignWithSends = await prisma.campaign.findUnique({
     where: { id: params.id },
     include: {
       sends: {
@@ -24,7 +42,7 @@ export default async function CampaignDetailsPage({ params, searchParams }: { pa
     }
   });
 
-  if (!campaign) notFound();
+  if (!campaignWithSends) notFound();
 
   const totalSends = await prisma.campaignSend.count({ where: { campaignId: params.id } });
   const totalPages = Math.ceil(totalSends / pageSize);
@@ -32,16 +50,16 @@ export default async function CampaignDetailsPage({ params, searchParams }: { pa
   return (
     <div className="p-6 max-w-6xl mx-auto space-y-8">
       <div className="bg-white p-6 rounded-lg border shadow-sm">
-        <h1 className="text-2xl font-bold mb-4">{campaign.goal}</h1>
+        <h1 className="text-2xl font-bold mb-4">{campaignWithSends.goal}</h1>
         <div className="grid grid-cols-2 gap-4 text-sm text-gray-600 mb-6">
-          <p>Segment: <span className="font-medium text-gray-900">{campaign.segment}</span></p>
-          <p>Status: <span className="font-medium text-gray-900">{campaign.status}</span></p>
-          <p>Created: <span className="font-medium text-gray-900">{campaign.createdAt.toLocaleString()}</span></p>
-          <p>Language: <span className="font-medium text-gray-900">{campaign.locale.toUpperCase()}</span></p>
+          <p>Segment: <span className="font-medium text-gray-900">{campaignWithSends.segment}</span></p>
+          <p>Status: <span className="font-medium text-gray-900">{campaignWithSends.status}</span></p>
+          <p>Created: <span className="font-medium text-gray-900">{campaignWithSends.createdAt.toLocaleString()}</span></p>
+          <p>Language: <span className="font-medium text-gray-900">{campaignWithSends.locale.toUpperCase()}</span></p>
         </div>
         <div>
           <h2 className="font-bold mb-2">Message</h2>
-          <pre className="p-4 bg-gray-50 rounded whitespace-pre-wrap font-sans text-sm border">{campaign.message}</pre>
+          <pre className="p-4 bg-gray-50 rounded whitespace-pre-wrap font-sans text-sm border">{campaignWithSends.message}</pre>
         </div>
       </div>
 
@@ -55,9 +73,9 @@ export default async function CampaignDetailsPage({ params, searchParams }: { pa
         </div>
 
         <div className="space-y-4">
-          {campaign.sends.map(s => {
+          {campaignWithSends.sends.map(s => {
             const name = s.customer.name || "Customer";
-            let msg = campaign.message || "";
+            let msg = campaignWithSends.message || "";
             msg = msg.replace(/\{name\}/g, name);
             const text = encodeURIComponent(msg);
             const waUrl = `https://wa.me/${s.phone.replace("+", "")}?text=${text}`;

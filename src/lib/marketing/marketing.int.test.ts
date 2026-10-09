@@ -1,7 +1,37 @@
-import { describe, it, expect, beforeEach } from 'vitest';
+import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { prisma } from '../db';
 import { getMarketingAudience } from './segments';
 import { generateMarketingVariants } from './ai';
+
+vi.mock("../ai", () => ({
+  getProvider: () => ({
+    complete: vi.fn().mockImplementation(async (prompt) => {
+      const goal = prompt.user.match(/Goal: "(.*)"/)?.[1] || "";
+      
+      if (goal === "Bad variants test") {
+        return {
+          text: JSON.stringify({
+            variants: [
+              "We have 50% off! APP_URL", // invented number
+              "Check this http://example.com", // bad link
+              "Hi {name}, hi {name} STOP" // double placeholder
+            ]
+          })
+        };
+      }
+      
+      return {
+        text: JSON.stringify({
+          variants: [
+            `Good variant matching ${goal} APP_URL STOP`,
+            `Another ${goal} {name} STOP`,
+            `Third ${goal} STOP`
+          ]
+        })
+      };
+    })
+  })
+}));
 
 describe('Marketing AI and Segments', () => {
   beforeEach(async () => {
@@ -45,5 +75,12 @@ describe('Marketing AI and Segments', () => {
     // Only c1 should be eligible
     expect(audience.length).toBe(1);
     expect(audience[0].phone).toBe("+910000000001");
+  });
+
+  it('validates marketing variants strictly', async () => {
+    await expect(generateMarketingVariants("Bad variants test")).rejects.toThrow("Variant contained invented numbers");
+    const goodVariants = await generateMarketingVariants("Good goal 20% off");
+    expect(goodVariants.length).toBe(3);
+    expect(goodVariants[0]).toContain("STOP");
   });
 });

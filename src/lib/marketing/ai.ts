@@ -1,9 +1,6 @@
-import { generateObject } from "ai";
-import { google } from "@ai-sdk/google";
 import { consumeMonthlyQuota } from "../ai/usage";
+import { getProvider } from "../ai";
 import { z } from "zod";
-import enMsgs from "../../../messages/en.json";
-import hiMsgs from "../../../messages/hi.json";
 
 const variantSchema = z.object({
   variants: z.array(z.string()).min(3).max(3)
@@ -34,17 +31,46 @@ Rules for the 3 variants:
 4. You may use at most one {name} placeholder to greet the customer (e.g. "Hi {name},").
 5. DO NOT include the STOP line yourself, it will be added automatically, just ensure the length leaves room for it (${stopLine.length} chars).
 
-Output a JSON array of 3 strings.`;
+Output a JSON array object: { "variants": ["variant 1", "variant 2", "variant 3"] }
+Return ONLY valid JSON.`;
 
-  const { object } = await generateObject({
-    model: google("gemini-1.5-pro"),
-    schema: variantSchema,
-    prompt,
+  const ai = getProvider();
+  const res = await ai.complete({
+    system: "You output JSON.",
+    user: prompt
   });
 
-  // Validate the variants
-  return object.variants.map(v => {
+  let parsed: z.infer<typeof variantSchema>;
+  try {
+    parsed = variantSchema.parse(JSON.parse(res.text));
+  } catch (err) {
+    throw new Error("AI returned invalid structure.");
+  }
+
+  // Extract all numbers from the goal
+  const goalNumbers = (goal.match(/\d+/g) || []);
+
+  return parsed.variants.map(v => {
     let clean = v.trim();
+    
+    // Check for invented numbers
+    const variantNumbers = (clean.match(/\d+/g) || []);
+    const inventedNumbers = variantNumbers.filter(n => !goalNumbers.includes(n));
+    if (inventedNumbers.length > 0) {
+      throw new Error("Variant contained invented numbers.");
+    }
+
+    // Check for non-APP_URL links
+    if (/(http|www\.)/i.test(clean) && !clean.includes("APP_URL")) {
+      throw new Error("Variant contained unauthorized links.");
+    }
+
+    // Check placeholder count
+    const nameMatches = clean.match(/\{name\}/g) || [];
+    if (nameMatches.length > 1) {
+      throw new Error("Variant contained too many name placeholders.");
+    }
+
     // enforce STOP line
     if (!clean.includes("STOP")) {
       clean = clean + "\n\n" + stopLine;

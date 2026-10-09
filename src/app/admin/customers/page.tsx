@@ -3,7 +3,6 @@ import { requirePageUser } from "@/lib/auth/session";
 import { prisma } from "@/lib/db";
 import Link from "next/link";
 import { Customer } from "@prisma/client";
-import { CampaignUI } from "./CampaignUI";
 
 export const metadata = {
   title: "Customers | Admin | RestroSathi"
@@ -65,8 +64,6 @@ export default async function CustomersPage({ searchParams }: { searchParams: Pr
           <button type="submit" className="bg-primary text-primary-foreground px-4 py-2 rounded">Search</button>
         </form>
       </div>
-
-      {user.role === "OWNER" && <CampaignUI eligibleCount={eligibleCount} />}
 
       <div className="bg-card rounded-lg shadow border overflow-x-auto">
         <table className="w-full text-left text-sm">

@@ -34,9 +34,29 @@ export async function createCampaignAction(formData: FormData) {
   if (!message || message.length > 300) {
     throw new Error("Message must be valid and <= 300 chars");
   }
-  
-  if (locale === "hi" && !message.includes("STOP")) {
-     // rudimentary check
+
+  const stopLine = locale === "hi" 
+    ? "अनसब्सक्राइब करने के लिए STOP भेजें।" 
+    : "Reply STOP to unsubscribe.";
+
+  if (!message.includes("STOP")) {
+    throw new Error("Message must include the STOP line");
+  }
+
+  const goalNumbers = (goal.match(/\d+/g) || []);
+  const messageNumbers = (message.match(/\d+/g) || []);
+  const inventedNumbers = messageNumbers.filter(n => !goalNumbers.includes(n));
+  if (inventedNumbers.length > 0) {
+    throw new Error("Message contained invented numbers.");
+  }
+
+  if (/(http|www\.)/i.test(message) && !message.includes("APP_URL")) {
+    throw new Error("Message contained unauthorized links.");
+  }
+
+  const nameMatches = message.match(/\{name\}/g) || [];
+  if (nameMatches.length > 1) {
+    throw new Error("Message contained too many name placeholders.");
   }
 
   const audience = await getMarketingAudience(segment);

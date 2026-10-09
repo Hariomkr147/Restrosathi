@@ -1,7 +1,6 @@
 import { prisma } from "../db";
 import { formatINR } from "../money/format";
-import { generateText } from "ai";
-import { google } from "@ai-sdk/google";
+import { getProvider } from "../ai";
 import { getSettings } from "../settings";
 import { consumeMonthlyQuota } from "../ai/usage";
 
@@ -178,9 +177,10 @@ Rating: ${avgRating.toFixed(1)}/5 (${ratingCount} reviews)
 Bookings: ${confirmedBookings} confirmed, ${noShowBookings} no-shows
 Voidal: ${voidedLines} items voided, ${cancelledBills} bills cancelled.`;
 
-        const res = await generateText({
-          model: google("gemini-1.5-pro"),
-          prompt
+        const ai = getProvider();
+        const res = await ai.complete({
+          system: "You are an AI analyst.",
+          user: prompt
         });
         insight = res.text.trim().substring(0, 200);
       }
