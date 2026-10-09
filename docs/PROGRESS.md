@@ -722,3 +722,10 @@ pm run dev\ fail immediately with an SWC native addon cache error (DACL grants r
 - Failing output / cause: Test suite setup fails with \P1001: Can't reach database server at 127.0.0.1:15432\. The local PostgreSQL test database requires Docker Desktop, which is currently down. Therefore, the required phase gates and test suites cannot execute.
 - What would unblock it: Restoring Docker Desktop on the host environment and ensuring the test database is available on port 15432.
 
+
+## Task R29: Publish an accurate handover and production launch packet
+
+- Generated \FINAL-REQUEST.md\ with all environment blockages detailed (Docker Desktop down, Next.js SWC cache broken).
+- Separated the software-gate status from human completion in the documentation.
+- Identified the precise steps required to unblock the rest of the queue (restore Docker Desktop and resolve Turbopack permissions).
+
