@@ -766,3 +766,11 @@ pm run test:int -- loyalty\ successfully.
 - Fixed deadlock in settleBill between customer insert and consent record insertion.
 - Extended erasure test to include LoyaltyTxn and CampaignSend.
 - Tested using npm run test:int -- customers and settle. All pass.
+
+## Task R17: Feedback themes and AI replies
+- Commit: 10d59bf
+- Updated generateFeedbackSummary to request structured themes with refs and calculate counts in code.
+- Fallback gracefully when comments < 5 or quota exceeded.
+- Validated reply content against unsafe keywords.
+- Updated UI to display theme counts.
+- Fixed tests to create multiple bills.
