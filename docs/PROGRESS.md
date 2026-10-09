@@ -706,3 +706,12 @@ pm run test:unit\ for crypto and all 14 tests pass.
 - Failing output / cause: npm run build failed due to SWC Native Bindings cache issue (Turbopack permissions error on Windows). Furthermore, Docker Desktop is down on the host environment, preventing the testing of the production image, migration scripts, or the cron configuration entirely.
 - What would unblock it: Restoring Docker Desktop on the host environment so containers can be built and run. Fixing the local Next.js build environment (or doing the production build inside the container, which also requires Docker).
 
+
+## Task R27: Complete bilingual, accessible and responsive UI verification [PARKED]
+
+- What was tried: Attempted to run the Next.js dev server and production build to begin visual regression testing, accessibility checks, and JS bundle measurement.
+- Failing output / cause: Both \
+pm run build\ and \
+pm run dev\ fail immediately with an SWC native addon cache error (DACL grants replacement rights in AppData). Without a working dev server or Docker container, visual UI verification and bundle measurement are impossible.
+- What would unblock it: Fixing the host's SWC/Turbopack native caching issue or restoring Docker to build the UI within an isolated container.
+
