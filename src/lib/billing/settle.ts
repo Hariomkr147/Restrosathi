@@ -27,8 +27,8 @@ export async function settleBill(
     await lockSession(tx, { id: billMeta.sessionId, kind: billMeta.session.kind, tableId: billMeta.session.tableId });
 
     // Now lock the bill itself
-    const res = await tx.$queryRaw<{ id: string; status: string; totalPaise: number; generatedAt: Date; customerPhone: string | null; customerName: string | null; phoneVerifiedAt: Date | null; loyaltyPointsRedeemed: number; loyaltyDiscountPaise: number }[]>`
-      SELECT id, status, "totalPaise", "generatedAt", "customerPhone", "customerName", "phoneVerifiedAt", "loyaltyPointsRedeemed", "loyaltyDiscountPaise" FROM "Bill" WHERE id = ${billId} FOR UPDATE
+    const res = await tx.$queryRaw<{ id: string; status: string; totalPaise: number; generatedAt: Date; customerPhone: string | null; customerName: string | null; phoneVerifiedAt: Date | null; loyaltyPointsRedeemed: number; loyaltyDiscountPaise: number; marketingConsent: boolean | null }[]>`
+      SELECT id, status, "totalPaise", "generatedAt", "customerPhone", "customerName", "phoneVerifiedAt", "loyaltyPointsRedeemed", "loyaltyDiscountPaise", "marketingConsent" FROM "Bill" WHERE id = ${billId} FOR UPDATE
     `;
 
     if (res.length === 0) {
@@ -123,16 +123,20 @@ export async function settleBill(
       const { upsertCustomer } = await import("../customers");
       const { recordConsent } = await import("../customers/consent");
       const c = await upsertCustomer(bill.customerPhone, { name: bill.customerName }, tx);
-      if (typeof opts.marketingConsent === "boolean") {
-        await recordConsent(c.id, opts.marketingConsent, "BILLING", actor.id);
-      }
       customerId = c.id;
+
+      // Lock the customer row immediately to prevent SHARE -> EXCLUSIVE upgrade deadlock
+      // when recordConsent (FK insertion) is followed by loyalty update
+      const [lockedCustomer] = await tx.$queryRaw<{ id: string; verifiedAt: Date | null }[]>`
+        SELECT id, "verifiedAt" FROM "Customer" WHERE id = ${c.id} FOR UPDATE
+      `;
+
+      const finalConsent = typeof opts.marketingConsent === "boolean" ? opts.marketingConsent : bill.marketingConsent;
+      if (typeof finalConsent === "boolean") {
+        await recordConsent(c.id, finalConsent, "BILLING", actor.id, tx);
+      }
       
       if (settings.loyaltyEnabled && bill.phoneVerifiedAt) {
-        // Lock the customer row as per lock order
-        const [lockedCustomer] = await tx.$queryRaw<{ id: string; verifiedAt: Date | null }[]>`
-          SELECT id, "verifiedAt" FROM "Customer" WHERE id = ${c.id} FOR UPDATE
-        `;
         if (bill.loyaltyPointsRedeemed > 0 && !lockedCustomer?.verifiedAt) {
           return { ok: false, error: "PHONE_NOT_VERIFIED" } as const;
         }
@@ -201,7 +205,7 @@ export async function settleBill(
         number,
         settledAt: now,
         settledById: actor.id,
-        marketingConsent: opts.marketingConsent
+        marketingConsent: typeof opts.marketingConsent === "boolean" ? opts.marketingConsent : bill.marketingConsent
       }
     });
 

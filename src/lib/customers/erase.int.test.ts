@@ -90,6 +90,10 @@ describe("eraseCustomer", () => {
       data: { name: "Bob", phone: c.phone, partySize: 2, slotStart: new Date(), cancelToken: "test" }
     });
 
+    await prisma.loyaltyTxn.create({
+      data: { customerId: c.id, kind: "EARN", points: 10, billId: b.id, actorId: "user1" }
+    });
+
     await prisma.user.create({ data: { id: "user1", phone: "+919999900000", passwordHash: "x", role: "OWNER", name: "Owner" } });
     await eraseCustomer(c.id, { id: "user1", role: "OWNER" });
 
@@ -102,6 +106,10 @@ describe("eraseCustomer", () => {
     // Feedback should be deleted
     const fb = await prisma.feedback.findUnique({ where: { token: "fbtoken" } });
     expect(fb).toBeNull();
+
+    // LoyaltyTxn should be deleted
+    const txn = await prisma.loyaltyTxn.findFirst({ where: { customerId: c.id } });
+    expect(txn).toBeNull();
 
     // Bill should remain but anonymised
     const afterB = await prisma.bill.findUnique({ where: { id: b.id } });

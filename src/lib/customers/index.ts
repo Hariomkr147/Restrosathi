@@ -40,3 +40,51 @@ export async function upsertCustomer(
     },
   });
 }
+
+export async function listCustomers(params: { search?: string; page?: number; limit?: number }) {
+  const page = params.page ?? 1;
+  const limit = params.limit ?? 50;
+  const skip = (page - 1) * limit;
+
+  const where: Prisma.CustomerWhereInput = { phone: { not: { startsWith: "+00deleted" } } };
+  if (params.search) {
+    where.OR = [
+      { phone: { contains: params.search } },
+      { name: { contains: params.search, mode: "insensitive" } },
+    ];
+  }
+
+  const [items, total] = await Promise.all([
+    db.customer.findMany({
+      where,
+      orderBy: { createdAt: "desc" },
+      skip,
+      take: limit,
+    }),
+    db.customer.count({ where })
+  ]);
+
+  return { items, total, page, totalPages: Math.ceil(total / limit) };
+}
+
+export async function getCustomerDetails(customerId: string) {
+  const customer = await db.customer.findUnique({
+    where: { id: customerId },
+    include: {
+      consentRecords: { orderBy: { at: "desc" } },
+      loyaltyTxns: { orderBy: { at: "desc" }, take: 10 },
+      feedbacks: { orderBy: { submittedAt: "desc" }, take: 5 },
+    }
+  });
+
+  if (!customer || customer.phone.startsWith("+00deleted")) return null;
+  
+  const bills = await db.bill.findMany({
+    where: { customerPhone: customer.phone },
+    orderBy: { generatedAt: "desc" },
+    take: 5,
+    select: { id: true, number: true, totalPaise: true, generatedAt: true }
+  });
+
+  return { ...customer, bills };
+}

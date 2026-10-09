@@ -22,8 +22,11 @@ export async function recordConsent(
   });
 }
 
-export async function hasMarketingConsent(customerId: string) {
-  const latest = await db.consentRecord.findFirst({
+export async function hasMarketingConsent(
+  customerId: string,
+  tx: import("@prisma/client").Prisma.TransactionClient = db
+) {
+  const latest = await tx.consentRecord.findFirst({
     where: { customerId, purpose: "MARKETING" },
     orderBy: { at: "desc" },
   });
@@ -61,4 +64,22 @@ export async function getMarketingAudience() {
   `;
 
   return await db.$queryRawUnsafe<Customer[]>(query);
+}
+
+export async function backfillOptOutsToConsent() {
+  const optOuts = await db.optOut.findMany();
+  let count = 0;
+  for (const o of optOuts) {
+    const c = await db.customer.findUnique({ where: { phone: o.phone } });
+    if (c) {
+      const existing = await db.consentRecord.findFirst({
+        where: { customerId: c.id, purpose: "MARKETING", source: "WHATSAPP_STOP" },
+      });
+      if (!existing) {
+        await recordConsent(c.id, false, "WHATSAPP_STOP");
+        count++;
+      }
+    }
+  }
+  return count;
 }
