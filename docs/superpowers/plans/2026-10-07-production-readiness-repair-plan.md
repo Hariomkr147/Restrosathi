@@ -209,12 +209,12 @@ Original Tasks 31–32. Audit: F08, F09. Depends: R09–R10.
 
 **Files:** bookings slots/request/confirm/status/reminders/cancel, actions/forms, blocked dates and related tests.
 
-- [ ] Use explicit IST calendar conversion and UTC instants, never host-local getDay/setHours. Test UTC and Asia/Kolkata hosts against identical expected instants, weekdays, cutoff, sixty-day horizon and overnight shifts.
-- [ ] Move request device/phone limits to shared durable rate limiting; serialize same-phone/same-slot active-request creation so concurrent requests cannot duplicate.
-- [ ] Retain per-IST-date advisory locking from Task 32, extending it for overnight overlap: lock the booking's start date and prior date in sorted order (90-minute occupancy cannot span more than these relevant starts), then re-read REQUESTED. Query every booking overlapping its occupied slots, including prior-date starts. Prove the chosen lock set serializes next-date overlapping requests without a global restaurant lock.
-- [ ] Re-check transition/status/time after locks for confirm/decline/cancel/arrive/no-show. Keep capacity calculation and notification/audit writes atomic.
-- [ ] Queue reminders once, only for confirmed future bookings made at least three hours ahead; run concurrent workers. Public cancellation is token-bound POST with invalid/expired handling.
-- [ ] Restore complete staff booking UI: date grouping, status/actions, covers remaining, blocked dates owner-only, ten-second refresh, bilingual validation.
+- [x] Use explicit IST calendar conversion and UTC instants, never host-local getDay/setHours. Test UTC and Asia/Kolkata hosts against identical expected instants, weekdays, cutoff, sixty-day horizon and overnight shifts.
+- [x] Move request device/phone limits to shared durable rate limiting; serialize same-phone/same-slot active-request creation so concurrent requests cannot duplicate.
+- [x] Retain per-IST-date advisory locking from Task 32, extending it for overnight overlap: lock the booking's start date and prior date in sorted order (90-minute occupancy cannot span more than these relevant starts), then re-read REQUESTED. Query every booking overlapping its occupied slots, including prior-date starts. Prove the chosen lock set serializes next-date overlapping requests without a global restaurant lock.
+- [x] Re-check transition/status/time after locks for confirm/decline/cancel/arrive/no-show. Keep capacity calculation and notification/audit writes atomic.
+- [x] Queue reminders once, only for confirmed future bookings made at least three hours ahead; run concurrent workers. Public cancellation is token-bound POST with invalid/expired handling.
+- [x] Restore complete staff booking UI: date grouping, status/actions, covers remaining, blocked dates owner-only, ten-second refresh, bilingual validation.
 
 **Acceptance:** capacity-10 concurrent parties-of-three → exactly three successes in three loops; previous-day 23:30 blocks next-day overlapping slots; exact-fit succeeds; duplicate confirmations/messages cannot occur.
 
@@ -223,12 +223,12 @@ Original Tasks 28, 33–36 and Gate 4. Audit: F04/F18/F24. Depends: R05, R09–R
 
 **Files:** event packages/enquiries, ai facts/autoreply, messages inbox, orders escalation, retention/privacy and E2E.
 
-- [ ] Walk Task 33's package/enquiry validation, owner/staff transitions, public rate limits and bilingual event pages against its full original contract.
-- [ ] Auto-reply must use only settings/current-menu facts, allergy no-call, monthly/daily cap, 12-hour human pause, STOP suppression, reply length/price/link/booking-claim validation and never-throw handover.
-- [ ] Prove webhook auth, group/broadcast ignore, ID dedupe and human-reply pause using fake inbound requests; render user content as text.
-- [ ] Escalations claim NEW orders transactionally, aggregate one message and dedupe concurrent cron calls; no owner phone stamps nothing.
-- [ ] Retention deletes only explicitly allowed records at original ages and ErrorLog >30 days; preserve bills/payments/orders/bookings/audit. Preserve the meaning of both-language privacy copy.
-- [ ] Restore Gate 4's actual booking/STOP/webhook/provider-outage E2E and write fresh security evidence.
+- [x] Walk Task 33's package/enquiry validation, owner/staff transitions, public rate limits and bilingual event pages against its full original contract.
+- [x] Auto-reply must use only settings/current-menu facts, allergy no-call, monthly/daily cap, 12-hour human pause, STOP suppression, reply length/price/link/booking-claim validation and never-throw handover.
+- [x] Prove webhook auth, group/broadcast ignore, ID dedupe and human-reply pause using fake inbound requests; render user content as text.
+- [x] Escalations claim NEW orders transactionally, aggregate one message and dedupe concurrent cron calls; no owner phone stamps nothing.
+- [x] Retention deletes only explicitly allowed records at original ages and ErrorLog >30 days; preserve bills/payments/orders/bookings/audit. Preserve the meaning of both-language privacy copy.
+- [x] Restore Gate 4's actual booking/STOP/webhook/provider-outage E2E and write fresh security evidence.
 
 **Acceptance:** original Tasks 28–36 acceptance succeeds locally with fakes. Pairing/privacy review remain human steps, not reasons to omit local tests.
 
@@ -237,12 +237,12 @@ Original Task 37; later model extensions. Audit: F10, F13, privacy inventory gap
 
 **Files:** customers index/consent/erase, bill settlement/generation/actions, booking request, STOP handler, customer pages/actions, schema/migration only when required.
 
-- [ ] Pass transaction clients through upsert/consent helpers. Test consent for newly inserted and existing customers, explicit false, rollback and concurrent append.
-- [ ] Read the saved billing marketing checkbox in settlement; false must be able to clear an earlier draft choice. Never turn an unchecked box into consent.
-- [ ] Use the canonical audience function for every recipient read; latest grant plus valid phone plus no OptOut. Backfill preexisting OptOut into denied consent idempotently.
-- [ ] Implement valid customer list/detail queries, visits/last visit, birthday/anniversary fields with purpose, consent history, owner-only consent edits/erasure.
-- [ ] Extend erasure and HANDLED_MODELS tests for LoyaltyTxn and Feedback now and CampaignSend in R19. Test every actual PII-bearing model, preserving bill totals/numbers/payments and blocking OptOut entries.
-- [ ] Ensure erasure audit contains only identifiers, not erased PII. Show a clear confirmation/result without exposing errors.
+- [x] Pass transaction clients through upsert/consent helpers. Test consent for newly inserted and existing customers, explicit false, rollback and concurrent append.
+- [x] Read the saved billing marketing checkbox in settlement; false must be able to clear an earlier draft choice. Never turn an unchecked box into consent.
+- [x] Use the canonical audience function for every recipient read; latest grant plus valid phone plus no OptOut. Backfill preexisting OptOut into denied consent idempotently.
+- [x] Implement valid customer list/detail queries, visits/last visit, birthday/anniversary fields with purpose, consent history, owner-only consent edits/erasure.
+- [x] Extend erasure and HANDLED_MODELS tests for LoyaltyTxn and Feedback now and CampaignSend in R19. Test every actual PII-bearing model, preserving bill totals/numbers/payments and blocking OptOut entries.
+- [x] Ensure erasure audit contains only identifiers, not erased PII. Show a clear confirmation/result without exposing errors.
 
 **Acceptance:** billing/booking consent survives exactly when the transaction commits; STOP always excludes marketing; erasure test walks Prisma DMMF and verifies before/after data.
 
@@ -289,11 +289,11 @@ Original Task 41. Audit: F12. Depends: R05, R15–R16.
 
 **Files:** ai feedback, reports weeks, FeedbackSummary migration, feedback UI/actions, tests.
 
-- [ ] Use the existing provider and shared atomic monthly cap. Strip phone-length digit sequences, email addresses and handles before sending data.
-- [ ] Fewer than five comments → statistics only, zero AI calls. Bound selection to 100 comments; validate structured themes/indexes, drop invalid/duplicate references and calculate counts in code.
-- [ ] Persist by IST week start and display source count/AI label/examples. Provider error/cap reached produces statistics plus a clear fallback.
-- [ ] Owner-only reply draft <=400 chars; validate refunds/free/discount/amount/URL restrictions and use a safe localized fallback. Nothing posts automatically.
-- [ ] Remove obsolete direct Google call paths; uninstall their SDK packages only if no remaining legitimate imports after R19.
+- [x] Use the existing provider and shared atomic monthly cap. Strip phone-length digit sequences, email addresses and handles before sending data.
+- [x] Fewer than five comments → statistics only, zero AI calls. Bound selection to 100 comments; validate structured themes/indexes, drop invalid/duplicate references and calculate counts in code.
+- [x] Persist by IST week start and display source count/AI label/examples. Provider error/cap reached produces statistics plus a clear fallback.
+- [x] Owner-only reply draft <=400 chars; validate refunds/free/discount/amount/URL restrictions and use a safe localized fallback. Nothing posts automatically.
+- [x] Remove obsolete direct Google call paths; uninstall their SDK packages only if no remaining legitimate imports after R19.
 
 **Acceptance:** PII never appears in captured fake-provider input; forbidden/unvalidated outputs never reach copy UI; real owner flow and wrong-role tests pass.
 
@@ -302,7 +302,7 @@ Original Task 42. Audit: F20/F06. Depends: R16–R17.
 
 **Files:** reports weeks/weekly, WeeklyReportLog/ownerLocale migration/settings, cron route, owner weekly page/tests/messages.
 
-- [ ] Compute previous Monday–Sunday IST window, with explicit Monday 08:59/09:00, Sunday and month/year boundary tests.
+- [x] Compute previous Monday–Sunday IST window, with explicit Monday 08:59/09:00, Sunday and month/year boundary tests.
 - [x] Calculate all original facts in code: sales/count/average/best day/hour/top dishes, confirmed/no-show bookings, rating/count, cancellations and voids.
 - [x] Render both languages using formatINR. Optional <=200-character insight must use only fact numbers, no URLs/promises; AI failure still sends the facts.
 - [x] Monday after 09:00 and no existing week log: atomically insert log and queue the report. Five concurrent calls queue once; no phone queues nothing.
@@ -316,8 +316,8 @@ Original Task 43. Audit: F12/F13. Depends: R13, R17–R18.
 **Files:** marketing segments/links/campaigns, ai marketing, Campaign/CampaignSend migrations, marketing pages/actions, customer recipient UI, erasure/tests/messages.
 
 - [x] Every segment begins with getMarketingAudience and only narrows: all consented, visited30, inactive60, birthdays-this-month; exclude any campaign in prior seven days by default.
-- [ ] Owner provides goal 10–400 chars and locale. Shared quota/provider returns three validated variants <=300 chars; amounts/numbers must exist in goal, APP_URL-only links, at most one name placeholder and enforced localized STOP line.
-- [ ] Build goal→draft→edit→segment→create→recipient list (100/page)→wa.me→mark-sent flow. Validate edited text at persistence too, not only generated drafts.
+- [x] Owner provides goal 10–400 chars and locale. Shared quota/provider returns three validated variants <=300 chars; amounts/numbers must exist in goal, APP_URL-only links, at most one name placeholder and enforced localized STOP line.
+- [x] Build goal→draft→edit→segment→create→recipient list (100/page)→wa.me→mark-sent flow. Validate edited text at persistence too, not only generated drafts.
 - [x] Mark sent is idempotent. Recompute audience on every campaign read; STOP after creation removes the recipient. Never send marketing via notify/provider.
 - [x] Extend erasure for CampaignSend; encode Hindi/emoji/name fallbacks; remove unsafe promo links from the generic customer list.
 - [x] Remove unused direct-provider dependencies and rerun audit.
@@ -329,11 +329,11 @@ Original Task 44. Audit: F22. Depends: R03.
 
 **Files:** backup crypto and its tests; backup-format documentation.
 
-- [ ] Preserve 1 MiB streaming AES-256-GCM; use a per-file random identifier/nonce base with collision-safe chunk nonces and authenticated header/version/index/length/final marker.
-- [ ] Version the repaired format. Inspect whether any real old archives exist before deciding compatibility; do not silently invalidate the only backup. Old format, if retained for recovery, must be explicitly labelled as legacy without a verified-integrity claim.
-- [ ] Add reorder, cross-file splice, duplicate frame, early-final-marker, truncation and appended-data rejection tests in addition to wrong key/bit flip.
-- [ ] Round-trip 0,1,1MiB−1,1MiB and a 50MiB stream by hashes. Stage decrypted output privately; never leave partial plaintext in the requested destination on failure.
-- [ ] Keep S3/hash sidecar as accidental-corruption detection, not a replacement for keyed file integrity.
+- [x] Preserve 1 MiB streaming AES-256-GCM; use a per-file random identifier/nonce base with collision-safe chunk nonces and authenticated header/version/index/length/final marker.
+- [x] Version the repaired format. Inspect whether any real old archives exist before deciding compatibility; do not silently invalidate the only backup. Old format, if retained for recovery, must be explicitly labelled as legacy without a verified-integrity claim.
+- [x] Add reorder, cross-file splice, duplicate frame, early-final-marker, truncation and appended-data rejection tests in addition to wrong key/bit flip.
+- [x] Round-trip 0,1,1MiB−1,1MiB and a 50MiB stream by hashes. Stage decrypted output privately; never leave partial plaintext in the requested destination on failure.
+- [x] Keep S3/hash sidecar as accidental-corruption detection, not a replacement for keyed file integrity.
 
 **Acceptance:** reordered audit sample is rejected; streaming size tests pass; no sensitive bytes/keys in logs. No new encryption dependency.
 
@@ -358,12 +358,12 @@ Original Task 45. Audit: F05/F06. Depends: R04, R09, R21.
 
 **Files:** errors/instrumentation, monitoring checks/alerts, cron alerts, health/deep, system page/tests, MONITORING.md.
 
-- [ ] Verify all seven checks against injected facts: DB, disk>85%, backup>26h, failed/stuck outbox, disconnected WA>30m, AI>=80%/exhaustion, errors>=20/10m.
-- [ ] Make each alert key independent: first failure, no repeat inside six hours, repeat after six, one recovery. Serialize concurrent evaluations and queue SYSTEM_ALERT via notify; no direct provider calls.
-- [ ] No owner phone must not crash or suppress system-page visibility. Preserve failure state carefully so adding a phone later can notify.
-- [ ] Add protected GET deep-health with the common secret guard; public health stays minimal, returning503 on DB failure without stack/version/secrets.
-- [ ] Scrub phone/email/body/stack details in errors, bound length and retain30 days. Display owner-only status plus backup size/outbox/WA/AI/last50 errors.
-- [ ] Document external uptime monitoring because in-app alerts cannot report a stopped VPS.
+- [x] Verify all seven checks against injected facts: DB, disk>85%, backup>26h, failed/stuck outbox, disconnected WA>30m, AI>=80%/exhaustion, errors>=20/10m.
+- [x] Make each alert key independent: first failure, no repeat inside six hours, repeat after six, one recovery. Serialize concurrent evaluations and queue SYSTEM_ALERT via notify; no direct provider calls.
+- [x] No owner phone must not crash or suppress system-page visibility. Preserve failure state carefully so adding a phone later can notify.
+- [x] Add protected GET deep-health with the common secret guard; public health stays minimal, returning503 on DB failure without stack/version/secrets.
+- [x] Scrub phone/email/body/stack details in errors, bound length and retain30 days. Display owner-only status plus backup size/outbox/WA/AI/last50 errors.
+- [x] Document external uptime monitoring because in-app alerts cannot report a stopped VPS.
 
 **Acceptance:** bad secrets never disclose or mutate; concurrent alert jobs dedupe; system failure/recovery E2E and scrub tests pass.
 
