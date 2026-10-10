@@ -43,8 +43,8 @@ export async function createCampaignAction(formData: FormData) {
     throw new Error("Message must include the STOP line");
   }
 
-  const goalNumbers = (goal.match(/\d+/g) || []);
-  const messageNumbers = (message.match(/\d+/g) || []);
+  const goalNumbers: string[] = (goal.match(/\d+/g) || []);
+  const messageNumbers: string[] = (message.match(/\d+/g) || []);
   const inventedNumbers = messageNumbers.filter(n => !goalNumbers.includes(n));
   if (inventedNumbers.length > 0) {
     throw new Error("Message contained invented numbers.");

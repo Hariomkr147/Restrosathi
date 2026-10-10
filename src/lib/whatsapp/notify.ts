@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
+ 
 import { Prisma } from "@prisma/client";
 import { prisma } from "../db";
 import { normalizePhone } from "../phone";

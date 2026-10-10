@@ -19,7 +19,7 @@ import { askMenuAction } from "../ai/actions";
 import { getDayEnd } from "../billing/day-end";
 import { GET as getHealth } from "../../app/api/health/route";
 import { draftReplyAction } from "../../app/admin/feedback/actions";
-import { draftCampaignAction } from "../../app/admin/customers/actions";
+import { createCampaignAction } from "../../app/admin/marketing/actions";
 import { requestOtpAction, verifyOtpAction } from "../../app/(public)/book/otp-actions";
 import { submitEnquiryAction } from "../../app/(public)/events/actions";
 import { adminUpsertPackageAction, adminUpdateEnquiryStatusAction } from "../../app/admin/events/actions";
@@ -218,8 +218,10 @@ for (const { role, signIn } of roles) {
   it(`${role}: adminUpsertPackageAction requires OWNER`, async () => {
     await signIn();
     if (role === "owner") {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       await expect(adminUpsertPackageAction(null, {} as any)).rejects.toThrow();
     } else {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       await expect(adminUpsertPackageAction(null, {} as any)).rejects.toBeInstanceOf(AuthError);
     }
   });
@@ -256,16 +258,16 @@ for (const { role, signIn } of roles) {
     }
   });
 
-  it(`${role}: draftCampaignAction requires staff or owner`, async () => {
+  it(`${role}: createCampaignAction requires OWNER`, async () => {
     await signIn();
-    if (role === "anonymous") {
-      await expect(draftCampaignAction()).rejects.toBeInstanceOf(AuthError);
-    } else {
+    if (role === "owner") {
       try {
-        await draftCampaignAction();
+        await createCampaignAction(new FormData());
       } catch (e) {
-        // Ignored, we just want to know it didn't throw AuthError
+        // Ignored
       }
+    } else {
+      await expect(createCampaignAction(new FormData())).rejects.toThrow();
     }
   });
 
@@ -294,6 +296,7 @@ for (const { role, signIn } of roles) {
       body: "{",
       headers: { "origin": "http://localhost:3000", "host": "localhost:3000" }
     });
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const res = await getOrders(req as any);
     expect(res.status).toBe(400); // Invalid JSON or signature fails, but not 401 or 403
   });

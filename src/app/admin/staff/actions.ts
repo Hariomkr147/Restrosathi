@@ -17,8 +17,8 @@ export async function createStaffAction(formData: FormData) {
 
   try {
     await createStaff({ name, pin });
-  } catch (err: any) {
-    return { error: err.message };
+  } catch (err) {
+    return { error: err instanceof Error ? err.message : String(err) };
   }
 
   revalidatePath("/admin/staff");
@@ -35,8 +35,8 @@ export async function resetStaffPinAction(formData: FormData) {
 
   try {
     await resetStaffPin(userId, pin);
-  } catch (err: any) {
-    return { error: err.message };
+  } catch (err) {
+    return { error: err instanceof Error ? err.message : String(err) };
   }
 
   revalidatePath("/admin/staff");
@@ -50,8 +50,8 @@ export async function setStaffActiveAction(formData: FormData) {
 
   try {
     await setStaffActive(userId, active);
-  } catch (err: any) {
-    return { error: err.message };
+  } catch (err) {
+    return { error: err instanceof Error ? err.message : String(err) };
   }
 
   revalidatePath("/admin/staff");
@@ -68,8 +68,8 @@ export async function changeOwnerPasswordAction(formData: FormData) {
 
   try {
     await changeOwnerPassword(current, next);
-  } catch (err: any) {
-    return { error: err.message };
+  } catch (err) {
+    return { error: err instanceof Error ? err.message : String(err) };
   }
 
   return { success: true };

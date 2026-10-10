@@ -11,7 +11,7 @@ vi.mock("../auth/session", async (importOriginal) => {
 
 beforeAll(async () => {
   await resetOperationalData();
-  const staff = await db.user.create({ data: { name: "Staff", role: "STAFF" } });
+  const staff = await db.user.findFirstOrThrow({ where: { role: "STAFF" } });
   vi.mocked(auth.requireUser).mockResolvedValue(staff);
 });
 

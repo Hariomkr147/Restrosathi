@@ -110,6 +110,22 @@ describe("requestBooking", () => {
     expect(result3.ok).toBe(true);
   });
 
+  it("prevents concurrent duplicate requests on same phone same slot", async () => {
+    const slot = await getValidSlot();
+    const ctx = { isPhoneVerified: async () => true, deviceId: "dev_conc" };
+    
+    const results = await Promise.all([
+      requestBooking({ name: "Test", phone: "+919999900000", partySize: 2, slotStart: slot, note: "" }, ctx),
+      requestBooking({ name: "Test", phone: "+919999900000", partySize: 2, slotStart: slot, note: "" }, ctx),
+      requestBooking({ name: "Test", phone: "+919999900000", partySize: 2, slotStart: slot, note: "" }, ctx)
+    ]);
+
+    const successes = results.filter(r => r.ok);
+    const failures = results.filter(r => !r.ok && "error" in r && r.error === "DUPLICATE_REQUEST");
+    expect(successes).toHaveLength(1);
+    expect(failures).toHaveLength(2);
+  });
+
   it("rate limits (5 per phone, 10 per device)", async () => {
     const slot = await getValidSlot();
     const ctx = { isPhoneVerified: async () => true, deviceId: "dev_rate_limit" };

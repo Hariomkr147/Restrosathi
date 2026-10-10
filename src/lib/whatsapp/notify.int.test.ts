@@ -28,6 +28,7 @@ describe("notify()", () => {
   });
 
   it("returns skipped for invalid phone", async () => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const res = await notify("OTP", "123", { otp: "123", minutes: 10 } as any);
     expect(res).toEqual({ skipped: "INVALID_PHONE" });
   });
@@ -55,9 +56,10 @@ describe("renderMessage()", () => {
       { kind: "EVENT_ENQUIRY_RECEIVED", params: {} },
       { kind: "ORDER_ESCALATION", params: { label: "Table 4" } },
       { kind: "THANK_YOU_FEEDBACK", params: { name: "", feedbackLink: "http://example.com" } },
-      { kind: "WEEKLY_REPORT", params: { sales: "₹10,000", orderCount: 42 } },
+      { kind: "WEEKLY_REPORT", params: { start: "Monday", end: "Sunday", sales: "₹10,000", orderCount: 42, insight: "Good week" } },
       { kind: "STOP_CONFIRMED", params: {} },
       { kind: "AUTO_REPLY", params: { answer: "We are open until 11 PM." } },
+      { kind: "SYSTEM_ALERT", params: { message: "Error" } },
     ];
 
     for (const { kind, params } of testCases) {
@@ -76,6 +78,7 @@ describe("renderMessage()", () => {
   it("throws on unknown param in template", () => {
     // If a template expects {missing} but it's not provided, it should throw or we test it by checking leftovers.
     // The spec says: "unknown params are an error in tests (every template is covered by a render test that fills all its placeholders)".
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     expect(() => renderMessage("OTP", { code: "123" } as any, "en")).toThrow();
   });
 });

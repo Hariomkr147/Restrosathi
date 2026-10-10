@@ -17,7 +17,7 @@ describe("cancelBooking", () => {
     const b = await prisma.booking.create({
       data: {
         name: "Test", phone: "919999999999", partySize: 2,
-        slotStart: new Date("2026-10-10T14:30:00.000Z"),
+        slotStart: new Date(Date.now() + 86400000),
         status: "REQUESTED", cancelToken: "TEST_TOKEN"
       }
     });
@@ -34,7 +34,7 @@ describe("cancelBooking", () => {
     const b = await prisma.booking.create({
       data: {
         name: "Test", phone: "919999999999", partySize: 2,
-        slotStart: new Date("2026-10-10T14:30:00.000Z"),
+        slotStart: new Date(Date.now() + 86400000),
         status: "CONFIRMED", cancelToken: "TEST_TOKEN"
       }
     });

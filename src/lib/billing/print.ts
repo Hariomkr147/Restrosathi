@@ -88,7 +88,7 @@ export async function getBillPrint(billId: string, actor: { id: string, role: st
       linePaise: l.linePaise
     })),
     subtotal: bill.subtotalPaise,
-                                                                                                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                                                                                                     
     discount: bill.discountPaise > 0 ? { value: bill.discountPaise, type: bill.discountType ?? "FLAT", reason: bill.discountReason || "" } : undefined,
     loyaltyDiscountPaise: bill.loyaltyDiscountPaise,
     taxLines,

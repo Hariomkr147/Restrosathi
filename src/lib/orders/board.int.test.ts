@@ -2,6 +2,7 @@
 import { describe, expect, it, beforeEach, vi, afterEach } from "vitest";
 import { getBoard, resolveServiceRequest } from "./board";
 import { prisma as db } from "../db";
+import { resetOperationalData } from "../../../tests/helpers/db";
 import * as auth from "../auth/session";
 
 vi.mock("../auth/session", async (importOriginal) => {
@@ -13,9 +14,7 @@ vi.mock("next-intl/server", () => ({ getLocale: () => "en" }));
 describe("board", () => {
   beforeEach(async () => {
     vi.clearAllMocks();
-    await db.$transaction([
-      db.billLine.deleteMany(), db.bill.deleteMany(), db.orderLine.deleteMany(), db.order.deleteMany(), db.serviceRequest.deleteMany(), db.diningSession.deleteMany()
-    ]);
+    await resetOperationalData();
   });
   afterEach(() => {
     vi.setSystemTime(new Date());
@@ -34,7 +33,7 @@ describe("board", () => {
     const now = new Date("2026-10-04T12:00:00Z");
     vi.setSystemTime(now);
 
-    const table = await db.restaurantTable.create({ data: { id: "t1", label: "Table 1", code: "CODE1", sortOrder: 1 } });
+    const table = await db.restaurantTable.findUniqueOrThrow({ where: { label: "T1" } });
     const session = await db.diningSession.create({ data: { id: "s1", tableId: table.id, kind: "DINE_IN" } });
     const item = await db.menuItem.create({ data: { id: "item1", categoryId: "starters", name: { en: "EnglishName" }, basePricePaise: 100, sortOrder: 1, available: true, isVeg: true } });
     const hindiItem = await db.menuItem.create({ data: { id: "item2", categoryId: "starters", name: { en: "Fallback", hi: "HindiName" }, basePricePaise: 100, sortOrder: 2, available: true, isVeg: true } });
@@ -76,7 +75,7 @@ describe("board", () => {
     expect(ids).toEqual(["o4", "o1", "o2", "o3"]); // Not o5, o6
     
     const o1 = board.orders.find(o => o.id === "o1")!;
-    expect(o1.tableLabel).toBe("Table 1");
+    expect(o1.tableLabel).toBe("T1");
     expect(o1.lines[0].voided).toBe(true);
     expect(o1.lines[0].name).toBe("EnglishName");
 

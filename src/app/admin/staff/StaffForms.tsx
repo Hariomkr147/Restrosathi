@@ -50,7 +50,7 @@ export function AddStaffForm() {
   );
 }
 
-export function StaffItemRow({ staff }: { staff: any }) {
+export function StaffItemRow({ staff }: { staff: { id: string; name: string; active: boolean } }) {
   const [resetting, setResetting] = useState(false);
   const [newPin, setNewPin] = useState("");
   const [loading, setLoading] = useState(false);

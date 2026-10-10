@@ -54,15 +54,7 @@ export async function handleIncoming(messageId: string): Promise<void> {
 
   // Allergy check
   if (isAllergyQuestion(text)) {
-    const msgId = await prisma.$transaction(async (tx) => {
-      const msgRes = await notify("AUTO_REPLY", phone, { answer: "Please ask our staff about allergies." }, { tx });
-      await tx.messageLog.update({
-        where: { id: msg.id },
-        data: { aiHandled: true, needsHuman: true }
-      });
-      return "id" in msgRes ? msgRes.id : undefined;
-    });
-    if (msgId) import("../whatsapp/outbox").then(({ sendNow }) => sendNow(msgId)).catch(() => {});
+    await triggerHandover(msg.id, phone, "Please ask our staff about allergies.");
     return;
   }
 
@@ -162,12 +154,18 @@ ${history}`;
   }
 }
 
-async function triggerHandover(messageId: string, phone: string) {
+async function triggerHandover(messageId: string, phone: string, answer = "Thanks! Our staff will reply shortly.") {
   const msgId = await prisma.$transaction(async (tx) => {
-    const msgRes = await notify("AUTO_REPLY", phone, { answer: "Thanks! Our staff will reply shortly." }, { tx });
+    const msgRes = await notify("AUTO_REPLY", phone, { answer }, { tx });
     await tx.messageLog.updateMany({
       where: { id: messageId },
       data: { needsHuman: true, aiHandled: true }
+    });
+    const pauseUntil = new Date(Date.now() + 12 * 60 * 60 * 1000);
+    await tx.threadState.upsert({
+      where: { phone },
+      update: { aiPausedUntil: pauseUntil },
+      create: { phone, aiPausedUntil: pauseUntil }
     });
     return "id" in msgRes ? msgRes.id : undefined;
   });

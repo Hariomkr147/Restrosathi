@@ -27,6 +27,7 @@ describe("getWhatsAppHealth()", () => {
       data: { direction: "OUT", phone: "+919876543211", status: "FAILED", kind: "OTP", params: {}, externalId: "2" }
     });
     
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     (getWhatsApp as any).mockReturnValue({
       status: async () => "connected"
     });
@@ -38,6 +39,7 @@ describe("getWhatsAppHealth()", () => {
   it("caches the result within 30s", async () => {
     vi.advanceTimersByTime(31000); // clear any cache from previous test
     const mockStatus = vi.fn().mockResolvedValue("disconnected");
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     (getWhatsApp as any).mockReturnValue({ status: mockStatus });
 
     await getWhatsAppHealth();

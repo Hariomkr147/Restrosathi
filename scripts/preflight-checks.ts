@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-/* eslint-disable @typescript-eslint/ban-ts-comment */
+ 
 export function checkPreflight(snapshot: any) {
   const results: { name: string, ok: boolean, error: string | null, type: "error" | "warning" }[] = [];
   

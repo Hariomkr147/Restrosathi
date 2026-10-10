@@ -135,7 +135,9 @@ describe("eraseCustomer", () => {
     // Audit log has no PII
     const log = await prisma.auditLog.findFirst({ where: { action: "customer.erase" } });
     expect(log).not.toBeNull();
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     expect((log!.data as any).phone).toBeUndefined();
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     expect((log!.data as any).name).toBeUndefined();
     expect(log!.entityId).toBe(c.id);
   });

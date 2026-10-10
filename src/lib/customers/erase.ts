@@ -39,6 +39,7 @@ export async function eraseCustomer(customerId: string, actor: { id: string; rol
       await (tx.loyaltyTxn as { deleteMany: (args: unknown) => Promise<unknown> }).deleteMany({ where: { customerId } });
     }
     if ("campaignSend" in tx) {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
       await (tx.campaignSend as any).deleteMany({ where: { customerId } });
     }
     

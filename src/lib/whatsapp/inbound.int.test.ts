@@ -37,7 +37,7 @@ describe("Webhook Inbound", () => {
       event: "message",
       timestamp: 1234,
       data: {
-        key: { remoteJid: "919876543210@s.whatsapp.net", id: "msg-1" },
+        key: { remoteJid: "919000000000@s.whatsapp.net", id: "msg-1" },
         content: "hello"
       }
     };
@@ -49,7 +49,7 @@ describe("Webhook Inbound", () => {
     expect(logs.length).toBe(1);
     expect(logs[0].direction).toBe("IN");
     expect(logs[0].body).toBe("hello");
-    expect(logs[0].phone).toBe("+919876543210");
+    expect(logs[0].phone).toBe("+919000000000");
   });
 
   it("the same message id twice -> one row", async () => {
@@ -57,7 +57,7 @@ describe("Webhook Inbound", () => {
       event: "message",
       timestamp: 1234,
       data: {
-        key: { remoteJid: "919876543210@s.whatsapp.net", id: "msg-dup" },
+        key: { remoteJid: "919000000000@s.whatsapp.net", id: "msg-dup" },
         content: "hello"
       }
     };
@@ -88,7 +88,7 @@ describe("Webhook Inbound", () => {
     const body = {
       event: "message",
       data: {
-        key: { remoteJid: "919876543210@s.whatsapp.net", id: "msg-2", fromMe: true },
+        key: { remoteJid: "919000000000@s.whatsapp.net", id: "msg-2", fromMe: true },
         content: "hello"
       }
     };
@@ -98,7 +98,7 @@ describe("Webhook Inbound", () => {
     expect(logs.length).toBe(0); // we don't store OUT here for fromMe? 
     // Spec says: "an event with fromMe: true is a human reply: set ThreadState.aiPausedUntil = now + 12 h for that phone"
 
-    const state = await prisma.threadState.findUnique({ where: { phone: "+919876543210" } });
+    const state = await prisma.threadState.findUnique({ where: { phone: "+919000000000" } });
     expect(state).not.toBeNull();
     expect(state!.aiPausedUntil?.getTime()).toBeGreaterThan(Date.now() + 11 * 60 * 60 * 1000);
   });
@@ -106,18 +106,18 @@ describe("Webhook Inbound", () => {
   it("' stop ' and 'STOP' and 'Stop' -> one OptOut row and one queued STOP_CONFIRMED", async () => {
     const makeBody = (text: string, id: string) => ({
       event: "message",
-      data: { key: { remoteJid: "919876543210@s.whatsapp.net", id }, content: text }
+      data: { key: { remoteJid: "919000000000@s.whatsapp.net", id }, content: text }
     });
 
     await POST(createReq(makeBody(" stop ", "msg-3")), { params: Promise.resolve({ token: "test-webhook-secret" }) });
     await POST(createReq(makeBody("STOP", "msg-4")), { params: Promise.resolve({ token: "test-webhook-secret" }) });
     await POST(createReq(makeBody("Stop", "msg-5")), { params: Promise.resolve({ token: "test-webhook-secret" }) });
 
-    const optOuts = await prisma.optOut.findMany();
+    const optOuts = await prisma.optOut.findMany({ where: { phone: "+919000000000" } });
     expect(optOuts.length).toBe(1);
-    expect(optOuts[0].phone).toBe("+919876543210");
+    expect(optOuts[0].phone).toBe("+919000000000");
 
-    const logs = await prisma.messageLog.findMany({ where: { direction: "OUT" } });
+    const logs = await prisma.messageLog.findMany({ where: { direction: "OUT", phone: "+919000000000" } });
     expect(logs.length).toBe(3); // Wait, spec says second STOP does not duplicate the opt-out, but does it queue STOP_CONFIRMED again? "second STOP does not duplicate the opt-out". We queued it 3 times. We can just check that optOut length is 1.
     expect(logs[0].kind).toBe("STOP_CONFIRMED");
     expect(logs[0].status).toBe("PENDING");

@@ -130,4 +130,33 @@ test.describe("Phase 4 Exit E2E", () => {
     const optOut = await db.optOut.findUnique({ where: { phone: "+919999900000" } });
     expect(optOut).toBeTruthy();
   });
+  test("provider outage logs failure but continues", async ({ page }) => {
+    const fs = await import("node:fs/promises");
+    await fs.mkdir("test-results", { recursive: true });
+    await fs.writeFile("test-results/fake-wa-control.txt", "fail");
+    
+    // Trigger OTP sending which will fail to send to provider but will queue in outbox and not crash
+    await page.goto("/book");
+    
+    const d = new Date(Date.now() + 2 * 86400000);
+    const dateStr = d.toISOString().slice(0, 10);
+    
+    await page.fill('input[type="date"]', dateStr);
+    await page.waitForSelector('[data-testid="slot-button"]');
+    await page.locator('[data-testid="slot-button"]').first().click();
+    await page.fill('input[type="text"]', "John Error");
+    await page.fill('input[type="tel"]', "+919999900000");
+    await page.getByRole("button", { name: "Request Table" }).click();
+    
+    // We should get the OTP verification screen despite the outage (because OTP goes to outbox successfully)
+    await expect(page.getByText(/We've sent a 6-digit code/i)).toBeVisible();
+
+    // The message log should reflect FAILED status
+    await page.waitForTimeout(1000);
+    const log = await db.messageLog.findFirst({ where: { phone: "+919999900000", direction: "OUT" }, orderBy: { createdAt: "desc" } });
+    expect(log?.status).toBe("FAILED");
+
+    // Clean up
+    await fs.rm("test-results/fake-wa-control.txt").catch(() => {});
+  });
 });

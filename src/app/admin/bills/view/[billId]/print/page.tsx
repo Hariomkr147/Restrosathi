@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
+ 
 import { requireUser } from "@/lib/auth/session";
 import { getBillPrint } from "@/lib/billing/print";
 import { notFound } from "next/navigation";

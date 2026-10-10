@@ -44,7 +44,7 @@ export async function getMarketingAudience(segment: CampaignSegment) {
   if (eligiblePhones.length === 0) return [];
 
   // If segment requires Bill data, we fetch it
-  let latestBillByPhone: Record<string, Date> = {};
+  const latestBillByPhone: Record<string, Date> = {};
   if (segment === "VISITED_30_DAYS" || segment === "INACTIVE_60_DAYS") {
     const bills = await prisma.bill.findMany({
       where: {

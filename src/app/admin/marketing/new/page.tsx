@@ -27,8 +27,8 @@ export default function NewCampaignPage() {
       setVariants(vars);
       setSelectedVariant(-1);
       setMessage("");
-    } catch (err: any) {
-      setError(err.message || "Failed to generate");
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Failed to generate");
     } finally {
       setLoading(false);
     }
@@ -46,8 +46,8 @@ export default function NewCampaignPage() {
       fd.append("message", message);
       const id = await createCampaignAction(fd);
       router.push(`/admin/marketing/${id}`);
-    } catch (err: any) {
-      setError(err.message || "Failed to create campaign");
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Failed to create campaign");
     } finally {
       setLoading(false);
     }

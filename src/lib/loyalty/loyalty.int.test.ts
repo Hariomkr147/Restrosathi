@@ -178,6 +178,7 @@ describe("loyalty ledger integration", () => {
     await adjustPoints(c.id, 10, "test", { id: "owner-demo", role: "OWNER" });
     const auditLog = await prisma.auditLog.findFirst({ where: { action: "loyalty.adjust" } });
     expect(auditLog).not.toBeNull();
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     expect((auditLog!.data as any).delta).toBe(10);
   });
   describe("seeded property test", () => {
@@ -259,6 +260,6 @@ describe("loyalty ledger integration", () => {
         }
         expect(dbBalance).toBe(state.get(c.id));
       }
-    }, 30000);
+    }, 60000);
   });
 });

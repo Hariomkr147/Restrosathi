@@ -88,6 +88,7 @@ describe("AI Feedback Summary", () => {
   });
 
   it("returns fallback gracefully if quota exceeded", async () => {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
     (consumeMonthlyQuota as any).mockResolvedValueOnce(false);
     
     const start = new Date("2026-10-01T00:00:00Z");

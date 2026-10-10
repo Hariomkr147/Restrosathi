@@ -16,7 +16,7 @@ export async function createStaff({ name, pin }: { name: string; pin: string }) 
   return prisma.$transaction(async (tx) => {
     const hash = crypto.createHash('md5').update(cleanName).digest();
     const lockKey = hash.readInt32BE(0);
-    await tx.$executeRaw`SELECT pg_advisory_xact_lock(506, ${lockKey})`;
+    await tx.$executeRaw`SELECT pg_advisory_xact_lock(506, ${lockKey}::int)`;
     
     const existing = await tx.user.findFirst({
       where: { name: cleanName, active: true, role: "STAFF" }
@@ -88,7 +88,7 @@ export async function setStaffActive(userId: string, active: boolean) {
     if (active) {
       const hash = crypto.createHash('md5').update(user.name).digest();
       const lockKey = hash.readInt32BE(0);
-      await tx.$executeRaw`SELECT pg_advisory_xact_lock(506, ${lockKey})`;
+      await tx.$executeRaw`SELECT pg_advisory_xact_lock(506, ${lockKey}::int)`;
       
       const existing = await tx.user.findFirst({
         where: { name: user.name, active: true, role: "STAFF" }

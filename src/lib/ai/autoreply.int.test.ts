@@ -59,6 +59,7 @@ test("reply mentioning a price not in the facts -> handover", async () => {
     where: { direction: "OUT", kind: "AUTO_REPLY", phone: "+919876543211" },
     orderBy: { createdAt: "desc" }
   });
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   expect((reply?.params as any).answer).toBe("Thanks! Our staff will reply shortly.");
 });
 
@@ -123,6 +124,7 @@ test("allergy question -> fixed handover with zero provider calls", async () => 
     where: { direction: "OUT", kind: "AUTO_REPLY", phone: "+919876543215" },
     orderBy: { createdAt: "desc" }
   });
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   expect((reply?.params as any).answer).toBe("Please ask our staff about allergies.");
 });
 

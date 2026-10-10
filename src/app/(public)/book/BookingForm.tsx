@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
+ 
 "use client";
 
 import { useState, useEffect, useMemo } from "react";
@@ -39,7 +39,7 @@ export function BookingForm({ maxPartySize, marketingText }: { maxPartySize: num
     
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setLoadingSlots(true);
-    // eslint-disable-next-line react-hooks/set-state-in-effect
+     
     setSelectedSlot(null);
     getBookingSlots(dateStr).then(res => {
       if (active) {

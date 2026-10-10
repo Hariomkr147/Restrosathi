@@ -61,6 +61,7 @@ describe('Weekly Report Generation', () => {
     const logs = await prisma.weeklyReportLog.findMany();
     expect(logs.length).toBe(1);
     
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const content = logs[0].content as any;
     expect(content.orderCount).toBe(1);
     expect(content.revenuePaise).toBe(10000);

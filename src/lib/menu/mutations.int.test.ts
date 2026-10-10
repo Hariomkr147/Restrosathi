@@ -73,8 +73,13 @@ it("concurrent edits keep one complete set of variants", async () => {
   await asOwner(); const before = input(await item("dal-makhani"));
   try {
     for (let loop = 0; loop < 3; loop++) {
-      await Promise.all([18000, 19000].map((pricePaise) => upsertItem({ ...before, variants: [{ name: { en: "Test portion" }, pricePaise }] })));
+      try {
+        await Promise.all([18000, 19000].map((pricePaise) => upsertItem({ ...before, variants: [{ name: { en: "Test portion" }, pricePaise }] })));
+      } catch (e) {
+        console.error("Error during concurrent edits:", e);
+        throw e;
+      }
       expect((await item("dal-makhani")).variants).toHaveLength(1);
     }
-  } finally { await upsertItem(before); }
+  } finally { await asOwner(); await upsertItem(before); }
 });

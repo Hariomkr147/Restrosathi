@@ -28,6 +28,7 @@ export function EnquiryRow({ enquiry, t }: { enquiry: any, t: Record<string, str
     setError(null);
     try {
       const quotePaise = newStatus === "QUOTED" && quoteInput ? Math.round(Number(quoteInput) * 100) : undefined;
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const res = await adminUpdateEnquiryStatusAction(enquiry.id, newStatus as any, notes, quotePaise);
       if (res.ok) {
         setStatus(newStatus);

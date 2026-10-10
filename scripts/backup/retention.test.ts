@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-/* eslint-disable @typescript-eslint/ban-ts-comment */
+ 
 import { describe, it, expect, vi } from "vitest";
 import { runRetention } from "./retention";
 import { S3Client } from "@aws-sdk/client-s3";

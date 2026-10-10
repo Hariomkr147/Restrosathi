@@ -21,7 +21,8 @@ export default async function WeeklyReportsPage() {
     const log = await generateWeeklyReport(new Date(), { saveLog: false });
     if (!log) throw new Error("Could not generate report");
 
-    const content = log.content as any;
+    type WeeklyReportContent = { startAt: string; endAt: string; revenuePaise: number; orderCount: number; avgOrderValuePaise: number; avgRating: number; ratingCount: number; insight?: string; status?: string };
+    const content = log.content as WeeklyReportContent;
     const startAt = new Date(content.startAt);
     const endAt = new Date(content.endAt);
 
@@ -66,7 +67,7 @@ export default async function WeeklyReportsPage() {
       ) : (
         <div className="space-y-6">
           {logs.map(log => {
-            const c = log.content as any;
+            const c = log.content as { startAt: string; endAt: string; revenuePaise: number; orderCount: number; avgOrderValuePaise: number; avgRating: number; ratingCount: number; insight?: string; status?: string };
             if (c.status === "computing") {
               return (
                 <div key={log.weekStart.toISOString()} className="p-4 bg-gray-100 rounded border border-gray-200">
@@ -102,7 +103,7 @@ export default async function WeeklyReportsPage() {
 
                 {c.insight && (
                   <div className="mt-4 p-4 bg-blue-50 text-blue-900 rounded italic">
-                    "{c.insight}"
+                    &quot;{c.insight}&quot;
                   </div>
                 )}
               </div>

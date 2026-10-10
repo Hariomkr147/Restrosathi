@@ -24,7 +24,9 @@ export default async function EventsPage() {
           <h2 className="text-2xl font-display">{t("packagesTitle")}</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-[calc(var(--spacing)*4)]">
             {activePackages.map(pkg => {
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
               const name = (pkg.name as any)?.[locale] || (pkg.name as any)?.en;
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
               const desc = (pkg.description as any)?.[locale] || (pkg.description as any)?.en;
               return (
               <div key={pkg.id} className="border border-[var(--color-border)] rounded-[var(--radius-md)] p-[calc(var(--spacing)*4)] bg-[var(--color-surface-raised)] flex flex-col h-full">

@@ -16,7 +16,7 @@ function SubmitButton({ isRecalculate, disabled }: { isRecalculate: boolean, dis
   );
 }
 
-                                                                                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                                                                                     
 export function BillPanel({ sessionId, bill, lines, computed, settings, userRole, marketingText, customerPointsBalance }: any) {
   const [error, setError] = useState<string | null>(null);
   const [customerPhone, setCustomerPhone] = useState(bill?.customerPhone || "");
@@ -30,7 +30,7 @@ export function BillPanel({ sessionId, bill, lines, computed, settings, userRole
   
   const canDiscount = userRole === "OWNER" || settings.staffCanDiscount;
   
-                                       // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                                        
   const hasUnaccepted = lines.some((l: any) => l.order?.status === "NEW");
   
   async function action(formData: FormData) {
@@ -90,6 +90,7 @@ export function BillPanel({ sessionId, bill, lines, computed, settings, userRole
     startOtpTransition(async () => {
       try {
         await applyRedemptionAction(bill.id, redeemPoints);
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       } catch (err: any) {
         setError(err.message || "Failed to apply redemption");
       }
@@ -101,6 +102,7 @@ export function BillPanel({ sessionId, bill, lines, computed, settings, userRole
     startOtpTransition(async () => {
       try {
         await removeRedemptionAction(bill.id);
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       } catch (err: any) {
         setError(err.message || "Failed to remove redemption");
       }
@@ -127,7 +129,7 @@ export function BillPanel({ sessionId, bill, lines, computed, settings, userRole
               </tr>
             </thead>
             <tbody className="divide-y">
-              {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+              { }
               {lines.map((l: any, i: number) => (
                 <tr key={i}>
                   <td className="py-3">

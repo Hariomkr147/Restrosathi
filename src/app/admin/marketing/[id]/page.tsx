@@ -2,6 +2,8 @@ import { prisma } from "@/lib/db";
 import { requireUser } from "@/lib/auth/session";
 import { notFound } from "next/navigation";
 import { markCampaignSentAction } from "../actions";
+import { getMarketingAudience } from "@/lib/marketing/segments";
+import { Customer, CampaignSegment } from "@prisma/client";
 
 export const metadata = { title: "Campaign Details" };
 
@@ -19,8 +21,8 @@ export default async function CampaignDetailsPage({ params, searchParams }: { pa
   if (!campaign) notFound();
 
   // Recompute audience: if pending send is no longer in audience, delete it
-  const audience = await getMarketingAudience(campaign.segment as any);
-  const audienceIds = new Set(audience.map(c => c.id));
+  const audience = await getMarketingAudience(campaign.segment as CampaignSegment);
+  const audienceIds = new Set(audience.map((c: Customer) => c.id));
   
   await prisma.campaignSend.deleteMany({
     where: {

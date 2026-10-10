@@ -19,6 +19,7 @@ export async function GET() {
     if (e.name === "AuthError" || e.message === "Unauthorized") {
       return new NextResponse("Unauthorized", { status: 401 });
     }
+    console.error("Board API error:", e);
     return new NextResponse("Internal Server Error", { status: 500 });
   }
 }

@@ -1,7 +1,7 @@
 import type { Hours } from "../settings/schema";
 
 export function isAligned(date: Date): boolean {
-  return (date.getMinutes() === 0 || date.getMinutes() === 30) && date.getSeconds() === 0 && date.getMilliseconds() === 0;
+  return (date.getUTCMinutes() === 0 || date.getUTCMinutes() === 30) && date.getUTCSeconds() === 0 && date.getUTCMilliseconds() === 0;
 }
 
 export function occupiedSlots(start: Date): Date[] {

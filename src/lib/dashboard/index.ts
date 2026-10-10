@@ -75,6 +75,7 @@ export async function getDashboardFacts() {
     where: { id: { in: menuItemIds } },
     select: { id: true, name: true }
   });
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const nameMap = Object.fromEntries(menuItems.map(m => [m.id, typeof m.name === 'object' && m.name !== null && 'en' in m.name ? (m.name as any).en : "Unknown"]));
 
   const topDishesToday = todayOrderLines.map(x => ({ name: x.itemId ? nameMap[x.itemId] || "Unknown" : "Unknown", qty: x._sum.qty || 0 }));

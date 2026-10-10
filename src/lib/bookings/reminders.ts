@@ -34,7 +34,7 @@ export async function sendDueReminders({ now = new Date() }: { now?: Date } = {}
       const msgId = await prisma.$transaction(async (tx) => {
         // Atomic lock via update
         const updated = await tx.booking.updateMany({
-          where: { id: b.id, reminderSentAt: null },
+          where: { id: b.id, reminderSentAt: null, status: "CONFIRMED" },
           data: { reminderSentAt: now }
         });
         

@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
+ 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
@@ -38,6 +38,7 @@ export function PackageForm({ pkg }: { pkg?: any }) {
       await adminUpsertPackageAction(pkg?.id || null, data);
       if (!pkg) form.reset();
       router.refresh();
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (err: any) {
       console.error(err);
       setError(err.message || "Error");

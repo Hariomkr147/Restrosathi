@@ -67,6 +67,7 @@ export async function generateWeeklyReport(now: Date = new Date(), options: { sa
             content: { status: "computing" }
           }
         });
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
       } catch (e: any) {
         if (e.code === 'P2002') {
           return null; // Return null if already generated
@@ -119,6 +120,7 @@ export async function generateWeeklyReport(now: Date = new Date(), options: { sa
     for (const b of bills) {
       for (const line of b.lines) {
         // we can use item name
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const n = typeof line.name === "string" ? line.name : (line.name as any).en || "Unknown";
         itemsQty[n] = (itemsQty[n] || 0) + line.qty;
       }

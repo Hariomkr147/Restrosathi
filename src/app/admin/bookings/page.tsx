@@ -6,6 +6,8 @@ import { confirmBookingAction, declineBookingAction, setBookingStatusAction } fr
 import { AutoRefresh } from "./Refresh";
 import { Booking } from "@prisma/client";
 
+import { ConfirmButton, DeclineButton, StatusButton } from "./BookingActionButtons";
+
 export default async function AdminBookingsPage() {
   const user = await requirePageUser();
 
@@ -59,14 +61,28 @@ export default async function AdminBookingsPage() {
           const confirmed = dayBookings.filter(b => b.status === "CONFIRMED");
           const arrived = dayBookings.filter(b => b.status === "ARRIVED");
           
-          // Calculate covers booked for this day (rough sum of confirmed+arrived)
-          const coversUsed = [...confirmed, ...arrived].reduce((sum, b) => sum + b.partySize, 0);
+          // Determine the max covers used in any overlapping slot
+          let maxConcurrentCovers = 0;
+          for (const b of dayBookings) {
+            if (b.status === "CONFIRMED" || b.status === "ARRIVED") {
+              const bStart = b.slotStart.getTime();
+              const bEnd = bStart + 90 * 60 * 1000;
+              const overlapping = dayBookings.filter(o => 
+                (o.status === "CONFIRMED" || o.status === "ARRIVED") && 
+                o.slotStart.getTime() < bEnd && 
+                o.slotStart.getTime() + 90 * 60 * 1000 > bStart
+              );
+              const sum = overlapping.reduce((s, o) => s + o.partySize, 0);
+              if (sum > maxConcurrentCovers) maxConcurrentCovers = sum;
+            }
+          }
+          const coversRemaining = Math.max(0, capacity - maxConcurrentCovers);
 
           return (
             <div key={date} className="border-t pt-8 first:border-0 first:pt-0">
               <div className="mb-6">
                 <h2 className="text-2xl font-bold">{new Date(`${date}T12:00:00+05:30`).toLocaleDateString("en-IN", { timeZone: "Asia/Kolkata", weekday: "long", month: "long", day: "numeric" })}</h2>
-                <p className="text-muted-foreground text-sm">Total confirmed/arrived covers today: {coversUsed}</p>
+                <p className="text-muted-foreground text-sm">Peak covers used today: {maxConcurrentCovers} / {capacity} (Remaining capacity at peak: {coversRemaining})</p>
               </div>
 
               <div className="space-y-8 pl-4 border-l-2 border-border">
@@ -130,25 +146,15 @@ function BookingCard({ booking }: { booking: any }) {
       <div className="flex flex-wrap gap-2">
         {booking.status === "REQUESTED" && (
           <>
-            <form action={async () => { "use server"; await confirmBookingAction(booking.id); }}>
-              <button className="bg-emerald-600 text-white px-3 py-1.5 rounded min-h-touch text-sm font-medium">Confirm</button>
-            </form>
-            <form action={async () => { "use server"; await declineBookingAction(booking.id); }}>
-              <button className="bg-destructive text-destructive-foreground px-3 py-1.5 rounded min-h-touch text-sm font-medium">Decline</button>
-            </form>
+            <ConfirmButton id={booking.id} />
+            <DeclineButton id={booking.id} />
           </>
         )}
         {booking.status === "CONFIRMED" && (
           <>
-            <form action={async () => { "use server"; await setBookingStatusAction(booking.id, "ARRIVED"); }}>
-              <button className="bg-primary text-primary-foreground px-3 py-1.5 rounded min-h-touch text-sm font-medium">Mark Arrived</button>
-            </form>
-            <form action={async () => { "use server"; await setBookingStatusAction(booking.id, "NO_SHOW"); }}>
-              <button className="bg-muted text-muted-foreground px-3 py-1.5 rounded min-h-touch text-sm font-medium">No-Show</button>
-            </form>
-            <form action={async () => { "use server"; await setBookingStatusAction(booking.id, "CANCELLED"); }}>
-              <button className="bg-destructive text-destructive-foreground px-3 py-1.5 rounded min-h-touch text-sm font-medium">Cancel</button>
-            </form>
+            <StatusButton id={booking.id} status="ARRIVED" label="Mark Arrived" className="bg-primary text-primary-foreground" />
+            <StatusButton id={booking.id} status="NO_SHOW" label="No-Show" className="bg-muted text-muted-foreground" />
+            <StatusButton id={booking.id} status="CANCELLED" label="Cancel" className="bg-destructive text-destructive-foreground" />
           </>
         )}
         {booking.status === "ARRIVED" && (
@@ -158,3 +164,4 @@ function BookingCard({ booking }: { booking: any }) {
     </div>
   );
 }
+

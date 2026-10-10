@@ -40,10 +40,13 @@ describe("Accounts Integration", () => {
     // In our test, if it fails, it returns { error: 'invalid' }
     // If it succeeds, it redirects.
     if (loginRes && "error" in loginRes) {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
       expect((loginRes as any).error).toBe("invalid");
       const altLogin = await loginWithPin({ userId: staff!.id, pin: "5678" });
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
       expect((altLogin as any)?.error).toBeUndefined(); // means redirect threw
     } else {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
       expect((loginRes as any)?.error).toBeUndefined();
     }
   });

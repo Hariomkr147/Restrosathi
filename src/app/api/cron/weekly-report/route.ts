@@ -30,6 +30,7 @@ export async function POST(req: Request) {
     return NextResponse.json({ message: "Report already generated for this week." });
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const content = log.content as any;
   const startAt = new Date(content.startAt);
   const endAt = new Date(content.endAt);

@@ -459,7 +459,7 @@
         "title": "बिल सेटल करें"
       }
     },
-    "Reports": {
+      "Reports": {
       "DayEnd": {
         "title": "दिन के अंत की रिपोर्ट",
         "subtitle": "तारीख:",
@@ -481,6 +481,12 @@
         "cancelledBills": "रद्द किए गए बिल ({count})",
         "voidedLines": "रद्द किए गए आइटम ({count})"
       }
+    },
+    "bookingErrors": {
+      "CAPACITY_EXCEEDED": "क्षमता से अधिक।",
+      "NOT_FOUND": "बुकिंग नहीं मिली।",
+      "INVALID_STATUS": "अवैध स्थिति।",
+      "FAILED": "विफल।"
     }
   },
   "wa": {

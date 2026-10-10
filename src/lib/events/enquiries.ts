@@ -80,30 +80,34 @@ export async function getEnquiries() {
 
 export async function updateEnquiryStatusAction(id: string, newStatus: "QUOTED" | "CONFIRMED" | "LOST", notes?: string, quotedPaise?: number) {
   const user = await requireUser();
-  
-  const enquiry = await prisma.eventEnquiry.findUnique({ where: { id } });
-  if (!enquiry) return { ok: false as const, error: "NOT_FOUND" };
 
-  const validTransitions: Record<string, string[]> = {
-    NEW: ["QUOTED", "LOST"],
-    QUOTED: ["CONFIRMED", "LOST"],
-    CONFIRMED: [],
-    LOST: [],
-  };
+  return await prisma.$transaction(async (tx) => {
+    const raw = await tx.$queryRaw<{status: string}[]>`SELECT status FROM "EventEnquiry" WHERE id = ${id} FOR UPDATE`;
+    if (!raw.length) return { ok: false as const, error: "NOT_FOUND" };
 
-  if (!validTransitions[enquiry.status].includes(newStatus)) {
-    return { ok: false as const, error: "INVALID_TRANSITION" };
-  }
+    const currentStatus = raw[0].status;
 
-  await prisma.eventEnquiry.update({
-    where: { id },
-    data: { 
-      status: newStatus,
-      notes: notes ?? undefined,
-      quotedPaise: quotedPaise ?? undefined,
-      handledById: user.id
-    },
+    const validTransitions: Record<string, string[]> = {
+      NEW: ["QUOTED", "LOST"],
+      QUOTED: ["CONFIRMED", "LOST"],
+      CONFIRMED: [],
+      LOST: [],
+    };
+
+    if (!validTransitions[currentStatus].includes(newStatus)) {
+      return { ok: false as const, error: "INVALID_TRANSITION" };
+    }
+
+    await tx.eventEnquiry.update({
+      where: { id },
+      data: { 
+        status: newStatus,
+        notes: notes ?? undefined,
+        quotedPaise: quotedPaise ?? undefined,
+        handledById: user.id
+      },
+    });
+
+    return { ok: true as const };
   });
-
-  return { ok: true as const };
 }

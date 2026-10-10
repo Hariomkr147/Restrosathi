@@ -1,5 +1,5 @@
 import { verifyCronSecret } from "@/lib/cron";
-/* eslint-disable @typescript-eslint/no-unused-vars */
+ 
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { runChecks } from "@/lib/monitoring/checks";

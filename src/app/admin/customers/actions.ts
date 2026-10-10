@@ -12,6 +12,7 @@ export async function eraseCustomerAction(customerId: string) {
     await eraseCustomer(customerId, user);
     revalidatePath("/admin/customers");
     return { ok: true };
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (e: any) {
     return { ok: false, error: e.message };
   }

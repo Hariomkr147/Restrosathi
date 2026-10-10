@@ -25,6 +25,7 @@ describe("WaAkgProvider", () => {
         });
       });
       server.listen(0, () => {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const port = (server.address() as any).port;
         process.env.WA_AKG_URL = `http://localhost:${port}`;
         process.env.WA_AKG_API_KEY = "test-api-key";

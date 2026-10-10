@@ -48,13 +48,13 @@ Return ONLY valid JSON.`;
   }
 
   // Extract all numbers from the goal
-  const goalNumbers = (goal.match(/\d+/g) || []);
+  const goalNumbers: string[] = (goal.match(/\d+/g) || []);
 
   return parsed.variants.map(v => {
     let clean = v.trim();
     
     // Check for invented numbers
-    const variantNumbers = (clean.match(/\d+/g) || []);
+    const variantNumbers: string[] = (clean.match(/\d+/g) || []);
     const inventedNumbers = variantNumbers.filter(n => !goalNumbers.includes(n));
     if (inventedNumbers.length > 0) {
       throw new Error("Variant contained invented numbers.");

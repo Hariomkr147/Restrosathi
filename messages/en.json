@@ -481,6 +481,12 @@
         "cancelledBills": "Cancelled Bills ({count})",
         "voidedLines": "Voided Items ({count})"
       }
+    },
+    "bookingErrors": {
+      "CAPACITY_EXCEEDED": "Capacity exceeded for this slot.",
+      "NOT_FOUND": "Booking not found.",
+      "INVALID_STATUS": "Invalid status transition.",
+      "FAILED": "Failed to update booking."
     }
   },
   "wa": {

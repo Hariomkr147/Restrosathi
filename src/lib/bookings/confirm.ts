@@ -101,8 +101,9 @@ export async function confirmBooking(bookingId: string, actorId: string): Promis
 
 export async function declineBooking(bookingId: string, reason: string | undefined, actorId: string): Promise<{ ok: true } | { ok: false; error: "NOT_FOUND" | "NOT_REQUESTED" }> {
   const result = await prisma.$transaction(async (tx) => {
-    const booking = await tx.booking.findUnique({ where: { id: bookingId } });
-    if (!booking) return { ok: false as const, error: "NOT_FOUND" as const };
+    const rows = await tx.$queryRaw<any[]>`SELECT * FROM "Booking" WHERE id = ${bookingId} FOR UPDATE`;
+    if (rows.length === 0) return { ok: false as const, error: "NOT_FOUND" as const };
+    const booking = rows[0];
     
     if (booking.status !== "REQUESTED") {
       return { ok: false as const, error: "NOT_REQUESTED" as const };
@@ -131,13 +132,17 @@ export async function declineBooking(bookingId: string, reason: string | undefin
 }
 
 export async function staffCancelBooking(bookingId: string, actorId: string): Promise<{ ok: true } | { ok: false; error: "NOT_FOUND" | "INVALID_STATUS" }> {
-  const booking = await prisma.booking.findUnique({ where: { id: bookingId } });
-  if (!booking) return { ok: false as const, error: "NOT_FOUND" as const };
-  if (!canBookingTransition(booking.status, "CANCELLED")) return { ok: false as const, error: "INVALID_STATUS" as const };
-  
-  await prisma.booking.update({
-    where: { id: bookingId },
-    data: { status: "CANCELLED", decidedById: actorId }
+  return prisma.$transaction(async (tx) => {
+    const rows = await tx.$queryRaw<any[]>`SELECT * FROM "Booking" WHERE id = ${bookingId} FOR UPDATE`;
+    if (rows.length === 0) return { ok: false as const, error: "NOT_FOUND" as const };
+    const booking = rows[0];
+
+    if (!canBookingTransition(booking.status, "CANCELLED")) return { ok: false as const, error: "INVALID_STATUS" as const };
+    
+    await tx.booking.update({
+      where: { id: bookingId },
+      data: { status: "CANCELLED", decidedById: actorId }
+    });
+    return { ok: true };
   });
-  return { ok: true };
 }

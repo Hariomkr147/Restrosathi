@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
+ 
 import { prisma } from "../db";
 import { formatINR } from "../money/format";
 import { Hours } from "../settings/schema";

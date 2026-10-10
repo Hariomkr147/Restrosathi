@@ -8,6 +8,7 @@ import { getBoard } from "@/lib/orders/board";
 import { prisma } from "@/lib/db";
 import { cookies } from "next/headers";
 import { vi } from "vitest";
+import { resetOperationalData } from "../../../tests/helpers/db";
 
 vi.mock("@/lib/device", () => ({
   getDeviceId: vi.fn().mockResolvedValue("mocked-device-id"),
@@ -19,11 +20,7 @@ vi.mock("next/headers", () => ({
 
 describe("Thin routes for loadtest", () => {
   beforeEach(async () => {
-    await prisma.orderLine.deleteMany();
-    await prisma.order.deleteMany();
-    await prisma.bill.deleteMany();
-    await prisma.diningSession.deleteMany();
-    await prisma.restaurantTable.deleteMany();
+    await resetOperationalData();
   });
 
   describe("Board Route", () => {

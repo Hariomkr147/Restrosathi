@@ -2,14 +2,11 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { expect, test, beforeEach } from "vitest";
 import { prisma } from "../db";
+import { resetOperationalData } from "../../../tests/helpers/db";
 import { escalateStaleOrders } from "./escalation";
 
 beforeEach(async () => {
-  await prisma.messageLog.deleteMany({});
-  await prisma.orderLine.deleteMany({});
-  await prisma.order.deleteMany({});
-  await prisma.diningSession.deleteMany({});
-  await prisma.restaurantTable.deleteMany({});
+  await resetOperationalData();
   await prisma.settings.update({
     where: { id: 1 },
     data: { ownerAlertPhone: "+919999911111" }
@@ -17,8 +14,8 @@ beforeEach(async () => {
 });
 
 test("escalates stale orders and sends one message", async () => {
-  const table1 = await prisma.restaurantTable.create({ data: { label: "3", code: "3" } });
-  const table2 = await prisma.restaurantTable.create({ data: { label: "5", code: "5" } });
+  const table1 = await prisma.restaurantTable.findUniqueOrThrow({ where: { label: "T1" } });
+  const table2 = await prisma.restaurantTable.findUniqueOrThrow({ where: { label: "T2" } });
   
   const sess1 = await prisma.diningSession.create({ data: { tableId: table1.id, status: "OPEN", kind: "DINE_IN" } });
   const sess2 = await prisma.diningSession.create({ data: { tableId: table2.id, status: "OPEN", kind: "DINE_IN" } });
@@ -50,6 +47,7 @@ test("escalates stale orders and sends one message", async () => {
   // One message queued
   const msgs = await prisma.messageLog.findMany({ where: { kind: "ORDER_ESCALATION" } });
   expect(msgs).toHaveLength(1);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   expect((msgs[0].params as any).label).toContain("2 orders waiting");
 });
 
