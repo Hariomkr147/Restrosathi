@@ -20,13 +20,10 @@ This document summarizes the current state of RestroSathi's Phase 6 (Infrastruct
 * **Production Deployment Environment**: Decide on the target VPS specifications and OS for staging and live.
 
 ## 4. Parked tasks and failed gates
-* **R21 (Backup Upload/Restore)**: Parked due to missing Docker Desktop and `pg_dump` on host. Unblocked by restoring Docker Desktop.
-* **R25 (Validate production image, migrations, schedule)**: Parked due to missing Docker Desktop and Next.js SWC cache build failure. Unblocked by restoring Docker/SWC.
-* **R26 (Measured HTTP load test)**: Parked as it requires the production build and test database running via Docker. Unblocked by restoring Docker.
-* **R27 (UI verification, performance metrics)**: Parked due to local Next.js `npm run build` and `npm run dev` failing with Turbopack SWC permissions errors. Unblocked by fixing host AppData DACL cache or building in Docker.
-* **R28 (Final Gate / Audit)**: Failed to pass phase exit criteria because `127.0.0.1:15432` test database is inaccessible without Docker. Unblocked by restoring Docker Desktop.
+* **R27 (UI verification, performance metrics)**: Parked due to local Next.js `npm run build` failing with an Application Control policy blocking the SWC native extensions (`ERR_DLOPEN_FAILED` / `ERR_SWC_NATIVE_CACHE` on Windows AppData). Unblocked by fixing host AppLocker/WDAC policy or building in Docker.
+* **R28 (Final Gate / Audit)**: Failed to pass phase exit criteria because `127.0.0.1:15432` test database is inaccessible without Docker, and integration/e2e tests cannot run. Unblocked by restoring Docker Desktop.
 
 ## 5. First three things to do tomorrow
 1. **Restore Docker Desktop** on the host environment and confirm `docker info` responds successfully.
-2. **Resolve the Next.js SWC cache error** (`ERR_SWC_NATIVE_CACHE` on Windows AppData) to allow `npm run build` to pass.
-3. Once unblocked, **Run the queue** again to complete the parked tasks (R21, R25, R26, R27, R28) and close the final gates.
+2. **Resolve the Windows AppLocker/WDAC block** on SWC native extensions (or fallback to a Docker dev container) to allow `npm run build` and `npm run dev` to pass.
+3. Once unblocked, **Run the queue** again to complete the parked tasks (R27, R28) and close the final gates.
