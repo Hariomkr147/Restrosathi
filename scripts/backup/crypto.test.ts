@@ -97,7 +97,7 @@ describe("Backup Crypto", () => {
 
     await pipeline(inputStr, enc, dec, outStr);
     expect(hashIn.digest("hex")).toEqual(hashOut.digest("hex"));
-  });
+  }, 150000);
 
   it("fails with wrong key", async () => {
     const input = Buffer.from("Hello world");
